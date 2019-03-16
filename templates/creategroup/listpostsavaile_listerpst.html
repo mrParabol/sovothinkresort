@@ -1,0 +1,204 @@
+{% extends "account/base.html" %}
+{% load i18n %}
+{% load static %}
+{% load poll_extras %}
+{% block bodyicijs %}
+	
+{% endblock %}
+{% block head_title %}
+	{% blocktrans %}The Total Number of Posts and according to Order of {% endblocktrans %}
+{% endblock %}
+
+{% block extra_head %}
+{% endblock %}
+ 
+{% block body %}
+	{% block mynavbar %}
+	  {% include "myincludes/mynavbar.html" %}
+	{% endblock %}
+{% block content %}
+ 
+{% if request.user.is_authenticated %}
+
+    {% if request.user.account_verified %}
+    	<section class="userdetailsection">
+		<div class="container">
+			<div class="page-header">
+		 		<div class="row">
+		 			<div class="col-md-12 text-center mt-1 pt-2">
+								<h3>{% trans "Relating Posts" %}</h3>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	{% if list_exams %}
+	<section class="createdsontent">
+			<div class="container">
+				{% for post in list_exams %}
+					<div id="contentids{{ post.pk }}" class="mt-4 pt-4">
+						<div class="row border-top border-primary">
+							<div id="feels{{ post.pk }}" class="col-md-4 text-center mt-1 pt-2">
+								{{ post.feeling }}
+							</div>
+							<script type="text/javascript">
+								$(document).ready(function() {
+								  function convert() {
+								      var input = $('#feels{{ post.pk }}').text();
+								      var output = emojione.toImage(input);
+								      document.getElementById('feels{{ post.pk }}').innerHTML = output;
+								  }
+								  convert();
+								});
+							</script>
+							<div class="col-md-4 text-center mt-1 pt-2 fosizes">
+								{{ post.createdates }}
+							</div>
+							<div class="col-md-4 text-center mt-1 pt-2 fosizes">
+								{% for tag in post.postgrouplabels.all %}
+									<!--<a href="/{{ post.creategrouppost.groupname }}/{{ tag.name }}/relatedposts">{{ tag.name }}</a>-->
+									<a href="/{{ tag.name }}/relatedposts">{{ tag.name }}</a>
+								{% endfor %}
+							</div>
+						<!-- </div> -->
+						<!-- carosel photo start -->
+						<!-- <div class="row"> -->
+							<div class="col-md-12 text-center mt-1 mb-1 pt-1">
+								{% photo_show_list post.id as photolist %}
+								<input id="wsipperphotourllist{{ post.pk }}" type="hidden" name="" value="{{ photolist }}">
+								<!-- for picture design -->
+								<div class="swiper-container slider{{ post.pk }}">
+									<div id="wrapper{{ post.pk }}" class="swiper-wrapper">
+										<!--<div class="swiper-slide"><img id="slide{{ post.pk }}" src=""></div>-->
+										<!-- Add Pagination -->
+									</div>
+								  <div class="swiper-pagination"></div>
+								  <!-- Add Arrows -->
+								  <div class="swiper-button-next"></div>
+								  <div class="swiper-button-prev"></div>
+								</div>
+								<script type="text/javascript">
+									$(document).ready(function() {
+										//photos add
+										var ptlst = $('#wsipperphotourllist{{ post.pk }}').val();
+										ptlst = ptlst.substr(1);
+										nnptlst = ptlst.length;
+										ptlst = ptlst.substr(0, nnptlst-1);
+										var listptlst = ptlst.split(",");
+										for (let i = 0; i < listptlst.length; i++) {
+											let element = listptlst[i];
+											if (element == "\'false\'") {
+												element = element;
+											}
+											else{
+												$('#wrapper{{ post.pk }}').append(`<div class="swiper-slide"><img id="slide{{ post.pk }}" class="img-fluid" src=`+element+`></div>`);
+											}
+										}
+										{% if post.multiphoto %}
+											$('#wrapper{{ post.pk }}').append(`<div class="swiper-slide"><video id="slide{{ post.pk }}" class="img-responsive myvidswidth" controls> <source src="{{ post.multiphoto.url }}" type="video/mp4"></video>`);
+										{% endif %}
+										(() => {
+											const sliderEl = document.querySelector('.slider{{ post.pk }}');
+											  if(!sliderEl){
+											    return;
+											  }
+											  const slider = new Swiper(sliderEl, {
+											    loop: true,
+											    /*
+											    autoplay: {
+											      delay: 5000,
+											      disableOnInteraction: false
+											    },
+											    */
+											    pagination: {
+											      el: '.swiper-pagination',
+											      clickable: true,
+											      //type: 'progressbar'
+											    },
+											    navigation: {
+											      nextEl: '.swiper-button-next',
+											      prevEl: '.swiper-button-prev',
+											    },
+											  });
+											})();
+									});
+									//$('#slide{{ post.pk }}').prop(src, )
+								</script>
+							</div>
+						</div>
+						<!-- carosel photo stop -->
+						<!-- text start -->
+						<div class="row">
+								<div class="col-md-12">
+									<blockquote class="blockquote text-center mt-1">
+										<span>{{ post.postsgroupwrite|safe|truncatechars:125 }}</span>
+									</blockquote>
+								</div>
+							</div>
+							<!-- text stop -->
+						</div>
+						<div class="row">
+							<div class="col-md-12 text-center mt-2">
+								{% url 'postscontent' post.user.username post.pk post.slug as the_url %}
+								<a href="{{ the_url }}">{% trans "Go To Detail" %}</a>
+							</div>
+						</div>
+				{% endfor %}
+			</div>
+		</section>
+    {% endif %}
+    	<!-- paginate start-->
+		{% if is_paginated %}
+			<div class="row">
+				<div class="col-md-12 text-center mt-3 pt-2" >
+					<nav aria-label="Page navigation example">
+						<ul class="pagination justify-content-center">
+							{% if list_exams.has_previous %}
+							    <li class="page-item">
+							        <span><a class="page-link" href="?page={{ list_exams.previous_page_number }}">{% trans "Previous" %}</a></span>
+							    </li>
+							{% endif %}
+							    <li class="page-item disabled">
+							        <span class="page-link">{% trans "Page"%} {{ list_exams.number }} {%trans "of" %} {{ list_exams.paginator.num_pages }}</span>
+							    </li>
+							{% if list_exams.has_next %}
+							    <li class="page-item">
+							        <span><a class="page-link" href="?page={{ list_exams.next_page_number }}">{%trans "Next" %}</a></span>
+							    </li>
+							{% endif %}
+						</ul>
+					</nav>
+				</div>
+			</div>
+		{% else %}
+			<div class="row">
+				<div class="col-md-12 text-center mt-4 pt-4">
+			    <p>{% trans "No more pages to display" %}</p>
+			  </div>
+			</div>
+		{% endif %}
+		<!-- paginate stop-->
+    </div>
+    </div>
+    </div>
+    </section>
+    {% else %}
+    	<section>
+				<div class="container">
+					<div class="row"> 
+						<div class="col-md-12 text-center mt-1 pt-2">
+							<h2>{% blocktrans %}you need to confirm your account via email{% endblocktrans %}
+					</div>
+				</div>
+			</div>
+		</section>
+    {% endif %}
+
+{% endif %}
+ 
+{% endblock content %}
+{% endblock body %}
+
+{% block myfooter %}
+  {% include "myincludes/myfooter.html" %}
+{% endblock %}

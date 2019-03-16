@@ -1,0 +1,220 @@
+{% extends "account/base.html" %}
+{% load more_like_this %}
+{% load i18n %}
+{% load highlight %}
+{% block bodyicijs %}
+  <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <!--<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>-->
+  <!--<link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css" rel="stylesheet"/>-->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
+  
+  <!--<script src="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.2/jquery-ui.js"></script>-->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+    $(function(){
+      $("#id_q").autocomplete({
+        minLength:3,
+        source: function(req, add){
+          var search=$("#id_q").val();
+          var radioValue = $("input[name='whichsearch']:checked").val();
+          $.ajax({
+            url:'/search/autocomplete?q=',
+            async:false,
+            dataType:'json',
+            type:'POST',
+            data:{ 
+              q: search,
+              whichsearch: radioValue,
+              csrfmiddlewaretoken: '{{ csrf_token }}'
+              },
+            success: function(data){
+              var suggestions=[];
+
+              $.each(data, function(index, objeto){
+                suggestions.push(objeto); 
+              });
+
+              add(suggestions);
+            },
+            error:function(err){
+              alert("error");
+            }
+          });
+        }
+      })
+      .data( "uiAutocomplete" )._renderItem = function( ul, item ) {
+        var t = String(item.value).replace(
+                new RegExp(this.term, "gi"),
+                "<span class='ui-state-highlight'>$&</span>");
+        return $( "<li></li>" )
+            .data( "item.autocomplete", item )
+            .append( "<a>" + t +"</a>" )
+            .appendTo( ul );
+    };
+    });
+  </script>
+{% endblock %}
+{% block head_title %}
+  {% blocktrans %}Search{% endblocktrans %}
+{% endblock %}
+
+{% block extra_head %}
+{% endblock %}
+ 
+{% block body %}
+  {% block mynavbar %}
+    {% include "myincludes/mynavbar.html" %}
+  {% endblock %}
+  {% block content %}
+    <section class="userdetailsection">
+      <div class="container">
+        <div class="page-header">
+          <div class="row">
+            <div class="col-md-12 text-center mt-1 pt-2">
+                  <h3>{% trans "Search" %}</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    {% if request.user.is_authenticated %}
+      {% if request.user.is_active %}
+      <!--<h1>Autocomplete Example</h1>-->
+      <!--<div class="ui-widget">-->
+        <section class="postcreateuss">
+          <div class="container">
+            <div class="row">
+              <div class="col-md-12 text-center">
+      
+        <div class="form-group">
+          <form method="post" action="/search/autocomplete" class="">
+            {% csrf_token %}
+              <input type="text" id="id_q" name="q" class="form-control autocomplete">
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+              <label class="btn btn-secondary mt-2 pt-2">
+                <input type="radio" name="whichsearch" value="for_group"> {% trans "Community" %}
+              </label>
+              <label class="btn btn-secondary active mt-2 pt-2">
+                <input type="radio" name="whichsearch" value="for_group_content"> {% trans "Community Content" %}
+              </label>
+            </div>
+            <div class="row">
+              <div class="col-md-12 text-center mt-2 pt-2">
+                <input type="submit" class="btn btn-primary btn-block" value="{% trans 'Search' %}">
+              </div>
+            </div>
+        </div>
+      </div>
+        
+          <!-- arama sonuç başlangıç -->
+          {% if results == 'absent data' %} 
+            
+              <div class="col-md-12 text-center mt-2">
+                <h3>{% trans "absent data" %}</h3>
+              </div>
+            
+          {% elif results == 'error method' %} 
+            
+              <div class="col-md-12 text-center mt-2">
+                <h3>{% trans "error method" %}</h3>
+              </div>
+            
+          {% else %}
+              
+                <div class="col-md-12 text-center mt-2">
+                  <h3>{% trans "Results" %}</h3>
+                </div>
+            
+
+            {% for detailresult in results %}
+            
+              <div class="col-md-12 text-center mt-2">
+              <p>
+                <a href="{% url 'groupshowlist' detailresult.pk detailresult.slug|lower %}">{{ detailresult.aboutgroup }}</a>
+              </p>
+              </div>
+           
+            {% empty %}
+            
+              <div class="col-md-12 text-center mt-2">
+              <p class="lead" >{% trans "No results found" %}</p>
+              </div>
+            
+            {% endfor %}
+
+            <!-- paginate start-->
+                  {% if is_paginated %}
+                    <div class="row mt-3 pt-2">
+                      <div class="col-md-12" >
+                        <nav aria-label="Page navigation example">
+                          <ul class="pagination justify-content-center">
+                            {% if mydata.has_previous %}
+                                <li class="page-item">
+                                    <span><a class="page-link" href="?page={{ mydata.previous_page_number }}">{% trans "Previous" %}</a></span>
+                                </li>
+                            {% endif %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">{% trans "Page"%} {{ mydata.number }} {%trans "of" %} {{ mydata.paginator.num_pages }}</span>
+                                </li>
+                            {% if mydata.has_next %}
+                                <li class="page-item">
+                                    <span><a class="page-link" href="?page={{ mydata.next_page_number }}">{%trans "Next" %}</a></span>
+                                </li>
+                            {% endif %}
+                          </ul>
+                        </nav>
+                      </div>
+                    </div>
+                  {% else %}
+                    <div class="col-md-12 text-center">
+                      <p>{% trans "No more pages to display" %}</p>
+                    </div>
+                  {% endif %}
+                  <!-- paginate stop-->
+          {% endif %}
+          <!-- arama sonuç bitiş -->
+
+      
+
+      <!-- Django template tags -->
+
+      <div id="contentdata" class="" >
+        {% for postcontent in likethis %}
+          <!-- {{ postcontent.postsgroupwrite|safe|truncatewords:100|linebreaks }}-->
+           {% more_like_this postcontent as more_list limit 5  %} 
+           {% highlight postcontent.postsgroupwrite with query html_tag "div" css_class "highlight_me_please" max_length 40 %} 
+           
+              <div class="col-md-12">
+                <blockquote class="blockquote text-center mt-1">
+                  <span>{{ postcontent.postsgroupwrite|safe|truncatechars:200|linebreaks }}</span>
+                </blockquote>
+              </div>
+            
+            
+              <div class="col-md-12">
+                  <a href="{{ postcontent.get_absolute_url }}">{% trans "Read More" %}</a>
+              </div>
+            
+        {% endfor %}
+      </div>
+      </div>
+    </section>
+        {% else %}
+            <section>
+               <div class="container">
+                   <div class="row"> 
+                      <div class="col-md-12 text-center mt-1 pt-2">
+                        <h2>{% blocktrans %}you need to confirm your account via email{% endblocktrans %}
+                      </div>
+                    </div>
+                /div>
+            </section>
+        {% endif %}
+    {% endif %}
+  {% endblock content %}
+{% endblock body %}
+
+{% block myfooter %}
+  {% include "myincludes/myfooter.html" %}
+{% endblock %}

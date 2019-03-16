@@ -1,0 +1,104 @@
+{% load static from staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/emojione@4.0.0/lib/js/emojione.min.js"></script>
+    	<!--<link rel="stylesheet" href='{% static "css/bootstrap.min.css" %}' >-->
+        <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.4.1/css/swiper.css">-->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.4.1/css/swiper.min.css">
+        <link rel="stylesheet" type="text/css" href='{% static "css/mystyle.css" %}'/>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/emojione@4.0.0/extras/css/emojione.min.css"/>
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    	<link rel="stylesheet" href='{% static "emojionearea/dist/emojionearea.min.css" %}' >
+    	<link rel="stylesheet" href='{% static "css/cropper.min.css" %}' >
+    	<link rel="stylesheet" href='{% static "jquery-upvote/lib/jquery.upvote.css" %}' >
+    	<link rel="stylesheet" href='{% static "js/DateTimePicker/src/DateTimePicker.css" %}' >
+    	<link rel="stylesheet" href='{% static "videojs-record/node_modules/video.js/dist/video-js.min.css" %}' >
+    	<link rel="stylesheet" href='{% static "videojs-record/dist/css/videojs.record.css" %}' >
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    	<script type="text/javascript" src='{% static "ckeditor/ckeditor-init.js" %}'></script>
+        <script type="text/javascript" src='{% static "ckeditor/ckeditor/ckeditor.js" %}'></script>
+        <!-- <script type="text/javascript" src='{% static "ckeditor/ckeditor/adapters/ckeditor.js" %}'></script> -->
+        <script type="text/javascript" src='{% static "js/DateTimePicker/dist/DateTimePicker.min.js" %}'></script>
+        <script src='https://www.google.com/recaptcha/api.js'></script>
+        <script type="text/javascript" src='{% static "emojionearea/dist/emojionearea.min.js" %}'></script>
+        <script type="text/javascript" src='{% static "js/jquery-file-upload/js/vendor/jquery.ui.widget.js" %}'></script>
+        <script type="text/javascript" src='{% static "js/jquery-file-upload/js/jquery.iframe-transport.js" %}'></script>
+        <script type="text/javascript" src='{% static "js/jquery-file-upload/js/jquery.fileupload.js" %}'></script>
+        <script type="text/javascript" src='{% static "videojs-record/node_modules/video.js/dist/video.min.js" %}'></script>
+        <script type="text/javascript" src='{% static "videojs-record/node_modules/recordrtc/RecordRTC.js" %}'></script>
+        <script type="text/javascript" src='{% static "videojs-record/node_modules/webrtc-adapter/out/adapter.js" %}'></script>
+        <script type="text/javascript" src='{% static "videojs-record/dist/videojs.record.js" %}'></script>
+        <script type="text/javascript" src='{% static "jquery-upvote/lib/jquery.upvote.js" %}'></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.4.1/js/swiper.js"></script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/jquery.validate.min.js"></script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/additional-methods.min.js"></script>
+        <script type="text/javascript" src='{% static "js/index.js" %}'></script>
+        <script src="http://balupton.github.io/jquery-scrollto/lib/jquery-scrollto.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/ramda/0.25.0/ramda.min.js"></script>
+        <script src='{% static "js/jquery_scrollto.js" %}'></script>
+        <!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.4.1/js/swiper.min.js"></script>-->
+        <!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.4.1/js/swiper.min.js.map"></script>-->
+        <!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.4.1/js/swiper.esm.bundle.js"></script>-->
+
+        
+        
+    	{% block extraiceaktar %}
+    	{% endblock %}
+    	{% block extracss %}
+    	{% endblock %}
+    	{% block extrajavascript %}
+    	{% endblock %}
+        <title>{% block head_title %}{% endblock %}</title>
+        {% block extra_head %}
+        {% endblock %}
+    </head>
+    <body class="login_body">
+    {% block body %}
+        {% block mynavbar %}
+        {% endblock %}
+        {% block messagecont %}
+            <section id="messagesection">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="w-100"></div>
+                            <div class="col">
+                                {% if messages %}
+                                    <div>
+                                        <strong>Messages:</strong>
+                                        <ul>
+                                            {% for message in messages %}
+                                                <li>{{message}}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        {% endblock %}
+        {% block content %}
+        {% endblock %}
+        
+        <!--<script type="text/javascript" src='{% static "js/bootstrap.min.js" %}'></script>-->
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+        <script type="text/javascript" src='{% static "js/cropper.min.js" %}'></script>
+    {% endblock %}
+    {% block extra_body %}
+    {% endblock %}
+    {% block bodyicijs %}
+    {% endblock %}
+    {% block myfooter %}
+    {% endblock %}
+    </body>
+    {% block ajaxjs %}
+    {% endblock %}
+</html>

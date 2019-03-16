@@ -1,0 +1,179 @@
+{% extends "account/base.html" %}
+{% load i18n %}
+{% block bodyicijs %}
+	<script type="text/javascript">
+		var closegroupshow = function closegroupshow (getpk){
+			var dropdow = $('#dropdowncontent');
+			$(dropdow).val("");
+			var loaddata = "#loadclick"+getpk;
+			var groupinform = "#groupdetaildiv"+getpk;
+			var clsbtn = "#closedbutton"+getpk;
+			$(groupinform).empty();
+			$(clsbtn).remove();
+			$(loaddata).show();
+		}
+		var groupshowload = function groupshowload (getpk) {
+			var dropdow = $('#dropdowncontent').val();
+			var beforeopenloaddata = "#loadclick"+dropdow;
+			var beforegroupinform = "#groupdetaildiv"+dropdow;
+			var beforeclsbtn = "#closedbutton"+dropdow;
+			$(beforeopenloaddata).show();
+			$(beforegroupinform).empty();
+			$(beforeclsbtn).remove();
+			$('#dropdowncontent').val(getpk);
+			var loaddata = "#loadclick"+getpk;
+			var urlget = $(loaddata).val();
+			var contentaddplace = "#groupdetaildiv"+getpk;
+			//$(contentaddplace).load(urlget);
+			$(contentaddplace).load(urlget, function(response, status, xhr) {
+				if ( status == "error" ) {
+					var msg = "Sorry but there was an error: ";
+					$( "#error" ).html( msg + xhr.status + " " + xhr.statusText );
+				}
+				$(loaddata).hide();
+				$(this).find("a").append("Profilim");
+				var closedbutton = '<button id="closedbutton'+getpk+'" onclick="closegroupshow('+getpk+')" class="btn btn-primary btn-block" type="input" >Closed Group</button>';
+				var closebtnplace = "#closedplace"+getpk;
+				$(closebtnplace).after(closedbutton);
+				//new adding
+				$("#mynavbarid").remove();
+				$("#footergeneral").remove();
+			});
+			//$.get(urlget, function(data) {
+				//var data = $(data);
+				//$(contentaddplace).html(data);
+			//});
+			
+		}
+	</script>
+{% endblock %}
+{% block head_title %}
+	{% blocktrans %}Group List{% endblocktrans %}
+{% endblock %}
+
+{% block extra_head %}
+{% endblock %}
+ 
+{% block body %}
+	{% block mynavbar %}
+	  {% include "myincludes/mynavbarlist.html" %}
+	{% endblock %}
+{% block content %}
+		<section class="userdetailsection">
+			<div class="container">
+				<div class="page-header">
+			 		<div class="row">
+			 			<div class="col-md-12 text-center mt-1 pt-2">
+									<h3>{% trans "Group List" %}</h3>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+ 
+	{% if request.user.is_authenticated %}
+		{% if request.user.is_active %}
+			<input type="hidden" id= "dropdowncontent" name="dropdowncontent" value="">
+			 <div id="grouplistdiv">
+				{% for post in list_exams %}
+				    <div class="table-responsive">
+					    <table class="table">
+						    <tbody>
+							    <tr>
+									<div class="text-center mt-3 pt-2">
+										<div class="contentbigphoto">
+											{% if post.bigphoto %}
+											    <img class="img-fluid rounded-circle" style='max-width: 30%;' id='bigphotocontent' src='{{ post.bigphoto.url }}' alt='' />
+											{% else %}
+												<img class="img-fluid rounded-circle" style='max-width: 30%;' id='bigphotocontent' src='/media/defaultimages/1asuk2018-05-15-203455.jpg' alt='' />
+											{% endif %}
+										</div>
+									</div>
+								</tr>
+								<tr>
+									<th>
+										<div class="col-md-6 text-center">
+											<p class="lead text-primary font-weight">
+								        		{% trans "Group Name:" %} {{ post.groupname }}
+								        	</p>
+							        	</div>
+									</th>
+									<th>
+										<div class="col-md-6 text-center mt-1 ml-2 pl-2">
+							        		{% url 'groupshowlist' post.pk post.slug as the_url_detail %}
+							        		<a href = "{{ the_url_detail }}"><p class="text-primary">{% trans "Go to" %} {{ post.groupname }}</p></a>
+							        	</div>
+									</th>
+								</tr>
+								<tr>
+									<td>
+										<div class="col-md-6 text-center">
+											<blockquote class="blockquote text-center mt-3">
+									        	{{ post.aboutgroup|safe }}
+									        </blockquote>
+								        </div>
+								    </td>
+								    <td>
+								    	<div class="col-md-6 text-center mt-1 ml-2 pl-2">
+									        <p>
+									        	<span id="addlabeldivplace"></span>
+										        {% for tag in post.grouplabels.all %}
+													<!--<a href="/{{ post.groupname }}/{{ tag.name }}">{{ tag.name }}</a>-->
+													<a href="/{{ tag.name }}/relatedgroup">{{ tag.name }}</a>
+											    {% endfor %}
+										    </p>
+									    </div>
+							    	</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				    {% url 'groupshowlist' post.pk post.slug as the_url_detail %}
+				    <div class="row">
+					    <div class="col-md-12">
+					    	<button id="loadclick{{ post.pk }}" onclick="groupshowload({{ post.pk }})" class="btn btn-primary btn-block" value="{{ the_url_detail }}" type="input" >{% trans "Show" %} {{ post.groupname }}</button>
+					    </div>
+				    </div>
+				    <div id="groupdetaildiv{{ post.pk }}"></div>
+				    <div id="closedplace{{ post.pk }}"></div>
+				    <div id="error"></div>
+				    
+				    
+				{% endfor %}
+
+
+				{% if is_paginated %}
+					<div class="row mt-3 pt-2">
+						<div class="col-md-12" >
+							<nav aria-label="Page navigation example">
+								<ul class="pagination justify-content-center">
+									{% if mydata.has_previous %}
+										<li class="page-item">
+											<span><a class="page-link" href="?page={{ mydata.previous_page_number }}">{% trans "Previous" %}</a></span>
+										</li>
+									{% endif %}
+										<li class="page-item disabled">
+											<span class="page-link">{% trans "Page"%} {{ mydata.number }} {%trans "of" %} {{ mydata.paginator.num_pages }}</span>
+										</li>
+									{% if mydata.has_next %}
+										<li class="page-item">
+											<span><a class="page-link" href="?page={{ mydata.next_page_number }}">{%trans "Next" %}</a></span>
+										</li>
+									{% endif %}
+								</ul>
+							</nav>
+						</div>
+					</div>
+				{% else %}
+					<p class="text-center mt-3 pt-3">{% trans "No more pages to display" %}</p>
+				{% endif %}
+			</div>
+		{% endif %}
+	{% endif %}
+ 
+{% endblock content %}
+{% endblock body %}
+
+{% block myfooter %}
+  {% include "myincludes/myfooterlist.html" %}
+{% endblock %}

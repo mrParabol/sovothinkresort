@@ -1,0 +1,103 @@
+{% extends "account/base.html" %}
+{% load i18n %}
+{% load static %}
+{% block bodyicijs %}
+  <script type="text/javascript">
+	  var deleteparse = function () {
+		  var deletedata = $("#deleteclick").attr("value");
+		  var parsedatas = deletedata.split(",");
+		  var url = parsedatas[0];
+		  var username = parsedatas[1];
+		  var retudata = {
+			  url:url,
+			  username:username
+		  }
+		  return retudata;
+	  }
+  </script>
+  
+  <script type="text/javascript">
+	  $(document).ready(function() {
+		  $("#deleteclick").click(function() {
+			  $("#deleteclick").hide();
+			  var retudata = deleteparse();
+			  var url = retudata['url'];
+			  var username = retudata['username'];
+			  var type = 'POST';
+			  var data = {
+			      username:username,
+				  csrfmiddlewaretoken:"{{ csrf_token }}"
+			  }
+			  $.ajax({
+				  url:url,
+				  type:type,
+				  data:data,
+				  contentType:"application/x-www-form-urlencoded;charset=utf-8",
+				  success: function(response) {
+					  if (response['success'] == 'delete') {
+						  $(window).attr('location', '/accounts/login/');
+					  }
+					  else{
+						  console.log('silinmedi');
+					  }
+				  },
+				  error: function(xhr, status, error) {
+					  var err = eval("(" + xhr.responseText + ")");
+					  alert(err.Message);
+				  }
+			  });
+			  return false;
+		  });
+	  
+	  });
+  </script>
+{% endblock %}
+{% block head_title %}
+	{% blocktrans %}Delete Account{% endblocktrans %}
+{% endblock %}
+
+{% block extra_head %}
+{% endblock %}
+
+{% block mynavbar %}
+  {% include "myincludes/mynavbar.html" %}
+{% endblock %}
+
+{% block content %}
+  {% if request.user.is_authenticated %}
+  	{% if reqshowcont == 'True' %}
+  		<section class="edituserform">
+  			<div class="container">
+  				<div class="row">
+  					<div class="col-md-12 text-center mt-4 pt-2">
+						<h4>{% trans "Delete Profile" %}</h4>
+						<blockquote class="blockquote text-center"><p class="mt-4">{% blocktrans %}if you delete your account, it will be deleted on all your posts{% endblocktrans %}</p></blockquote>
+						<div id="id_publishposts"></div>
+						{% url 'deleteuserajax' delete_user.pk delete_user.slug as delete_url %}
+						<form id="myform" action="{{ the_url }}" method="post" enctype="multipart/form-data">
+						    {% csrf_token %}
+						    {{ profile_form.hidden }} 
+						</form>
+						<button id="deleteclick" class="btn btn-primary btn-block" value= "{{ delete_url }}, {{ delete_user.username }}" type="input" >{% trans "Delete Profile" %}</button>
+					</div>
+				</div>
+			</div>
+		</section>
+	{% else %}
+		<section id="authorizederror">
+  		<div class="container">
+  			<div class="row">
+  				<div class="col-md-12 text-center mt-1 pt-1">
+  					<h4>{% trans "You are not authorized to view this page" %}</h4>
+  				</div>
+  			</div>
+  		</div>
+  	</section>
+    {% endif %}
+{% endif %}
+
+{% endblock %}
+
+{% block myfooter %}
+  {% include "myincludes/mypagefooter.html" %}
+{% endblock %}

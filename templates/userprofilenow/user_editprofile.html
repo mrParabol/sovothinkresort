@@ -1,0 +1,541 @@
+{% extends "account/base.html" %}
+{% load i18n %}
+{% load static %}
+{% block bodyicijs %}
+  <script type="text/javascript">
+	  var readURL = function readURL(input) {
+		  if (input[0].files && input[0].files[0]) {
+			  var reader = new FileReader();
+			  reader.onload = function(e) {
+				  $('#bigphotoid').attr('src', e.target.result);
+			  }
+			  reader.readAsDataURL(input[0].files[0]);
+		  }
+		  else {$('#bigphotoid').attr('src', '/assets/no_preview.png');}
+	  }
+  </script>
+  <script type="text/javascript">
+	  var readURLtwo = function readURLtwo(input) {
+		  if (input[0].files && input[0].files[0]) {
+			  var reader = new FileReader();
+			  reader.onload = function(e) {
+				  $('#miniphotoid').attr('src', e.target.result);
+			  }
+			  reader.readAsDataURL(input[0].files[0]);
+		  }
+		  else {$('#miniphotoid').attr('src', '/assets/no_preview.png');}
+	  }
+  </script>
+  <script type="text/javascript">
+	  function imageonefunc() {
+		  var $mypictureskim = $("#bigphoto");
+		  /* SCRIPT TO OPEN THE MODAL WITH THE PREVIEW */
+		  $mypictureskim.change(function () {
+			if (this.files && this.files[0]) {
+			  var reader = new FileReader();
+              reader.onload = function (e) {
+                $("#image").attr("src", e.target.result);
+                $("#modalCrop").modal("show");
+              }
+              reader.readAsDataURL(this.files[0]);
+            }
+           });
+           /* SCRIPTS TO HANDLE THE CROPPER BOX */
+	       var $image = $("#image");
+           var cropBoxData;
+           var canvasData;
+           $("#modalCrop").on("shown.bs.modal", function () {
+             $image.cropper({
+             viewMode: 1,
+             aspectRatio: 1/1,
+             minCropBoxWidth: 200,
+             minCropBoxHeight: 200,
+             ready: function () {
+               $image.cropper("setCanvasData", canvasData);
+               $image.cropper("setCropBoxData", cropBoxData);
+             }
+           });
+          }).on("hidden.bs.modal", function () {
+            cropBoxData = $image.cropper("getCropBoxData");
+            canvasData = $image.cropper("getCanvasData");
+            $image.cropper("destroy");
+          });
+
+          $(".js-zoom-in").click(function () {
+            $image.cropper("zoom", 0.1);
+          });
+
+          $(".js-zoom-out").click(function () {
+            $image.cropper("zoom", -0.1);
+          });
+      
+          /* page reload */
+          $(".page-reload-path").click(function() {
+		    location.reload();
+	      });
+
+          /* SCRIPT TO COLLECT THE DATA AND POST TO THE SERVER */
+          $(".js-crop-and-upload").click(function () {
+            var cropData = $image.cropper("getData");
+            $("#bigphotox").val(cropData["x"]);
+            $("#bigphotoy").val(cropData["y"]);
+            $("#bigphotoheight").val(cropData["height"]);
+            $("#bigphotowidth").val(cropData["width"]);
+            $(".close").click();
+            //var imgadd = "<img style='width: 90px;' id='bigphotoid' src='#' alt='' />";
+            //$(".divbigphoto").after(imgadd);
+            var biggerphoto = $("#bigphoto");
+            readURL(biggerphoto);
+          });
+	  }
+  </script>
+  <script type="text/javascript">
+	  function imagetwofunc() {
+		  var $mypictureskim = $("#miniphoto");
+		  /* SCRIPT TO OPEN THE MODAL WITH THE PREVIEW */
+		  $mypictureskim.change(function () {
+			if (this.files && this.files[0]) {
+			  var reader = new FileReader();
+              reader.onload = function (e) {
+                $("#image").attr("src", e.target.result);
+                $("#modalCrop").modal("show");
+              }
+              reader.readAsDataURL(this.files[0]);
+            }
+           });
+           /* SCRIPTS TO HANDLE THE CROPPER BOX */
+	       var $image = $("#image");
+           var cropBoxData;
+           var canvasData;
+           $("#modalCrop").on("shown.bs.modal", function () {
+             $image.cropper({
+             viewMode: 1,
+             aspectRatio: 1/1,
+             minCropBoxWidth: 200,
+             minCropBoxHeight: 200,
+             ready: function () {
+               $image.cropper("setCanvasData", canvasData);
+               $image.cropper("setCropBoxData", cropBoxData);
+             }
+           });
+          }).on("hidden.bs.modal", function () {
+            cropBoxData = $image.cropper("getCropBoxData");
+            canvasData = $image.cropper("getCanvasData");
+            $image.cropper("destroy");
+          });
+
+          $(".js-zoom-in").click(function () {
+            $image.cropper("zoom", 0.1);
+          });
+
+          $(".js-zoom-out").click(function () {
+            $image.cropper("zoom", -0.1);
+          });
+      
+          /* page reload */
+          $(".page-reload-path").click(function() {
+		    location.reload();
+	      });
+
+          /* SCRIPT TO COLLECT THE DATA AND POST TO THE SERVER */
+          $(".js-crop-and-upload").click(function () {
+            var cropData = $image.cropper("getData");
+            $("#miniphotox").val(cropData["x"]);
+            $("#miniphotoy").val(cropData["y"]);
+            $("#miniphotoheight").val(cropData["height"]);
+            $("#miniphotowidth").val(cropData["width"]);
+            $(".close").click();
+            //var imgadd = "<img style='width: 90px;' id='miniphotoid' src='#' alt='' />";
+            //$(".divminiphoto").after(imgadd);
+            var minnererphoto = $("#miniphoto");
+            readURLtwo(minnererphoto);
+          });
+	  }
+  </script>
+  <script type="text/javascript">
+	  var mydatas = function (data) {
+		var data = data;
+		return data;
+	  }
+	  var myforminformation = function (dataforminformation) {
+	    var dataforminformation = dataforminformation;
+		return dataforminformation;
+	  }
+  </script>
+  <script type="text/javascript">
+	  //aşağısı button
+	  var form = $("#myform");
+	  $(document).ready(function() {
+		  $("#bigphotox").change(function(){
+			  var bigphotox = $("#bigphotox").val();
+			  var bigphotoy = $("#bigphotoy").val();
+			  var bigphotoheight = $("#bigphotoheight").val();
+			  var bigphotowidth = $("#bigphotowidth").val();
+			  var bigphotodatagets = $("#bigphotodatagets").val();
+			  if (bigphotodatagets == "" ) {
+				  var databig = bigphotox+','+bigphotoy+','+bigphotoheight+','+bigphotowidth;
+				  $("#bigphotodatagets").val(databig);
+			  }
+		   });
+		   $("#miniphotox").change(function(){
+			  var miniphotox = $("#miniphotox").val();
+              var miniphotoy = $("#miniphotoy").val();
+              var miniphotoheight = $("#miniphotoheight").val();
+              var miniphotowidth = $("#miniphotowidth").val();
+              var miniphotodatagets = $("#miniphotodatagets").val();
+			  if (miniphotodatagets == "" ) {
+				  var datamini = miniphotox+','+miniphotoy+','+miniphotoheight+','+miniphotowidth;
+				  $("#miniphotodatagets").val(datamini);
+			  }
+		  });
+		  $("#bigphoto").change(function(){
+			  $(".btn-primary").click(function(){
+				  $("#bigphotox").trigger("change");
+           });
+           });
+          $("#miniphoto").change(function(){
+			  $(".btn-primary").click(function(){
+				  $("#miniphotox").trigger("change");
+           });
+		  });
+		  
+		  $("#buraya").click(function() {
+			  var bigphotodatagets = $("#bigphotodatagets").val();
+			  var miniphotodatagets = $("#miniphotodatagets").val();
+			  var parsedatabig = bigphotodatagets.split(",");
+			  var parsedatamini = miniphotodatagets.split(",");
+			  var firstname = $("#firstname").val();
+			  var lastname = $("#lastname").val();
+			  var birthday = $("#birthday").val();
+			  var feeling = $("#feeling").data("emojioneArea").getText();
+			  var gender = $("#gender").val();
+			  var aboutyourself = $("#aboutyourself").val();
+			  var url = $("#myform").attr("action");
+			  var type = $("#myform").attr("method"); //$("#myform").attr("method");
+			  var bigphotox = parsedatabig[0];
+              var bigphotoy = parsedatabig[1];
+              var bigphotoheight = parsedatabig[2];
+              var bigphotowidth = parsedatabig[3];
+              var miniphotox = parsedatamini[0];
+              var miniphotoy = parsedatamini[1];
+              var miniphotoheight = parsedatamini[2];
+              var miniphotowidth = parsedatamini[3];
+			  var data = {
+				  firstname:firstname,
+				  lastname:lastname,
+				  birthday:birthday,
+				  feeling:feeling,
+				  gender:gender,
+				  aboutyourself:aboutyourself,
+				  bigphotox:bigphotox,
+				  bigphotoy:bigphotoy,
+				  bigphotoheight:bigphotoheight,
+				  bigphotowidth:bigphotowidth,
+				  miniphotox:miniphotox,
+				  miniphotoy:miniphotoy,
+				  miniphotoheight:miniphotoheight,
+				  miniphotowidth:miniphotowidth,
+				  csrfmiddlewaretoken:"{{ csrf_token }}"
+			  }
+			  var dataforminformation = {
+				 url:url,
+				 type:type
+			  }
+			  var formDatamine = new FormData($('#myform')[0]);
+			  var url = myforminformation(dataforminformation).url;
+			  var type = myforminformation(dataforminformation).type;
+			  var csrfmiddlewaretoken = mydatas(data).csrfmiddlewaretoken;
+			  var firstname = mydatas(data).firstname;
+			  var lastname = mydatas(data).lastname;
+			  var birthday = mydatas(data).birthday;
+			  var feeling = mydatas(data).feeling;
+			  var gender = mydatas(data).gender;
+			  var aboutyourself = mydatas(data).aboutyourself;
+			  var miniphotox = mydatas(data).miniphotox;
+			  var miniphotoy = mydatas(data).miniphotoy;
+			  var miniphotoheight = mydatas(data).miniphotoheight;
+			  var miniphotowidth = mydatas(data).miniphotowidth;
+			  var bigphotox = mydatas(data).bigphotox;
+			  var bigphotoy = mydatas(data).bigphotoy;
+			  var bigphotoheight = mydatas(data).bigphotoheight;
+			  var bigphotowidth = mydatas(data).bigphotowidth;
+			  var bigphoto = $("#bigphoto")[0].files[0];
+			  var miniphoto = $("#miniphoto")[0].files[0];
+			  formDatamine.append('url', url);
+			  formDatamine.append('type', type);
+			  formDatamine.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
+			  formDatamine.append('firstname', firstname);
+			  formDatamine.append('lastname', lastname);
+			  formDatamine.append('birthday', birthday);
+			  formDatamine.append('feeling', feeling);
+			  formDatamine.append('gender', gender);
+			  formDatamine.append('aboutyourself', aboutyourself);
+			  formDatamine.append('bigphoto', bigphoto);
+			  formDatamine.append('miniphoto', miniphoto);
+			  formDatamine.append('miniphotox', miniphotox);
+			  formDatamine.append('miniphotoy', miniphotoy);
+			  formDatamine.append('miniphotoheight', miniphotoheight);
+			  formDatamine.append('miniphotowidth', miniphotowidth);
+			  formDatamine.append('bigphotox', bigphotox);
+			  formDatamine.append('bigphotoy', bigphotoy);
+			  formDatamine.append('bigphotoheight', bigphotoheight);
+			  formDatamine.append('bigphotowidth', bigphotowidth);
+			  $.ajax({
+				  url:url,
+				  type:type,
+				  contentType:false,
+				  processData: false,
+				  data:formDatamine,
+				  success: function(response) {
+					  console.log(response);
+					  $("#firstaddmyform").remove();
+					  $("#bigphotodatagets").val("");
+					  $("#miniphotodatagets").val("");
+					  if (response['pk']) {
+						  $(window).attr('location', '/userdetail/'+response['pk']+'/'+response['slug']+'/detail');
+					  }
+					  else {
+						  //$('.errorspan').append(response['error']);
+						  if (response['error'] == 'enter your first or last name'){
+					  		//$('.errorspan').append(response['error']);
+					  		$('.errorspan').append("{% trans 'enter your first or last name' %}");
+					  	}
+					  	else if (response['error'] == 'method is not true but the process is completed'){
+					  		$('.errorspan').append("{% trans 'method is not true but the process is completed' %}");
+					  	}
+					  	else if (response['error'] == 'absent post'){
+					  		$('.errorspan').append("{% trans 'no posts' %}");
+					  	}
+					  	else if (response['error'] == 'You don\'t show this post'){
+					  		$('.errorspan').append("{% trans 'you can not view this post' %}");
+					  	}
+					  	else if (response['error'] == 'not an acceptable picture'){
+					  		$('.errorspan').append("{% trans 'Not an acceptable picture' %}");
+					  	}
+					  	else {
+					  		$('.errorspan').append(response['error']);
+					  	}
+					  }
+				   },
+				  error: function(xhr, status, error) {
+					  var err = eval("(" + xhr.responseText + ")");
+					  alert(err.Message);
+				   }
+			  });
+			  return false;
+		     
+		  });
+	   });
+  </script>
+   <script type="text/javascript">
+	  $(document).ready(function()
+	  {
+		  $("#id_publishposts").DateTimePicker(
+		  {
+			  init: function()
+			  {
+				  var oDTP = this;
+				  oDTP.setDateTimeStringInInputField();
+			  },
+			  dateFormat: "yyyy-MM-dd",
+			  shortMonthNames:["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+		   });
+	  });
+  </script>
+  
+  <script type="text/javascript">
+	  $(document).ready(function() {
+		  $("#feeling").emojioneArea({
+			  standalone: true,
+			  autocomplete: false,
+			  shortnames: true,
+			  saveEmojisAs: "shortname"
+			  });
+	  });
+  </script>
+  <script type="text/javascript">
+	  $(document).ready(function(){
+	    $("#myform").on("keyup change", function(event){
+	        form_control();
+	    });
+	    var form_control = function(){
+	      if($("#firstname").val().length == 0)
+	        $("#buraya").prop("disabled", true);
+	    else if($("#lastname").val().length == 0)
+	        $("#buraya").prop("disabled", true);
+	    else
+	        $("#buraya").prop("disabled", false);
+	    }
+	  });
+</script>
+{% endblock %}
+{% block head_title %}
+	{% blocktrans %}Account Edit{% endblocktrans %}
+{% endblock %}
+
+{% block extra_head %}
+	<!--{% trans "Edit" %}-->
+{% endblock %}
+
+{% block mynavbar %}
+  {% include "myincludes/mynavbar.html" %}
+{% endblock %}
+
+{% block content %}
+  {% if request.user.is_authenticated %}
+  	{% if reqshowcont == 'True' %}
+ 	<section class="edituserform">
+ 		<div class="container">
+ 			<div class="row">
+ 				<div class="col-md-12 text-center mt-1 pt-1">
+					<h4>{% trans "Edit Profile" %}</h4>
+					<input type="hidden" id= "bigphotodatagets" name="bigphotodatagets" value="">
+				    <input type="hidden" id= "miniphotodatagets" name="miniphotodatagets" value="">
+					<div id="id_publishposts"></div>
+					{% url 'updateuserajax' userprofileupdate.pk userprofileupdate.slug as the_url %}
+					<form id="myform" action="{{ the_url }}" method="post" enctype="multipart/form-data">
+						<div class="col-md-12 mt-4 pt-1 push-4">
+	                        <span class="errorspan"></span>
+	                    </div>
+						{% csrf_token %}
+						<div class="form-group">
+							{{ form.first_name }}
+						</div>
+						<div class="adderror">
+						<div class="form-group">
+							{{ form.last_name }}
+						</div>
+						<div class="form-group">
+							<div class="custom-file">
+								{{ formbig.bigphoto }}
+								<label class="bigphoto custom-file-label" for="bigphoto">{% trans "Choose Profile Photo" %}</label>
+							</div>
+							<div class="table-responsive">
+								<table class="table">
+									<tbody>
+										<tr>
+												<th>
+													<div class="text-center">
+														<div class="divbigphoto">
+															<img class="img-fluid rounded-circle" style='max-width: 30%;' id='bigphotoid' src='#' alt='' />
+														</div>
+													</div>
+												</th>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="custom-file">
+								{{ formmini.miniphoto }}
+								<label class="miniphoto custom-file-label" for="miniphoto">{% trans "Choose BackGround Photo" %}</label>
+							</div>
+							<div class="table-responsive">
+								<table class="table">
+									<tbody>
+										<tr>
+												<th>
+													<div class="text-center">
+														<div class="divminiphoto">
+															<img class="img-fluid rounded-circle" style='max-width: 30%;' id='miniphotoid' src='#' alt='' />
+														</div>
+													</div>
+												</th>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="mt-1 pt-1">
+								{{ form.gender }}
+							</div>
+						</div>
+						<div class="form-group">
+							{{ form.birthday }}
+						</div>
+						<!-- feeling area-->
+						<div class="form-group row">
+						  <label class="col-2 col-form-label font-weight-bold">{% trans "Select Feeling" %}</label>
+						  <div class="col-10 text-right">
+						    {{ form.feeling }}
+						  </div>
+						</div>
+						<!-- feeling area-->
+						<div class="form-group">
+							{{ form.aboutyourself }}
+						</div>
+						{{ form.bigphotox }}
+						{{ form.bigphotoy }}
+						{{ form.bigphotowidth }}
+						{{ form.bigphotoheight }}
+						{{ form.miniphotox }}
+						{{ form.miniphotoy }}
+						{{ form.miniphotowidth }}
+						{{ form.miniphotoheight }}
+						<input type="hidden" id= "postesttype" name="postesttype" value="application/x-www-form-urlencoded"> 
+					</form>
+					<button id="buraya" class="btn btn-primary btn-block" type="input" disabled>{% trans "Edit Profile" %}</button> 
+					{{formbig.hidden}}
+					{{formmini.hidden}}
+				</div>
+			</div>
+		</div>
+	</section>
+	 <!-- MODAL TO CROP THE IMAGE -->
+  <div class="modal fade" id="modalCrop">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title">Crop the photo</h4>
+        </div>
+        <div class="modal-body">
+          <img src="" id="image" style="max-width: 100%;">
+        </div>
+        <div class="modal-footer">
+          <div class="btn-group pull-left" role="group">
+            <button type="button" class="btn btn-default js-zoom-in">
+              <span class="glyphicon glyphicon-zoom-in"></span>
+            </button>
+            <button type="button" class="btn btn-default js-zoom-out">
+              <span class="glyphicon glyphicon-zoom-out"></span>
+            </button>
+          </div>
+          <button type="button" class="btn btn-default page-reload-path" data-dismiss="modal">Nevermind</button>
+          <button type="button" class="btn btn-primary js-crop-and-upload">Crop and upload</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTAINER TO DISPLAY THE CROPPED IMAGES 
+  <div class="row" style="margin-top: 20px">
+    {% for photo in photos %}
+      <div class="col-sm-4 col-md-3">
+        <img src="{{ photo.file.url }}" class="thumbnail">
+      </div>
+    {% endfor %}
+  </div>-->
+  {% else %}
+  	<section id="authorizederror">
+  		<div class="container">
+  			<div class="row">
+  				<div class="col-md-12 text-center mt-1 pt-1">
+  					<h4>{% trans "You are not authorized to view this page" %}</h4>
+  				</div>
+  			</div>
+  		</div>
+  	</section>
+  {% endif %}
+
+{% endif %}
+
+{% endblock %}
+
+{% block myfooter %}
+  {% include "myincludes/mypagefooter.html" %}
+{% endblock %}

@@ -1,0 +1,246 @@
+{% extends "account/base.html" %}
+{% block bodyicijs %}
+	<script type="text/javascript">
+		var deletex = function deletex (getpk) {
+			var deletexid = "#deletex"+getpk;
+			var whichlister = "#lister"+getpk;
+			var formids = "#myform"+getpk;
+			var showvalue = $(deletexid).val();
+			var splitvalue = showvalue.split(",");
+			var processtyper = splitvalue[0];
+			var url = splitvalue[1];
+			var whichmessage = splitvalue[2];
+			var readunreadcontrol = '';
+			var type = 'POST';
+			var data = {
+				processtyper:processtyper,
+				whichmessage:whichmessage,
+				readunreadcontrol:readunreadcontrol,
+				csrfmiddlewaretoken:"{{ csrf_token }}"
+			}
+			$.ajax({
+				url:url,
+				type:type,
+				data:data,
+				contentType:"application/x-www-form-urlencoded;charset=utf-8",
+				success: function(response) {
+					if (response['success'] = 'silindi') {
+						$(whichlister).remove();
+						$('#lastcase'+getpk).empty();
+						var addmessage = '{% trans "message deleted" %}';
+						$('#lastcase'+getpk).append(addmessage);
+					}
+					else {
+						$(whichlister).remove();
+						$('#lastcase'+getpk).empty();
+						var addmessage = '{% trans "message deleted but post type error" %}';
+						$('#lastcase'+getpk).append(addmessage);
+					}
+				},
+				error: function(xhr, status, error) {
+				  var err = eval("(" + xhr.responseText + ")");
+				  alert(err.Message);
+				}
+			});
+			return false;
+		}
+	</script>
+	
+	<script type="text/javascript">
+		var readunread = function readunread (getpk) {
+			var readunreadid = "#readunread"+getpk;
+			var whichlister = "#lister"+getpk;
+			var formids = "#myform"+getpk;
+			var showvalue = $(readunreadid).val();
+			var splitvalue = showvalue.split(",");
+			var processtyper = splitvalue[0];
+			var url = splitvalue[1];
+			var whichmessage = splitvalue[2];
+			var readunreadcontrol = splitvalue[3];
+			var type = 'POST';
+			var data = {
+				processtyper:processtyper,
+				whichmessage:whichmessage,
+				readunreadcontrol:readunreadcontrol,
+				csrfmiddlewaretoken:"{{ csrf_token }}"
+			}
+			$.ajax({
+				url:url,
+				type:type,
+				data:data,
+				contentType:"application/x-www-form-urlencoded;charset=utf-8",
+				success: function(response) {
+					if (response['complete'] = 'READ') {
+						$(readunreadid).remove();
+						var readvar = 'READ';
+						var chbuttonner = '<button id="readunread'+getpk+'" onclick="readunread('+getpk+')" class="btn btn-primary custombtn" type="input" name="readunread'+getpk+'" value="READUNREAD,'+url+','+getpk+','+readvar+'">'+readvar+'</button>';
+						var bfdeladd = '#addtex'+getpk;
+						$(bfdeladd).before(chbuttonner);
+					}
+					else {
+						var unreadvar = 'UNREAD';
+						var chbuttonner = '<button id="readunread'+getpk+'" onclick="readunread('+getpk+')" class="btn btn-primary custombtn" type="input" name="readunread'+getpk+'" value="READUNREAD,'+url+','+getpk+','+unreadvar+'">'+unreadvar+'</button>';
+						var bfdeladd = '#addtex'+getpk;
+						$(bfdeladd).before(chbuttonner);
+					}
+				},
+				error: function(xhr, status, error) {
+				  var err = eval("(" + xhr.responseText + ")");
+				  alert(err.Message);
+				}
+			});
+			return false;
+		}
+	</script>
+
+	<script>
+		/*
+			var notify_name = 'notify';
+
+			var chatSocket = new WebSocket(
+				'ws://' + window.location.host +
+				'/ws/notify/' + notify_name + '/');
+
+			chatSocket.onmessage = function(e) {
+				var data = JSON.parse(e.data);
+				var content = data['content'];
+				var notifydetail = data['another'];
+				var currentuserget = document.getElementById("fornotifyid").value;
+				if (currentuserget == content) {
+					var notifyicon = document.getElementById("redwarnicon").value;
+					//burada yeni mesajınız var deyip,üst kısma bir sayfa yenile ekleyebilir veya
+					//mesajı üst tarafta notifydetail add yapanilirsin jquery ile
+				}
+			};
+
+			chatSocket.onclose = function(e) {
+				console.error('Chat socket closed unexpectedly');
+			};
+		*/
+	</script>
+
+{% endblock %}
+
+{% block head_title %}
+	{% blocktrans %}Messages{% endblocktrans %}
+{% endblock %}
+
+{% block extra_head %}
+{% endblock %}
+ 
+{% block body %}
+	{% block mynavbar %}
+	  {% include "myincludes/mynavbar.html" %}
+	{% endblock %}
+{% block content %}
+ 
+{% if request.user.is_authenticated %}
+
+    {% if request.user.account_verified %}
+    	<section class="userdetailsection">
+		<div class="container">
+			<div class="page-header">
+		 		<div class="row">
+		 			<div class="col-md-12 text-center mt-1 pt-2">
+								<h3>{{ request.user.username }} {% trans "Message List" %}</h3>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	{% if list_exams %}
+        <section class="joinerscls">
+        <div class="container">
+        <div class="row">
+        	<div class="col-md-12 text-center mt-4 pt-2">
+	    <div id="fullist"> 
+			{% for usershow in list_exams %}
+			    <div id="lastcase{{ usershow.pk }}" class="col-md-12"></div>
+				<div id="lister{{ usershow.pk }}">
+				    <input type="hidden" id="fornotifyid" name="fornotifyid" value="{{ currentusername }}">
+					<div class="row border-top border-primary">
+					{% getphotolink currentusername as photolinkget %}
+					<div class="col-md-6 text-center mt-2">
+						<img src="{{ photolinkget }}" alt="{{ currentusername }}" class="img-fluid rounded-circle imgwidth">
+					</div>
+					<div class="col-md-6 text-center mt-2 pt-4">
+						{{ currentusername }}
+					</div>
+					<div class="col-md-12 text-center mt-2 pt-4">
+						{{ usershow.messagechar|safe }}
+					</div>
+				    {% url 'messagelistanddel' usershow.user.pk as membership_url %}
+			    <form id="myform{{ usershow.pk }}" action="{{ membership_url }}" method="post" enctype="multipart/form-data">
+				    {% csrf_token %}
+				    {{ form }}
+			    </form>
+				<div id="addbtnblck"></div>
+				<div class="col-md-6 text-center mt-2">
+				    <button id="readunread{{ usershow.pk }}" onclick="readunread({{ usershow.pk }})" class="btn btn-primary custombtn" type="input" name="readunread{{ usershow.pk }}" value="READUNREAD,{{ membership_url }},{{ usershow.pk }},{{ usershow.readunreadcontrol }}">{{ usershow.readunreadcontrol }}</button>
+				    <div id="addtex{{ usershow.pk }}"></div>
+				</div>
+				<div class="col-md-6 text-center mt-2">
+				    <button id="deletex{{ usershow.pk }}" onclick="deletex({{ usershow.pk }})" class="btn btn-primary custombtn" type="input" name="deletex{{ usershow.pk }}" value="DELETE,{{ membership_url }},{{ usershow.pk }}">{% trans "Delete" %}</button>
+				</div>
+				</div>
+			</div>
+			{% endfor %}
+	{% else %}
+		<p>{{ list_exams_nothing }}</p>
+    {% endif %}
+    	<!-- paginate start-->
+		{% if is_paginated %}
+			<div class="row">
+				<div class="col-md-12 text-center mt-3 pt-2" >
+					<nav aria-label="Page navigation example">
+						<ul class="pagination justify-content-center">
+							{% if list_exams.has_previous %}
+							    <li class="page-item">
+							        <span><a class="page-link" href="?page={{ list_exams.previous_page_number }}">{% trans "Previous" %}</a></span>
+							    </li>
+							{% endif %}
+							    <li class="page-item disabled">
+							        <span class="page-link">{% trans "Page"%} {{ list_exams.number }} {%trans "of" %} {{ list_exams.paginator.num_pages }}</span>
+							    </li>
+							{% if list_exams.has_next %}
+							    <li class="page-item">
+							        <span><a class="page-link" href="?page={{ list_exams.next_page_number }}">{%trans "Next" %}</a></span>
+							    </li>
+							{% endif %}
+						</ul>
+					</nav>
+				</div>
+			</div>
+		{% else %}
+			<div class="row">
+				<div class="col-md-12 text-center mt-4 pt-4">
+			    <p>{% trans "No more pages to display" %}</p>
+			  </div>
+			</div>
+		{% endif %}
+		<!-- paginate stop-->
+    </div>
+    </div>
+    </div>
+    </div>
+    </section>
+    {% else %}
+    	<section>
+				<div class="container">
+					<div class="row"> 
+						<div class="col-md-12 text-center mt-1 pt-2">
+							<h2>{% blocktrans %}you need to confirm your account via email{% endblocktrans %}
+					</div>
+				</div>
+			</div>
+		</section>
+    {% endif %}
+
+{% endif %}
+ 
+{% endblock content %}
+{% endblock body %}
+
+{% block myfooter %}
+  {% include "myincludes/myfooter.html" %}
+{% endblock %}

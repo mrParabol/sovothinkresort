@@ -1,0 +1,3274 @@
+{% extends "account/base.html" %}
+{% load static %}
+{% load i18n %}
+{% load poll_extras %}
+{% block bodyicijs %}
+  <script type="text/javascript">
+	  $(document).ready(function()
+	  {
+		  $("#id_publishposts").DateTimePicker(
+		  {
+			  init: function()
+			  {
+				  var oDTP = this;
+				  oDTP.setDateTimeStringInInputField();
+			  },
+			  dateTimeFormat: "yyyy-MM-dd HH:mm",
+			  shortMonthNames:["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+		   });
+	  });
+  </script>
+  
+  <script type="text/javascript">
+	  $(document).ready(function() {
+		  $("#myform input[name=feeling]").emojioneArea({
+			  standalone: true,
+			  autocomplete: false,
+			  shortnames: true,
+			  saveEmojisAs: "shortname"
+			  });
+	  });
+  </script>
+  
+  <script type="text/javascript">
+	  $(document).ready(function() {
+		  $("#myformtwo input[name=feeling]").emojioneArea({
+			  standalone: true,
+			  autocomplete: false,
+			  shortnames: true,
+			  saveEmojisAs: "shortname"
+			  });
+	  });
+  </script>
+  
+  <script type="text/javascript">
+	  $(document).ready(function() {
+		  $("#myformthree input[name=feeling]").emojioneArea({
+			  standalone: true,
+			  autocomplete: false,
+			  shortnames: true,
+			  saveEmojisAs: "shortname"
+			  });
+	  });
+  </script>
+  
+  <script type="text/javascript">
+	  $(document).ready(function() {
+		  $("#myformfour input[name=feeling]").emojioneArea({
+			  standalone: true,
+			  autocomplete: false,
+			  shortnames: true,
+			  saveEmojisAs: "shortname"
+			  });
+	  });
+  </script>
+  
+  <script type="text/javascript">
+	  $(document).ready(function() {
+		  $("#myformfive input[name=feeling]").emojioneArea({
+			  standalone: true,
+			  autocomplete: false,
+			  shortnames: true,
+			  saveEmojisAs: "shortname"
+			  });
+	  });
+  </script>
+  
+  
+  
+  <script type="text/javascript">
+	  var ckcntfun = function (btnstyleid){
+	  	CKEDITOR.on('instanceReady', function () {
+				var instance = 'commentcontent';
+			  $.each(CKEDITOR.instances, function (instance) {
+			    CKEDITOR.instances[instance].on("keyup", CK_jQ);
+			    CKEDITOR.instances[instance].on("paste", CK_jQ);
+			    CKEDITOR.instances[instance].on("keypress", CK_jQ);
+			    CKEDITOR.instances[instance].on("blur", CK_jQ);
+			    CKEDITOR.instances[instance].on("change", CK_jQ);
+			  });
+			});
+
+			function CK_jQ() {
+				var conlists = "";
+			  for (instance in CKEDITOR.instances) {
+			    //var sim = CKEDITOR.instances[instance].updateElement();
+			    var message =  jQuery.trim(CKEDITOR.instances[instance].getData());
+			    message = message.replace(/<[^>]*>/gi, '');
+			    message = message.replace(/&nbsp;/gi, '');
+			    message = R.replace(/<[^>]*>/g, '', R.toString(message));
+			    message = R.replace(/ /g, '', message);
+			    var messageLength = R.trim(message).length;
+			    if (messageLength < 14) {
+			    	conlists = false;
+			    }
+			    else{
+			    	conlists = true;
+			    }
+			  }
+			  if (conlists == false) {
+			  	$('#addckwarn').empty();
+			  	$('#addckwarn').append('{%trans "content must contain at least 10 characters"%}');
+			  	$(btnstyleid).prop("disabled", true);
+			  }
+			  else{
+			  	$('#addckwarn').empty();
+			  	var al = $(btnstyleid).prop("disabled");
+			  	$(btnstyleid).prop("disabled", false);
+			  }
+			}
+	  }
+  </script>
+  <script type="text/javascript">
+	  $('#yanitbirgöster').hide();
+  </script>
+  <script type="text/javascript">
+	  $('#yanitikigöster').hide();
+  </script>
+  <script type="text/javascript">
+	  $('#yanitucgöster').hide();
+  </script>
+  <script type="text/javascript">
+	  $('#yanitdortgöster').hide();
+  </script>
+  <script type="text/javascript">
+	  $('#yanitbesgöster').hide();
+  </script>
+
+  <script type="text/javascript">
+	  var deletesecondcomment = function deletesecondcomment (posid, divposid, btnposid, poslug) {
+	  	var postgetid = posid;
+	  	var divpostgetid = divposid;
+	  	var btnpostgetid = btnposid;
+	  	var btnpostslug = poslug;
+	  	$("#"+btnpostgetid).hide();
+	  	var valuepk = postgetid;
+	  	var valueslug = btnpostslug;
+	  	var url = "/comment/"+postgetid+"/"+btnpostslug+"/delete/";
+	  	var type = "POST";
+	  	var data = {
+	  		postgetid:postgetid,
+	  		btnpostslug:btnpostslug,
+	  		valuepk:valuepk,
+	  		valueslug:valueslug,
+	  		csrfmiddlewaretoken:"{{ csrf_token }}"
+	  	}
+	  	$.ajax({
+	  		url:url,
+	  		type:type,
+	  		contentType:"application/x-www-form-urlencoded;charset=utf-8",
+	  		data:data,
+	  		success: function(response) {
+	  			$("#"+divpostgetid).remove();
+	  		},
+	  		error: function(xhr, status, error) {
+	  			var err = eval("(" + xhr.responseText + ")");
+	  			alert(err.Message);
+	  		}
+	  	});
+	  	return false;
+	  }
+  </script>
+  <script type="text/javascript">
+  	var neweditfun = function neweditfun (mynewerid, contenttypeid, detail_postsid, myneweridtwo, noneone, nonetwo, mynewerslug) {
+  		// $("#yanitikigöster").show();
+            $("#hideformfirst").remove();
+            $("#hideformsecond").remove();
+            $("#hideformthird").remove();
+            $("#hideformfourth").remove();
+            $("#hideformfifth").remove();
+            $("#hideformsecondedit").remove();
+            $("#hideformthirdedit").remove();
+            $("#hideformfourthedit").remove();
+            $("#hideformfifthedit").remove();
+            var myformaddtwoedit = `<div id="hideformsecondedit" class="">
+				<!--{% url 'postscontentedit' detail_posts.user.username detail_posts.pk detail_posts.slug as the_url_detail_two_edit %}-->
+				<!-- {{ the_url_detail_two_edit }} -->
+				<form id="myformtwoedit" action="" method="post" enctype="multipart/form-data">
+					{% csrf_token %}
+					<div class="form-group">
+						<div id="addckwarn" class="row ml-1 mb-1"></div>
+							{{ form.commentcontent }}
+					</div>
+					<input type="hidden" name="content_type" id="content_type" value={{contenttypeid}}>
+					<input type="hidden" name="object_id" id="object_id" value={{detail_posts.id}}>
+					<input type="hidden" name="parent_id" id="parent_id" value={{commentpost.id}}>
+					<input type="hidden" name="secondparent_id" id="secondparent_id" value="None">
+					<input type="hidden" name="thirdparent_id" id="thirdparent_id" value="None">
+					<div class="row">
+						<div class="col-md-6">
+							<button id="burayatwoedit" class="btn btn-primary custombtn" type="input" disabled="true">{% trans "Send" %}</button>
+						</div>
+				</form>
+					<div class="col-md-6">
+						<button id="passemptytwoedit" class="btn btn-success custombtn dotyatwoedit" type="input" >{% trans "Cancel" %}</button>
+					</div>
+				</div> 
+				</div>`;
+				//var mybuttonvaluetwoedit = this.value;
+				//var mybuttonvaluetwoedit = mybuttonvaluetwoedit.split(",");
+				var mybuttonvaluetwolocationedit = mynewerid;
+				var mycontenttypeidtwoedit = contenttypeid;
+				var myobjectidtwoedit = detail_postsid;
+				var myparenttwoedit = myneweridtwo;
+				var mysecondparenttwoedit = noneone;
+				var mythirdparenttwoedit = nonetwo;
+				var mytwoslugedit = mynewerslug;
+				var locationformtwoedit = '#addformtwoeditnew'+mybuttonvaluetwolocationedit;
+				$(locationformtwoedit).after(myformaddtwoedit);
+				$("#myformtwoedit input[name=feeling]").emojioneArea({
+					standalone: true,
+					autocomplete: false,
+					shortnames: true,
+					saveEmojisAs: "shortname"
+				});
+				CKEDITOR.replace('commentcontent');
+				$(locationformtwoedit).ScrollTo();
+				// $(CKEDITOR.replace('commentcontent'), myform)
+				//$('#yanitikiedit').hide();
+				$('.dotyatwoedit').click(function(){
+					$('#hideformsecondedit').remove();
+					//$("#yanitikiedit").show();
+				});
+				$(document).ready(function() {
+					ckcntfun('#burayatwoedit');
+				});
+				$('#burayatwoedit').click(function(){
+					var myformtwoedit = $(this).closest('form');
+					var commentcontent = CKEDITOR.instances["commentcontent"].getData();
+					//var commentappear = $("select[name='commentappear']", myformtwoedit).val();
+					//var publishselect = $("select[name='publishselect']", myformtwoedit).val();
+					//var feeling = $("input[name='feeling']", myformtwoedit).data("emojioneArea").getText();
+					var content_type = mycontenttypeidtwoedit;
+					var object_id = myobjectidtwoedit;
+					//var publishposts = $("input[name='publishposts']", myformtwoedit).val();
+					var parent_id = myparenttwoedit; // $("input[name='parent_id']", myformtwo).val();
+					var secondparent_id = mysecondparenttwoedit;// $("input[name='secondparent_id']", myformtwo).val();
+					var thirdparent_id = mythirdparenttwoedit; // $("input[name='thirdparent_id']", myformtwo).val();
+					var url = "/comment/"+mybuttonvaluetwolocationedit+"/"+mytwoslugedit+"/edit/";
+					var type = myformtwoedit.attr("method");
+					//add new append start
+					var postidgets = $('#postsdtlid').val();
+					var postsluggets = $('#postsdtlslug').val();
+					var postsusrgets = $('#postsdtlusrname').val();
+					//add new append stop
+					var data = {
+						//add new append startxxx
+						pstsid:mybuttonvaluetwolocationedit,
+						pstslg:mytwoslugedit,
+						postidgets:postidgets,
+						postsluggets:postsluggets,
+						postsusrgets:postsusrgets,
+						//add new append stop
+						commentcontent:commentcontent,
+						//commentappear:commentappear,
+						//publishselect:publishselect,
+						//feeling:feeling,
+						content_type:content_type,
+						object_id:object_id,
+						//publishposts:publishposts,
+						parent_id:parent_id,
+						secondparent_id:secondparent_id,
+						thirdparent_id:thirdparent_id,
+						csrfmiddlewaretoken:"{{ csrf_token }}"
+					}
+					$.ajax({
+						url:url,
+						type:type,
+						contentType:"application/x-www-form-urlencoded;charset=utf-8",
+						data:data,
+						//dataType:"json", //json yerine html veya xml de gelebilir bunu silebilir veya yorum olarak da kullanabilirsin
+						success: function(response) {
+							$("#hideformfirst").remove();
+				            $("#hideformsecond").remove();
+				            $("#hideformthird").remove();
+				            $("#hideformfourth").remove();
+				            $("#hideformfifth").remove();
+				            $("#hideformsecondedit").remove();
+				            $("#hideformthirdedit").remove();
+				            $("#hideformfourthedit").remove();
+				            $("#hideformfifthedit").remove();
+							var locationanswertwoedit = '#edittwonew'+mybuttonvaluetwolocationedit;
+							$(locationanswertwoedit).empty();
+							$(locationanswertwoedit).append(`<div class="row"><div id="writer`+response['pk']+`" class="col-md-6 text-center fosizes">{% trans "From" %} `+response['username']+` {% trans "to" %} `+response['whois']+`</div><div id="comdates`+response['pk']+`" class="col-md-6 text-center fosizes">`+response['updateposts']+`</div></div><div class="row"><div class="col-xs-12 text-left"><blockquote class="blockquote text-left">`+response['commentcontent']+`</blockquote></div></div>`);
+							//$('#yanitikiedit').show();
+							$(locationanswertwoedit).ScrollTo();
+						},
+						error: function(xhr, status, error) {
+							var err = eval("(" + xhr.responseText + ")");
+							alert(err.Message);
+						}
+					});
+					return false;
+				});
+  	}
+  </script>
+  <script type="text/javascript">
+  	var newreplyfun = function newreplyfun (mynewerid, contenttypeid, detail_postsid, myneweridtwo, noneone, nonetwo) {
+  				var myneweridfirst = mynewerid;
+  				var contenttypeidfirst = contenttypeid;
+  				var detailpostsidfirst = detail_postsid;
+  				var myneweridtwofirst = myneweridtwo;
+  				var nonefirstz = noneone;
+  				var nonesecondz = nonetwo;
+		  		$("#hideformfirst").remove();
+		        $("#hideformsecond").remove();
+		        $("#hideformthird").remove();
+		        $("#hideformfourth").remove();
+		        $("#hideformfifth").remove();
+		        $("#hideformsecondedit").remove();
+		        $("#hideformthirdedit").remove();
+		        $("#hideformfourthedit").remove();
+		        $("#hideformfifthedit").remove();
+		        var myformaddtwo = `<div id="hideformsecond" class="">
+				{% url 'postscontent' detail_posts.user.username detail_posts.pk detail_posts.slug as the_url_detail_two %}
+				<form id="myformtwo" action="{{ the_url_detail_two }}" method="post" enctype="multipart/form-data">
+					{% csrf_token %}
+					<div class="form-group">
+						<div id="addckwarn" class="row ml-1 mb-1"></div>
+							{{ form.commentcontent }}
+					</div>
+					<input type="hidden" name="content_type" id="content_type" value={{contenttypeid}}>
+					<input type="hidden" name="object_id" id="object_id" value={{detail_posts.id}}>
+					<input type="hidden" name="parent_id" id="parent_id" value={{commentpost.id}}>
+					<input type="hidden" name="secondparent_id" id="secondparent_id" value="None">
+					<input type="hidden" name="thirdparent_id" id="thirdparent_id" value="None">
+					<div class="row">
+						<div class="col-md-6">
+							<button id="burayatwo" class="btn btn-primary custombtn" type="input" disabled="true">{% trans "Reply" %}</button>
+						</div>
+				</form>
+					<div class="col-md-6">
+						<button id="passemptytwo" class="btn btn-success custombtn dotyatwo" type="input" >{% trans "Cancel" %}</button>
+					</div>
+				</div> 
+				</div>`;
+				//var mybuttonvaluetwo = this.value;
+				//var mybuttonvaluetwo = mybuttonvaluetwo.split(",");
+				var mybuttonvaluetwolocation = myneweridfirst;
+				var mycontenttypeidtwo = contenttypeidfirst;
+				var myobjectidtwo = detailpostsidfirst;
+				var myparenttwo = myneweridtwofirst;
+				var mysecondparenttwo = nonefirstz;
+				var mythirdparenttwo = nonesecondz;
+				var locationformtwo = '#addformtwonew'+mybuttonvaluetwolocation;
+				$(locationformtwo).after(myformaddtwo);
+				$("#myformtwo input[name=feeling]").emojioneArea({
+					standalone: true,
+					autocomplete: false,
+					shortnames: true,
+					saveEmojisAs: "shortname"
+				});
+				CKEDITOR.replace('commentcontent');
+				$(locationformtwo).ScrollTo();
+				// $(CKEDITOR.replace('commentcontent'), myform)
+				$('#yanitikinew').hide();
+				$('.dotyatwo').click(function(){
+					$('#hideformsecond').remove();
+					$("#yanitikinew").show();
+				});
+				$(document).ready(function() {
+					ckcntfun('#burayatwo');
+				});
+				$('#burayatwo').click(function(){
+					var myformtwo = $(this).closest('form');
+					var commentcontent = CKEDITOR.instances["commentcontent"].getData();
+					//var commentappear = $("select[name='commentappear']", myformtwo).val();
+					//var publishselect = $("select[name='publishselect']", myformtwo).val();
+					//var feeling = $("input[name='feeling']", myformtwo).data("emojioneArea").getText();
+					var content_type = mycontenttypeidtwo;
+					var object_id = myobjectidtwo;
+					//var publishposts = $("input[name='publishposts']", myformtwo).val();
+					var parent_id = myparenttwo; // $("input[name='parent_id']", myformtwo).val();
+					var secondparent_id = mysecondparenttwo;// $("input[name='secondparent_id']", myformtwo).val();
+					var thirdparent_id = mythirdparenttwo; // $("input[name='thirdparent_id']", myformtwo).val();
+					var url = myformtwo.attr("action");
+					var type = myformtwo.attr("method");
+					var data = {
+						commentcontent:commentcontent,
+						//commentappear:commentappear,
+						//publishselect:publishselect,
+						//feeling:feeling,
+						content_type:content_type,
+						object_id:object_id,
+						//publishposts:publishposts,
+						parent_id:parent_id,
+						secondparent_id:secondparent_id,
+						thirdparent_id:thirdparent_id,
+						csrfmiddlewaretoken:"{{ csrf_token }}"
+					}
+					$.ajax({
+						url:url,
+						type:type,
+						contentType:"application/x-www-form-urlencoded;charset=utf-8",
+						data:data,
+						//dataType:"json", //json yerine html veya xml de gelebilir bunu silebilir veya yorum olarak da kullanabilirsin
+						success: function(response) {
+							$("#hideformfirst").remove();
+				            $("#hideformsecond").remove();
+				            $("#hideformthird").remove();
+				            $("#hideformfourth").remove();
+				            $("#hideformfifth").remove();
+				            $("#hideformsecondedit").remove();
+				            $("#hideformthirdedit").remove();
+				            $("#hideformfourthedit").remove();
+				            $("#hideformfifthedit").remove();
+				            $("#yanitikinew").show();
+							var locationanswertwo = '#addanswerstwonew'+mybuttonvaluetwolocation;
+							//$(locationanswertwo).append("<b><p id='addanswerspragraph' class=''>"+response['commentcontent']+"</p></b><button id='editcommet' class='' value="+response['pk']+"',{{contenttypeid}},{{detail_posts.id}},'"+response['pk']+"',"+response['pk']+"',None' type='input' >Yorum Duzenle iki</button>");
+							var addingcontent = `<div class="row">
+							    <div class="col-md-12 text-center">
+									<ul class="list-group mt-3 pt-3">
+										<div id="deletdivtwo`+response['pk']+`">
+											<li class="list-group-item">
+												<div id="edittwo`+response['pk']+`">
+													<div class="row">
+														<div id="writer`+response['pk']+`" class="col-md-6 text-center fosizes">
+															{% trans "From" %} `+response['username']+` {% trans "to" %} `+response['whois']+`
+														</div>
+														<div id="comdates`+response['pk']+`" class="col-md-6 text-center fosizes">
+															`+response['updateposts']+`
+														</div>
+													</div>
+													<div class="row">
+														<div class="col-xs-12">
+															<blockquote class="blockquote text-left">
+																`+response['commentcontent']+`
+															</blockquote>
+														</div>
+													</div>
+												</div>
+												<div id="id_publishposts"></div>
+												<div id="addformtwo`+response['pk']+`" class=""></div>
+												<!-- Buraya aşağıya edit butonu ve delete ekle-->
+													<div id="addformtwoedit`+response['pk']+`" class=""></div>
+												<div class="row">
+													<div class="col-xs-4 mt-1">
+														<button id="yanitiki" class="btn btn-primary minibtn yanitiki`+response['pk']+`" onclick="firstreplyfun('yanitiki',`+response['pk']+`)" value ="`+response['pk']+`,{{contenttypeid}},{{detail_posts.id}},`+response['pk']+`,None,None" type="input" ><i class="fas fa-reply"></i></button>
+													</div>
+													<div class="col-xs-4 ml-2 mt-1">
+														<button id="editcommet" class="btn btn-success minibtn" value ="`+response['pk']+`,{{contenttypeid}},{{detail_posts.id}},`+response['pk']+`,None,None,`+response['slug']+`" type="input" ><i class="far fa-edit" ></i></button>
+													</div>
+													<div class="col-xs-4 ml-2 mt-1">
+														<button id="deletebtntwo`+response['pk']+`" class="btn btn-danger minibtn" onclick="deletesecondcomment(`+response['pk']+`, 'deletdivtwo`+response['pk']+`', 'deletebtntwo`+response['pk']+`', '`+response['slug']+`')"><i class="far fa-trash-alt"></i></button>
+													</div>
+												</div>
+												<div id="addanswerstwo`+response['pk']+`" class=""></div>
+											</li>
+										</div>
+									</ul>
+								</div>
+							</div>`;
+							$(locationanswertwo).append(addingcontent);
+							//$('maincontent'+response['pk']).html(response['commentcontent']);
+							$(document).ready(function() {
+								editcommetfunc();
+								//firstreplyfun();
+							});
+							$(locationanswertwo).ScrollTo();
+						},
+						error: function(xhr, status, error) {
+							var err = eval("(" + xhr.responseText + ")");
+							alert(err.Message);
+						}
+					});
+					return false;
+				});
+  	}
+  </script>
+  
+  <script type="text/javascript">
+    jQuery(':button').click(function () {
+        if (this.id == 'yanitbir') {
+            // $("#yanitbirgöster").show();
+            $("#hideformfirst").remove();
+            $("#hideformsecond").remove();
+            $("#hideformthird").remove();
+            $("#hideformfourth").remove();
+            $("#hideformfifth").remove();
+            $("#hideformsecondedit").remove();
+            $("#hideformthirdedit").remove();
+            $("#hideformfourthedit").remove();
+            $("#hideformfifthedit").remove();
+            var cnttypid = $('#postsdtlcnttype').val();
+            var dtlpstid = $('#postsdtlid').val();
+            var myformadd = `<div id="hideformfirst" class="">
+				{% url 'postscontent' detail_posts.user.username detail_posts.pk detail_posts.slug as the_url_detail %}
+				<form id="myform" action="{{ the_url_detail }}" method="post" enctype="multipart/form-data">
+					{% csrf_token %}
+					<div class="form-group">
+						<div id="addckwarn" class="row ml-1 mb-1"></div>
+							{{ form.commentcontent }}
+					</div>
+					<input type="hidden" name="content_type" id="content_type" value=`+cnttypid+`>
+					<input type="hidden" name="object_id" id="object_id" value=`+dtlpstid+`>
+					<input type="hidden" name="parent_id" id="parent_id" value="None">
+					<input type="hidden" name="secondparent_id" id="secondparent_id" value="None">
+					<input type="hidden" name="thirdparent_id" id="thirdparent_id" value="None">
+					<div class="row">
+						<div class="col-md-6">
+							<button id="buraya" class="btn btn-primary custombtn" type="input" disabled="true">{% trans "Send" %}</button>
+						</div>
+				</form>
+					<div class="col-md-6">
+						<button id="passempty" class="btn btn-success custombtn dotya" type="input" >{% trans "Cancel" %}</button>
+					</div>
+				</div> 
+				</div>`;
+				$("#addform").after(myformadd);
+				$("#myform input[name=feeling]").emojioneArea({
+					standalone: true,
+					autocomplete: false,
+					shortnames: true,
+					saveEmojisAs: "shortname"
+				});
+				CKEDITOR.replace('commentcontent');
+				$("#addform").ScrollTo();
+				$('#yanitbir').hide();
+				$('.dotya').click(function(){
+					$('#hideformfirst').remove();
+					$("#yanitbir").show();
+				});
+				$(document).ready(function() {
+					ckcntfun('#buraya');
+				});
+				$('#buraya').click(function(){
+					var myformone = $(this).closest('form');
+					var commentcontent = CKEDITOR.instances["commentcontent"].getData();
+					//var commentappear = $("select[name='commentappear']", myformone).val();
+					//var publishselect = $("select[name='publishselect']", myformone).val();
+					//var feeling = $("input[name='feeling']", myformone).data("emojioneArea").getText();
+					//var content_type = $("input[name='content_type']", myformone).val();
+					//var object_id = $("input[name='object_id']", myformone).val();
+					var content_type = cnttypid;
+					var object_id = dtlpstid;
+					//var publishposts = $("input[name='publishposts']", myformone).val();
+					var parent_id = $("input[name='parent_id']", myformone).val();
+					var secondparent_id = $("input[name='secondparent_id']", myformone).val();
+					var thirdparent_id = $("input[name='thirdparent_id']", myformone).val();
+					var url = myformone.attr("action");
+					var type = myformone.attr("method");
+					//var url = $('#myform').attr("action");
+					//var type = $('#myform').attr("method");
+					var data = {
+						commentcontent:commentcontent,
+						//commentappear:commentappear,
+						//publishselect:publishselect,
+						//feeling:feeling,
+						content_type:content_type,
+						object_id:object_id,
+						//publishposts:publishposts,
+						parent_id:parent_id,
+						secondparent_id:secondparent_id,
+						thirdparent_id:thirdparent_id,
+						csrfmiddlewaretoken:"{{ csrf_token }}"
+					}
+					$.ajax({
+						url:url,
+						type:type,
+						contentType:"application/x-www-form-urlencoded;charset=utf-8",
+						data:data,
+						//dataType:"json", //json yerine html veya xml de gelebilir bunu silebilir veya yorum olarak da kullanabilirsin
+						success: function(response) {
+							$("#yanitbir").show();
+							$("#hideformfirst").remove();
+				            $("#hideformsecond").remove();
+				            $("#hideformthird").remove();
+				            $("#hideformfourth").remove();
+				            $("#hideformfifth").remove();
+				            $("#hideformsecondedit").remove();
+				            $("#hideformthirdedit").remove();
+				            $("#hideformfourthedit").remove();
+				            $("#hideformfifthedit").remove();
+							//var editformaddings = `<div id="addformtwoedit`+response['pk']+`" class=""></div>`;
+							//$("#addanswers").append(editformaddings);
+							//$("#addanswers").append("<b><p id='addanswerspragraph' class=''>"+response['commentcontent']+"</p></b><button id='editcommet' class='' value="+response['pk']+",{{contenttypeid}},{{detail_posts.id}},"+response['pk']+",None,None,"+response['slug']+" type='input' >Yorum Duzenle</button>");
+							//adding new design start
+							var addingcontent = `<div class="row">
+							    <div class="col-md-12 text-center">
+									<ul class="list-group mt-3 pt-3">
+										<div id="deletdivtwo`+response['pk']+`">
+											<li class="list-group-item">
+												<div id="edittwo`+response['pk']+`">
+													<div class="row">
+														<div id="writer`+response['pk']+`" class="col-md-6 text-center fosizes">
+															{% trans "From" %} `+response['username']+` {% trans "to" %} `+response['whois']+`
+														</div>
+														<div id="comdates`+response['pk']+`" class="col-md-6 text-center fosizes">
+															`+response['updateposts']+`
+														</div>
+													</div>
+													<div class="row">
+														<div class="col-xs-12">
+															<blockquote class="blockquote text-left">
+																`+response['commentcontent']+`
+															</blockquote>
+														</div>
+													</div>
+												</div>
+												<div id="id_publishposts"></div>
+												<div id="addformtwo`+response['pk']+`" class=""></div>
+												<!-- Buraya aşağıya edit butonu ve delete ekle-->
+													<div id="addformtwoedit`+response['pk']+`" class=""></div>
+												<div class="row">
+													<div class="col-xs-4 mt-1">
+														<button id="yanitiki" class="btn btn-primary minibtn yanitiki`+response['pk']+`" onclick="firstreplyfun('yanitiki',`+response['pk']+`)" value ="`+response['pk']+`,{{contenttypeid}},{{detail_posts.id}},`+response['pk']+`,None,None" type="input" ><i class="fas fa-reply"></i></button>
+													</div>
+													<div class="col-xs-4 ml-2 mt-1">
+														<button id="editcommet" class="btn btn-success minibtn" value ="`+response['pk']+`,{{contenttypeid}},{{detail_posts.id}},`+response['pk']+`,None,None,`+response['slug']+`" type="input" ><i class="far fa-edit" ></i></button>
+													</div>
+													<div class="col-xs-4 ml-2 mt-1">
+														<button id="deletebtntwo`+response['pk']+`" class="btn btn-danger minibtn" onclick="deletesecondcomment(`+response['pk']+`, 'deletdivtwo`+response['pk']+`', 'deletebtntwo`+response['pk']+`', '`+response['slug']+`')"><i class="far fa-trash-alt"></i></button>
+													</div>
+												</div>
+												<div id="addanswerstwo`+response['pk']+`" class=""></div>
+											</li>
+										</div>
+									</ul>
+								</div>
+							</div>`;
+							$("#addanswers").append(addingcontent);
+							$(document).ready(function() {
+								//$('#maincontent'+response['pk']).html(response['commentcontent']);
+							//adding new design stop
+								editcommetfunc();
+								//firstreplyfun();
+							});
+							$("#addanswers").ScrollTo();
+						},
+						error: function(xhr, status, error) {
+							var err = eval("(" + xhr.responseText + ")");
+							alert(err.Message);
+						}
+					});
+					return false;
+				});
+        }
+        else if (this.id == 'yanitiki') {
+            // $("#yanitikigöster").show();
+            $("#hideformfirst").remove();
+            $("#hideformsecond").remove();
+            $("#hideformthird").remove();
+            $("#hideformfourth").remove();
+            $("#hideformfifth").remove();
+            $("#hideformsecondedit").remove();
+            $("#hideformthirdedit").remove();
+            $("#hideformfourthedit").remove();
+            $("#hideformfifthedit").remove();
+            var myformaddtwo = `<div id="hideformsecond" class="">
+				{% url 'postscontent' detail_posts.user.username detail_posts.pk detail_posts.slug as the_url_detail_two %}
+				<form id="myformtwo" action="{{ the_url_detail_two }}" method="post" enctype="multipart/form-data">
+					{% csrf_token %}
+					<div class="form-group">
+						<div id="addckwarn" class="row ml-1 mb-1"></div>
+							{{ form.commentcontent }}
+					</div>
+					<input type="hidden" name="content_type" id="content_type" value={{contenttypeid}}>
+					<input type="hidden" name="object_id" id="object_id" value={{detail_posts.id}}>
+					<input type="hidden" name="parent_id" id="parent_id" value={{commentpost.id}}>
+					<input type="hidden" name="secondparent_id" id="secondparent_id" value="None">
+					<input type="hidden" name="thirdparent_id" id="thirdparent_id" value="None">
+					<div class="row">
+						<div class="col-md-6">
+							<button id="burayatwo" class="btn btn-primary custombtn" type="input" disabled="true">{% trans "Reply" %}</button>
+						</div>
+				</form>
+					<div class="col-md-6">
+						<button id="passemptytwo" class="btn btn-success custombtn dotyatwo" type="input" >{% trans "Cancel" %}</button>
+					</div>
+				</div> 
+				</div>`;
+				var mybuttonvaluetwo = this.value;
+				var mybuttonvaluetwo = mybuttonvaluetwo.split(",");
+				var mybuttonvaluetwolocation = mybuttonvaluetwo[0];
+				var mycontenttypeidtwo = mybuttonvaluetwo[1];
+				var myobjectidtwo = mybuttonvaluetwo[2];
+				var myparenttwo = mybuttonvaluetwo[3];
+				var mysecondparenttwo = mybuttonvaluetwo[4];
+				var mythirdparenttwo = mybuttonvaluetwo[5];
+				var locationformtwo = '#addformtwo'+mybuttonvaluetwolocation;
+				$(locationformtwo).after(myformaddtwo);
+				$("#myformtwo input[name=feeling]").emojioneArea({
+					standalone: true,
+					autocomplete: false,
+					shortnames: true,
+					saveEmojisAs: "shortname"
+				});
+				CKEDITOR.replace('commentcontent');
+				$(locationformtwo).ScrollTo();
+				// $(CKEDITOR.replace('commentcontent'), myform)
+				$('#yanitiki').hide();
+				$('.dotyatwo').click(function(){
+					$('#hideformsecond').remove();
+					$("#yanitiki").show();
+				});
+				$(document).ready(function() {
+					ckcntfun('#burayatwo');
+				});
+				$('#burayatwo').click(function(){
+					var myformtwo = $(this).closest('form');
+					var commentcontent = CKEDITOR.instances["commentcontent"].getData();
+					//var commentappear = $("select[name='commentappear']", myformtwo).val();
+					//var publishselect = $("select[name='publishselect']", myformtwo).val();
+					//var feeling = $("input[name='feeling']", myformtwo).data("emojioneArea").getText();
+					var content_type = mycontenttypeidtwo;
+					var object_id = myobjectidtwo;
+					//var publishposts = $("input[name='publishposts']", myformtwo).val();
+					var parent_id = myparenttwo; // $("input[name='parent_id']", myformtwo).val();
+					var secondparent_id = mysecondparenttwo;// $("input[name='secondparent_id']", myformtwo).val();
+					var thirdparent_id = mythirdparenttwo; // $("input[name='thirdparent_id']", myformtwo).val();
+					var url = myformtwo.attr("action");
+					var type = myformtwo.attr("method");
+					var data = {
+						commentcontent:commentcontent,
+						//commentappear:commentappear,
+						//publishselect:publishselect,
+						//feeling:feeling,
+						content_type:content_type,
+						object_id:object_id,
+						//publishposts:publishposts,
+						parent_id:parent_id,
+						secondparent_id:secondparent_id,
+						thirdparent_id:thirdparent_id,
+						csrfmiddlewaretoken:"{{ csrf_token }}"
+					}
+					$.ajax({
+						url:url,
+						type:type,
+						contentType:"application/x-www-form-urlencoded;charset=utf-8",
+						data:data,
+						//dataType:"json", //json yerine html veya xml de gelebilir bunu silebilir veya yorum olarak da kullanabilirsin
+						success: function(response) {
+							$("#hideformfirst").remove();
+				            $("#hideformsecond").remove();
+				            $("#hideformthird").remove();
+				            $("#hideformfourth").remove();
+				            $("#hideformfifth").remove();
+				            $("#hideformsecondedit").remove();
+				            $("#hideformthirdedit").remove();
+				            $("#hideformfourthedit").remove();
+				            $("#hideformfifthedit").remove();
+				            $("#yanitiki").show();
+							var locationanswertwo = '#addanswerstwo'+mybuttonvaluetwolocation;
+							//$(locationanswertwo).append("<b><p id='addanswerspragraph' class=''>"+response['commentcontent']+"</p></b><button id='editcommet' class='' value="+response['pk']+"',{{contenttypeid}},{{detail_posts.id}},'"+response['pk']+"',"+response['pk']+"',None' type='input' >Yorum Duzenle iki</button>");
+							var addingcontent = `<div class="row">
+							    <div class="col-md-12 text-center">
+									<ul class="list-group mt-3 pt-3">
+										<div id="deletdivtwo`+response['pk']+`">
+										<div class="ml-1 container-fluid">
+											<li class="list-group-item">
+												<div id="edittwo`+response['pk']+`">
+													<div class="row">
+														<div id="writer`+response['pk']+`" class="col-md-6 text-center fosizes">
+															{% trans "From" %} `+response['username']+` {% trans "to" %} `+response['whois']+`
+														</div>
+														<div id="comdates`+response['pk']+`" class="col-md-6 text-center fosizes">
+															`+response['updateposts']+`
+														</div>
+													</div>
+													<div class="row">
+														<div class="col-xs-12">
+															<blockquote class="blockquote text-left">
+																`+response['commentcontent']+`
+															</blockquote>
+														</div>
+													</div>
+												</div>
+												<div id="id_publishposts"></div>
+												<div id="addformtwo`+response['pk']+`" class=""></div>
+												<!-- Buraya aşağıya edit butonu ve delete ekle-->
+													<div id="addformtwoedit`+response['pk']+`" class=""></div>
+												<div class="row">
+													<div class="col-xs-4 mt-1">
+														<button id="yanitiki" class="btn btn-primary minibtn yanitiki`+response['pk']+`" onclick="firstreplyfun('yanitiki',`+response['pk']+`)" value ="`+response['pk']+`,{{contenttypeid}},{{detail_posts.id}},`+response['pk']+`,None,None" type="input" ><i class="fas fa-reply"></i></button>
+													</div>
+													<div class="col-xs-4 ml-2 mt-1">
+														<button id="editcommet" class="btn btn-success minibtn" value ="`+response['pk']+`,{{contenttypeid}},{{detail_posts.id}},`+response['pk']+`,None,None,`+response['slug']+`" type="input" ><i class="far fa-edit" ></i></button>
+													</div>
+													<div class="col-xs-4 ml-2 mt-1">
+														<button id="deletebtntwo`+response['pk']+`" class="btn btn-danger minibtn" onclick="deletesecondcomment(`+response['pk']+`, 'deletdivtwo`+response['pk']+`', 'deletebtntwo`+response['pk']+`', '`+response['slug']+`')"><i class="far fa-trash-alt"></i></button>
+													</div>
+												</div>
+												<div id="addanswerstwo`+response['pk']+`" class=""></div>
+											</li>
+										</div>
+										</div>
+									</ul>
+								</div>
+							</div>`;
+							$(locationanswertwo).append(addingcontent);
+							//$('maincontent'+response['pk']).html(response['commentcontent']);
+							$(document).ready(function() {
+								editcommetfunc();
+								//firstreplyfun();
+							});
+							$(locationanswertwo).ScrollTo();
+						},
+						error: function(xhr, status, error) {
+							var err = eval("(" + xhr.responseText + ")");
+							alert(err.Message);
+						}
+					});
+					return false;
+				});
+        }
+        else if (this.id == 'yanituc') {
+            // $("#yanitucgöster").show();
+            $("#hideformfirst").remove();
+            $("#hideformsecond").remove();
+            $("#hideformthird").remove();
+            $("#hideformfourth").remove();
+            $("#hideformfifth").remove();
+            $("#hideformsecondedit").remove();
+            $("#hideformthirdedit").remove();
+            $("#hideformfourthedit").remove();
+            $("#hideformfifthedit").remove();
+            var myformaddthree = `<div id="hideformthird" class="">
+							{% url 'postscontent' detail_posts.user.username detail_posts.pk detail_posts.slug as the_url_detail_two %}
+							<form id="myformthree" action="{{ the_url_detail_two }}" method="post" enctype="multipart/form-data">
+								{% csrf_token %}
+								<div class="form-group">
+									<div id="addckwarn" class="row ml-1 mb-1"></div>
+										{{ form.commentcontent }}
+								</div>
+								<input type="hidden" name="content_type" id="content_type" value={{contenttypeid}}>
+								<input type="hidden" name="object_id" id="object_id" value={{detail_posts.id}}>
+								<input type="hidden" name="parent_id" id="parent_id" value={{subcommentpost.id}}>
+								<input type="hidden" name="secondparent_id" id="secondparent_id" value={{subcommentpost.id}}>
+								<input type="hidden" name="thirdparent_id" id="thirdparent_id" value="None">
+								<div class="row">
+									<div class="col-md-6">
+										<button id="burayathree" class="btn btn-primary custombtn" type="input" disabled="true">{% trans "Reply" %}</button>
+									</div>
+							</form>
+								<div class="col-md-6">
+									<button id="passemptythree" class="btn btn-success custombtn dotyathree" type="input" >{% trans "Cancel" %}</button>
+								</div>
+							</div> 
+						</div>`;
+				var mybuttonvaluethree = this.value;
+				var mybuttonvaluethree = mybuttonvaluethree.split(",");
+				var mybuttonvaluethreelocation = mybuttonvaluethree[0];
+				var mycontenttypeidthree = mybuttonvaluethree[1];
+				var myobjectidthree = mybuttonvaluethree[2];
+				var myparentthree = mybuttonvaluethree[3];
+				var mysecondparentthree = mybuttonvaluethree[4];
+				var mythirdparentthree = mybuttonvaluethree[5];
+				var locationformthree = '#addformthree'+mybuttonvaluethreelocation;
+				$(locationformthree).after(myformaddthree);
+				$("#myformthree input[name=feeling]").emojioneArea({
+					standalone: true,
+					autocomplete: false,
+					shortnames: true,
+					saveEmojisAs: "shortname"
+				});
+				CKEDITOR.replace('commentcontent');
+				$(locationformthree).ScrollTo();
+				$('#yanituc').hide();
+				$('.dotyathree').click(function(){
+					$('#hideformthird').remove();
+					$("#yanituc").show();
+				});
+				$(document).ready(function() {
+					ckcntfun('#burayathree');
+				});
+				$('#burayathree').click(function(){
+					var myformthree = $(this).closest('form');
+					var commentcontent = CKEDITOR.instances["commentcontent"].getData();
+					//var commentappear = $("select[name='commentappear']", myformthree).val();
+					//var publishselect = $("select[name='publishselect']", myformthree).val();
+					//var feeling = $("input[name='feeling']", myformthree).data("emojioneArea").getText();
+					var content_type = mycontenttypeidthree;
+					var object_id = myobjectidthree;
+					//var publishposts = $("input[name='publishposts']", myformthree).val();
+					var parent_id = myparentthree;
+					var secondparent_id = mysecondparentthree;
+					var thirdparent_id = mythirdparentthree;
+					var url = myformthree.attr("action");
+					var type = myformthree.attr("method");
+					var data = {
+						commentcontent:commentcontent,
+						//commentappear:commentappear,
+						//publishselect:publishselect,
+						//feeling:feeling,
+						content_type:content_type,
+						object_id:object_id,
+						//publishposts:publishposts,
+						parent_id:parent_id,
+						secondparent_id:secondparent_id,
+						thirdparent_id:thirdparent_id,
+						csrfmiddlewaretoken:"{{ csrf_token }}"
+					}
+					$.ajax({
+						url:url,
+						type:type,
+						contentType:"application/x-www-form-urlencoded;charset=utf-8",
+						data:data,
+						//dataType:"json", //json yerine html veya xml de gelebilir bunu silebilir veya yorum olarak da kullanabilirsin
+						success: function(response) {
+							$("#hideformfirst").remove();
+				            $("#hideformsecond").remove();
+				            $("#hideformthird").remove();
+				            $("#hideformfourth").remove();
+				            $("#hideformfifth").remove();
+				            $("#hideformsecondedit").remove();
+				            $("#hideformthirdedit").remove();
+				            $("#hideformfourthedit").remove();
+				            $("#hideformfifthedit").remove();
+				            $("#yanituc").show();
+							var locationanswerthree = '#addanswersthree'+mybuttonvaluethreelocation;
+							//$(locationanswerthree).append("<b><p id='addanswerspragraph' class=''>"+response['commentcontent']+"</p></b><button id='editcommet' class='' value="+response['pk']+"',{{contenttypeid}},{{detail_posts.id}},'"+response['pk']+"',"+response['pk']+",''"+response['pk']+"' type='input' >Yorum Duzenle uc</button>");
+							var addingcontent = `<ul class="list-group">
+								<div id="deletdivthree`+response['pk']+`">
+								<div class="ml-2 container-fluid">
+								<li class="list-group-item">
+									<div id="editthree`+response['pk']+`">
+										<div class="row">
+											<div id="writer`+response['pk']+`" class="col-md-6 text-center fosizes">
+												{% trans "From" %} `+response['username']+` {% trans "to" %} `+response['whois']+`
+											</div>
+											<div id="comdates`+response['pk']+`" class="col-md-6 text-center fosizes">
+												`+response['updateposts']+`
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-xs-12">
+												<blockquote class="blockquote text-left">
+													`+response['commentcontent']+`
+												</blockquote>
+											</div>
+										</div>
+									</div>
+									<div id="id_publishposts"></div>
+									<div id="addformthree`+response['pk']+`" class=""></div>
+									<div id="addformthreeedit`+response['pk']+`" class=""></div>
+									<div class="row">
+										<div class="col-xs-4 mt-1">
+											<button id="yanituc" class="btn btn-primary minibtn yanituc`+response['pk']+`" onclick="firstreplyfun('yanituc',`+response['pk']+`)" value ="`+response['pk']+`,{{contenttypeid}},{{detail_posts.id}},`+response['pk']+`,`+response['pk']+`,None" type="input" ><i class="fas fa-reply"></i></button>
+										</div>
+										<div class="col-xs-4 ml-2 mt-1">
+											<button id="yanitucedit" class="btn btn-success minibtn" value ="`+response['pk']+`,{{contenttypeid}},{{detail_posts.id}},`+response['pk']+`,`+response['pk']+`,None,`+response['slug']+`" type="input" ><i class="far fa-edit" ></i></button>
+										</div>
+										<div class="col-xs-4 ml-2 mt-1">
+											<button id="deletebtnthree`+response['pk']+`" class="btn btn-danger minibtn" onclick="deletesecondcomment(`+response['pk']+`, 'deletdivthree`+response['pk']+`', 'deletebtnthree`+response['pk']+`', '`+response['slug']+`')"><i class="far fa-trash-alt"></i></button>
+										</div>
+									</div>
+									</div>
+									<div id="addanswersthree`+response['pk']+`" class=""></div>
+									</li>
+									</div>
+							</ul>`;
+							$(locationanswerthree).append(addingcontent);
+							//$('maincontent'+response['pk']).html(response['commentcontent']);
+							$(document).ready(function() {
+								editcommetfunc();
+								//firstreplyfun();
+							});
+							$(locationanswerthree).ScrollTo();
+						},
+						error: function(xhr, status, error) {
+							var err = eval("(" + xhr.responseText + ")");
+							alert(err.Message);
+						}
+					});
+					return false;
+				});
+        }
+        else if (this.id == 'yanitdort') {
+            // $("#yanitdortgöster").show();
+            $("#hideformfirst").remove();
+            $("#hideformsecond").remove();
+            $("#hideformthird").remove();
+            $("#hideformfourth").remove();
+            $("#hideformfifth").remove();
+            $("#hideformsecondedit").remove();
+            $("#hideformthirdedit").remove();
+            $("#hideformfourthedit").remove();
+            $("#hideformfifthedit").remove();
+            var myformaddfour = `<div id="hideformfourth" class="">
+											{% url 'postscontent' detail_posts.user.username detail_posts.pk detail_posts.slug as the_url_detail_two %}
+											<form id="myformfour" action="{{ the_url_detail_two }}" method="post" enctype="multipart/form-data">
+												{% csrf_token %}
+												<div class="form-group">
+													<div id="addckwarn" class="row ml-1 mb-1"></div>
+														{{ form.commentcontent }}
+												</div>
+												<input type="hidden" name="content_type" id="content_type" value={{contenttypeid}}>
+												<input type="hidden" name="object_id" id="object_id" value={{detail_posts.id}}>
+												<input type="hidden" name="parent_id" id="parent_id" value={{secondsubcommentpost.id}}>
+												<input type="hidden" name="secondparent_id" id="secondparent_id" value={{secondsubcommentpost.id}}>
+												<input type="hidden" name="thirdparent_id" id="thirdparent_id" value={{secondsubcommentpost.id}}>
+												<div class="row">
+													<div class="col-md-6">
+														<button id="burayafour" class="btn btn-primary custombtn" type="input" disabled="true">{% trans "Reply" %}</button>
+													</div>
+											</form>
+												<div class="col-md-6">
+													<button id="passemptyfour" class="btn btn-success custombtn dotyafour" type="input" >{% trans "Cancel" %}</button>
+												</div>
+											</div> 
+				
+				</div>`;
+				var mybuttonvaluefour = this.value;
+				var mybuttonvaluefour = mybuttonvaluefour.split(",");
+				var mybuttonvaluefourlocation = mybuttonvaluefour[0];
+				var mycontenttypeidfour = mybuttonvaluefour[1];
+				var myobjectidfour = mybuttonvaluefour[2];
+				var myparentfour = mybuttonvaluefour[3];
+				var mysecondparentfour = mybuttonvaluefour[4];
+				var mythirdparentfour = mybuttonvaluefour[5];
+				var locationformfour = '#addformfour'+mybuttonvaluefourlocation;
+				$(locationformfour).after(myformaddfour);
+				$("#myformfour input[name=feeling]").emojioneArea({
+					standalone: true,
+					autocomplete: false,
+					shortnames: true,
+					saveEmojisAs: "shortname"
+				});
+				CKEDITOR.replace('commentcontent');
+				$(locationformfour).ScrollTo();
+				$('#yanitdort').hide();
+				$('.dotyafour').click(function(){
+					$('#hideformfourth').remove();
+					$("#yanitdort").show();
+				});
+				$(document).ready(function() {
+					ckcntfun('#burayafour');
+				});
+				$('#burayafour').click(function(){
+					var myformfour = $(this).closest('form');
+					var commentcontent = CKEDITOR.instances["commentcontent"].getData();
+					//var commentappear = $("select[name='commentappear']", myformfour).val();
+					//var publishselect = $("select[name='publishselect']", myformfour).val();
+					//var feeling = $("input[name='feeling']", myformfour).data("emojioneArea").getText();
+					var content_type = mycontenttypeidfour;
+					var object_id = myobjectidfour;
+					//var publishposts = $("input[name='publishposts']", myformfour).val();
+					var parent_id = myparentfour;
+					var secondparent_id = mysecondparentfour;
+					var thirdparent_id = mythirdparentfour;
+					var url = myformfour.attr("action");
+					var type = myformfour.attr("method");
+					var data = {
+						commentcontent:commentcontent,
+						//commentappear:commentappear,
+						//publishselect:publishselect,
+						//feeling:feeling,
+						content_type:content_type,
+						object_id:object_id,
+						//publishposts:publishposts,
+						parent_id:parent_id,
+						secondparent_id:secondparent_id,
+						thirdparent_id:thirdparent_id,
+						csrfmiddlewaretoken:"{{ csrf_token }}"
+					}
+					$.ajax({
+						url:url,
+						type:type,
+						contentType:"application/x-www-form-urlencoded;charset=utf-8",
+						data:data,
+						//dataType:"json", //json yerine html veya xml de gelebilir bunu silebilir veya yorum olarak da kullanabilirsin
+						success: function(response) {
+							$("#hideformfirst").remove();
+				            $("#hideformsecond").remove();
+				            $("#hideformthird").remove();
+				            $("#hideformfourth").remove();
+				            $("#hideformfifth").remove();
+				            $("#hideformsecondedit").remove();
+				            $("#hideformthirdedit").remove();
+				            $("#hideformfourthedit").remove();
+				            $("#hideformfifthedit").remove();
+				            $("#yanitdort").show();
+							var locationanswerfour = '#addanswersfour'+mybuttonvaluefourlocation;
+							//$(locationanswerfour).append("<b><p id='addanswerspragraph' class=''>"+response['commentcontent']+"</p></b><button id='editcommet' class='' value="+response['pk']+"',{{contenttypeid}},{{detail_posts.id}},'"+response['pk']+"',"+response['pk']+",''"+response['pk']+"' type='input' >Yorum Duzenle dort</button>");
+							var addingcontent = `<ul class="list-group">
+								<div id="deletdivfour`+response['pk']+`">
+								<div class="ml-3 container-fluid">
+									<li class="list-group-item">
+										<div id="editfour`+response['pk']+`">
+											<div class="row">
+												<div id="writer`+response['pk']+`" class="col-md-6 text-center fosizes">
+													{% trans "From" %} `+response['username']+` {% trans "to" %} `+response['whois']+`
+												</div>
+												<div id="comdates`+response['pk']+`" class="col-md-6 text-center fosizes">
+													`+response['updateposts']+`
+												</div>
+											</div>
+											<div class="row">
+												<div class="col-xs-12">
+													<blockquote class="blockquote text-left">
+														`+response['commentcontent']+`
+													</blockquote>
+												</div>
+											</div>
+										</div>
+										<div id="id_publishposts"></div>
+										<div id="addformfour`+response['pk']+`" class=""></div>
+										<div id="addformfouredit`+response['pk']+`" class=""></div>
+										<div class="row">
+											<div class="col-xs-4 mt-1">
+												<button id="yanitdort" class="btn btn-primary minibtn yanitdort`+response['pk']+`" onclick="firstreplyfun('yanitdort',`+response['pk']+`)" value ="`+response['pk']+`,{{contenttypeid}},{{detail_posts.id}},`+response['pk']+`,`+response['pk']+`,`+response['pk']+`" type="input" ><i class="fas fa-reply"></i></button>
+											</div>
+											<div class="col-xs-4 ml-2 mt-1">
+												<button id="yanitdortedit" class="btn btn-success minibtn" value ="`+response['pk']+`,{{contenttypeid}},{{detail_posts.id}},`+response['pk']+`,`+response['pk']+`,`+response['pk']+`,`+response['slug']+`" type="input" ><i class="far fa-edit"></i></button>
+											</div>
+											<div class="col-xs-4 ml-2 mt-1">
+												<button id="deletebtnfour`+response['pk']+`" class="btn btn-danger minibtn" onclick="deletesecondcomment(`+response['pk']+`, 'deletdivfour`+response['pk']+`', 'deletebtnfour`+response['pk']+`', '`+response['slug']+`')"><i class="far fa-trash-alt"></i></button>
+											</div>
+										</div>
+										<div id="addanswersfour`+response['pk']+`" class=""></div>
+									</li>
+								</div>
+								</div>
+							</ul>`;
+							$(locationanswerfour).append(addingcontent);
+							//$('maincontent'+response['pk']).html(response['commentcontent']);
+							$(document).ready(function() {
+								editcommetfunc();
+								//firstreplyfun();
+							});
+							$(locationanswerfour).ScrollTo();
+						},
+						error: function(xhr, status, error) {
+							var err = eval("(" + xhr.responseText + ")");
+							alert(err.Message);
+						}
+					});
+					return false;
+				});
+        }
+        else if (this.id == 'yanitbes') {
+            // $("#yanitbesgöster").show();
+            $("#hideformfirst").remove();
+            $("#hideformsecond").remove();
+            $("#hideformthird").remove();
+            $("#hideformfourth").remove();
+            $("#hideformfifth").remove();
+            $("#hideformsecondedit").remove();
+            $("#hideformthirdedit").remove();
+            $("#hideformfourthedit").remove();
+            $("#hideformfifthedit").remove();
+            var myformaddfive = `<div id="hideformfifth" class="">
+														{% url 'postscontent' detail_posts.user.username detail_posts.pk detail_posts.slug as the_url_detail_two %}
+														<form id="myformfive" action="{{ the_url_detail_two }}" method="post" enctype="multipart/form-data">
+															{% csrf_token %}
+															<div class="form-group">
+																<div id="addckwarn" class="row ml-1 mb-1"></div>
+																	{{ form.commentcontent }}
+															</div>
+															<input type="hidden" name="content_type" id="content_type" value={{contenttypeid}}>
+															<input type="hidden" name="object_id" id="object_id" value={{detail_posts.id}}>
+															<input type="hidden" name="parent_id" id="parent_id" value={{thirdsubcommentpost.parent_id}}>
+															<input type="hidden" name="secondparent_id" id="secondparent_id" value={{thirdsubcommentpost.parent_id}}>
+															<input type="hidden" name="thirdparent_id" id="thirdparent_id" value={{thirdsubcommentpost.parent_id}}>
+															<div class="row">
+															<div class="col-md-6">
+																<button id="burayafive" class="btn btn-primary custombtn" type="input" disabled="true">{% trans "Send" %}</button>
+															</div>
+														</form>
+															<div class="col-md-6">
+																<button id="passemptyfive" class="btn btn-success custombtn dotyafive" type="input" >{% trans "Cancel" %}</button>
+															</div>
+														</div>
+				</div>`;
+				var mybuttonvaluefive = this.value;
+				var mybuttonvaluefive = mybuttonvaluefive.split(",");
+				var mybuttonvaluefivelocation = mybuttonvaluefive[0];
+				var mycontenttypeidfive = mybuttonvaluefive[1];
+				var myobjectidfive = mybuttonvaluefive[2];
+				var myparentfive = mybuttonvaluefive[3];
+				var mysecondparentfive = mybuttonvaluefive[4];
+				var mythirdparentfive = mybuttonvaluefive[5];
+				var isfiveanswers = mybuttonvaluefivelocation;
+				var locationformfive = '#addformfive'+mybuttonvaluefivelocation;
+				$(locationformfive).after(myformaddfive);
+				$("#myformfive input[name=feeling]").emojioneArea({
+					standalone: true,
+					autocomplete: false,
+					shortnames: true,
+					saveEmojisAs: "shortname"
+				});
+				CKEDITOR.replace('commentcontent');
+				$(locationformfive).ScrollTo();
+				$('#yanitbes').hide();
+				$('.dotyafive').click(function(){
+					$('#hideformfifth').remove();
+					$("#yanitbes").show();
+				});
+				$(document).ready(function() {
+					ckcntfun('#burayafive');
+				});
+				$('#burayafive').click(function(){
+					var myformfive = $(this).closest('form');
+					var commentcontent = CKEDITOR.instances["commentcontent"].getData();
+					//var commentappear = $("select[name='commentappear']", myformfive).val();
+					//var publishselect = $("select[name='publishselect']", myformfive).val();
+					//var feeling = $("input[name='feeling']", myformfive).data("emojioneArea").getText();
+					var content_type = mycontenttypeidfive;
+					var object_id = myobjectidfive;
+					//var publishposts = $("input[name='publishposts']", myformfive).val();
+					var parent_id = myparentfive;
+					var secondparent_id = mysecondparentfive;
+					var thirdparent_id = mythirdparentfive;
+					var url = myformfive.attr("action");
+					var type = myformfive.attr("method");
+					var data = {
+						commentcontent:commentcontent,
+						//commentappear:commentappear,
+						//publishselect:publishselect,
+						//feeling:feeling,
+						content_type:content_type,
+						object_id:object_id,
+						//publishposts:publishposts,
+						isfiveanswers:isfiveanswers,
+						parent_id:parent_id,
+						secondparent_id:secondparent_id,
+						thirdparent_id:thirdparent_id,
+						csrfmiddlewaretoken:"{{ csrf_token }}"
+					}
+					$.ajax({
+						url:url,
+						type:type,
+						contentType:"application/x-www-form-urlencoded;charset=utf-8",
+						data:data,
+						//dataType:"json", //json yerine html veya xml de gelebilir bunu silebilir veya yorum olarak da kullanabilirsin
+						success: function(response) {
+							$("#hideformfirst").remove();
+				            $("#hideformsecond").remove();
+				            $("#hideformthird").remove();
+				            $("#hideformfourth").remove();
+				            $("#hideformfifth").remove();
+				            $("#hideformsecondedit").remove();
+				            $("#hideformthirdedit").remove();
+				            $("#hideformfourthedit").remove();
+				            $("#hideformfifthedit").remove();
+				            $("#yanitbes").show();
+							var locationanswerfive = '#addanswersfive'+mybuttonvaluefivelocation;
+							//$(locationanswerfive).append("<b><p id='addanswerspragraph' class=''>"+response['commentcontent']+"</p></b><button id='editcommet' class='' value="+response['pk']+"',{{contenttypeid}},{{detail_posts.id}},'"+response['pk']+"',"+response['pk']+",''"+response['pk']+"' type='input' >Yorum Duzenle bes</button>");
+							var addingcontent = `<ul class="list-group">
+								<div id="deletdivfive`+response['pk']+`">
+								<div class="ml-4 container-fluid">
+									<li class="list-group-item">
+										<div id="editfive`+response['pk']+`">
+											<div class="row">
+												<div id="writer`+response['pk']+`" class="col-md-6 text-center fosizes">
+													{% trans "From" %} `+response['username']+` {% trans "to" %} `+response['whois']+`
+												</div>
+												<div id="comdates`+response['pk']+`" class="col-md-6 text-center fosizes">
+													`+response['updateposts']+`
+												</div>
+											</div>
+											<div class="row">
+												<div class="col-xs-12">
+													<blockquote class="blockquote text-left">
+														`+response['commentcontent']+`
+													</blockquote>
+												</div>
+											</div>
+										</div>
+										<div id="id_publishposts"></div>
+										<div id="addformfive`+response['pk']+`" class=""></div>
+										<div id="addformfiveedit`+response['pk']+`" class=""></div>
+										<div class="row">
+											<div class="col-xs-4 mt-1">
+												<button id="yanitbes" class="btn btn-primary minibtn yanitbes`+response['pk']+`" onclick="firstreplyfun('yanitbes',`+response['pk']+`)" value ="`+response['pk']+`,{{contenttypeid}},{{detail_posts.id}},`+response['parent']+`,`+response['parent']+`,`+response['parent']+`" type="input" ><i class="fas fa-reply"></i></button>
+											</div>
+											<div class="col-xs-4 ml-2 mt-1">
+												<button id="yanitbesedit" class="btn btn-success minibtn" value ="`+response['pk']+`,{{contenttypeid}},{{detail_posts.id}},`+response['parent']+`,`+response['parent']+`,`+response['parent']+`,`+response['slug']+`" type="input" ><i class="far fa-edit" ></i></button>
+											</div>
+											<div class="col-xs-4 ml-2 mt-1">
+												<button id="deletebtnfive{{ thirdsubcommentpost.id }}" class="btn btn-danger minibtn" onclick="deletesecondcomment(`+response['pk']+`, 'deletdivfive`+response['pk']+`', 'deletebtnfive`+response['pk']+`', '`+response['slug']+`')"><i class="far fa-trash-alt"></i></button>
+											</div>
+										</div>
+										<div id="addanswersfive`+response['pk']+`" class=""></div>
+									</li>
+								</div>
+								</div>
+							</ul>`;
+							$(locationanswerfive).append(addingcontent);
+							//$('maincontent'+response['pk']).html(response['commentcontent']);
+							$(document).ready(function() {
+								editcommetfunc();
+								//firstreplyfun();
+							});
+							$(locationanswerfive).ScrollTo();
+						},
+						error: function(xhr, status, error) {
+							var err = eval("(" + xhr.responseText + ")");
+							alert(err.Message);
+						}
+					});
+					return false;
+				});
+        }
+        else if (this.id == 'yanitikiedit') {
+            // $("#yanitikigöster").show();
+            $("#hideformfirst").remove();
+            $("#hideformsecond").remove();
+            $("#hideformthird").remove();
+            $("#hideformfourth").remove();
+            $("#hideformfifth").remove();
+            $("#hideformsecondedit").remove();
+            $("#hideformthirdedit").remove();
+            $("#hideformfourthedit").remove();
+            $("#hideformfifthedit").remove();
+            var myformaddtwoedit = `<div id="hideformsecondedit" class="">
+				<!--{% url 'postscontentedit' detail_posts.user.username detail_posts.pk detail_posts.slug as the_url_detail_two_edit %}-->
+				<!-- {{ the_url_detail_two_edit }} -->
+				<form id="myformtwoedit" action="" method="post" enctype="multipart/form-data">
+					{% csrf_token %}
+					<div class="form-group">
+						<div id="addckwarn" class="row ml-1 mb-1"></div>
+							{{ form.commentcontent }}
+					</div>
+					<input type="hidden" name="content_type" id="content_type" value={{contenttypeid}}>
+					<input type="hidden" name="object_id" id="object_id" value={{detail_posts.id}}>
+					<input type="hidden" name="parent_id" id="parent_id" value={{commentpost.id}}>
+					<input type="hidden" name="secondparent_id" id="secondparent_id" value="None">
+					<input type="hidden" name="thirdparent_id" id="thirdparent_id" value="None">
+					<div class="row">
+						<div class="col-md-6">
+							<button id="burayatwoedit" class="btn btn-primary custombtn" type="input" disabled="true">{% trans "Send" %}</button>
+						</div>
+				</form>
+					<div class="col-md-6">
+						<button id="passemptytwoedit" class="btn btn-success custombtn dotyatwoedit" type="input" >{% trans "Cancel" %}</button>
+					</div>
+				</div> 
+				</div>`;
+				var mybuttonvaluetwoedit = this.value;
+				var mybuttonvaluetwoedit = mybuttonvaluetwoedit.split(",");
+				var mybuttonvaluetwolocationedit = mybuttonvaluetwoedit[0];
+				var mycontenttypeidtwoedit = mybuttonvaluetwoedit[1];
+				var myobjectidtwoedit = mybuttonvaluetwoedit[2];
+				var myparenttwoedit = mybuttonvaluetwoedit[3];
+				var mysecondparenttwoedit = mybuttonvaluetwoedit[4];
+				var mythirdparenttwoedit = mybuttonvaluetwoedit[5];
+				var mytwoslugedit = mybuttonvaluetwoedit[6];
+				var locationformtwoedit = '#addformtwoedit'+mybuttonvaluetwolocationedit;
+				$(locationformtwoedit).after(myformaddtwoedit);
+				$("#myformtwoedit input[name=feeling]").emojioneArea({
+					standalone: true,
+					autocomplete: false,
+					shortnames: true,
+					saveEmojisAs: "shortname"
+				});
+				CKEDITOR.replace('commentcontent');
+				$(locationformtwoedit).ScrollTo();
+				// $(CKEDITOR.replace('commentcontent'), myform)
+				$('#yanitikiedit').hide();
+				$('.dotyatwoedit').click(function(){
+					$('#hideformsecondedit').remove();
+					$("#yanitikiedit").show();
+				});
+				$(document).ready(function() {
+					ckcntfun('#burayatwoedit');
+				});
+				$('#burayatwoedit').click(function(){
+					var myformtwoedit = $(this).closest('form');
+					var commentcontent = CKEDITOR.instances["commentcontent"].getData();
+					//var commentappear = $("select[name='commentappear']", myformtwoedit).val();
+					//var publishselect = $("select[name='publishselect']", myformtwoedit).val();
+					//var feeling = $("input[name='feeling']", myformtwoedit).data("emojioneArea").getText();
+					var content_type = mycontenttypeidtwoedit;
+					var object_id = myobjectidtwoedit;
+					//var publishposts = $("input[name='publishposts']", myformtwoedit).val();
+					var parent_id = myparenttwoedit; // $("input[name='parent_id']", myformtwo).val();
+					var secondparent_id = mysecondparenttwoedit;// $("input[name='secondparent_id']", myformtwo).val();
+					var thirdparent_id = mythirdparenttwoedit; // $("input[name='thirdparent_id']", myformtwo).val();
+					var url = "/comment/"+mybuttonvaluetwolocationedit+"/"+mytwoslugedit+"/edit/";
+					var type = myformtwoedit.attr("method");
+					//add new append start
+					var postidgets = $('#postsdtlid').val();
+					var postsluggets = $('#postsdtlslug').val();
+					var postsusrgets = $('#postsdtlusrname').val();
+					//add new append stop
+					var data = {
+						//add new append startxxx
+						pstsid:mybuttonvaluetwolocationedit,
+						pstslg:mytwoslugedit,
+						postidgets:postidgets,
+						postsluggets:postsluggets,
+						postsusrgets:postsusrgets,
+						//add new append stop
+						commentcontent:commentcontent,
+						//commentappear:commentappear,
+						//publishselect:publishselect,
+						//feeling:feeling,
+						content_type:content_type,
+						object_id:object_id,
+						//publishposts:publishposts,
+						parent_id:parent_id,
+						secondparent_id:secondparent_id,
+						thirdparent_id:thirdparent_id,
+						csrfmiddlewaretoken:"{{ csrf_token }}"
+					}
+					$.ajax({
+						url:url,
+						type:type,
+						contentType:"application/x-www-form-urlencoded;charset=utf-8",
+						data:data,
+						//dataType:"json", //json yerine html veya xml de gelebilir bunu silebilir veya yorum olarak da kullanabilirsin
+						success: function(response) {
+							$("#hideformfirst").remove();
+				            $("#hideformsecond").remove();
+				            $("#hideformthird").remove();
+				            $("#hideformfourth").remove();
+				            $("#hideformfifth").remove();
+				            $("#hideformsecondedit").remove();
+				            $("#hideformthirdedit").remove();
+				            $("#hideformfourthedit").remove();
+				            $("#hideformfifthedit").remove();
+				            $("#yanitikiedit").show();
+							var locationanswertwoedit = '#edittwo'+mybuttonvaluetwolocationedit;
+							$(locationanswertwoedit).empty();
+							$(locationanswertwoedit).append(`<div class="row"><div id="writer`+response['pk']+`" class="col-md-6 text-center fosizes">{% trans "From" %} `+response['username']+` {% trans "to" %} `+response['whois']+`</div><div id="comdates`+response['pk']+`" class="col-md-6 text-center fosizes">`+response['updateposts']+`</div></div><div class="row"><div class="col-xs-12 text-left"><blockquote class="blockquote text-left">`+response['commentcontent']+`</blockquote></div></div>`);
+							$('#yanitikiedit').show();
+							$(locationanswertwoedit).ScrollTo();
+						},
+						error: function(xhr, status, error) {
+							var err = eval("(" + xhr.responseText + ")");
+							alert(err.Message);
+						}
+					});
+					return false;
+				});
+        }
+        else if (this.id == 'yanitucedit') {
+            // $("#yanitikigöster").show();
+            $("#hideformfirst").remove();
+            $("#hideformsecond").remove();
+            $("#hideformthird").remove();
+            $("#hideformfourth").remove();
+            $("#hideformfifth").remove();
+            $("#hideformsecondedit").remove();
+            $("#hideformthirdedit").remove();
+            $("#hideformfourthedit").remove();
+            $("#hideformfifthedit").remove();
+            var myformaddthreeedit = `<div id="hideformthirdedit" class="">
+				<form id="myformthreeedit" action="" method="post" enctype="multipart/form-data">
+					{% csrf_token %}
+					<div class="form-group">
+						<div id="addckwarn" class="row ml-1 mb-1"></div>
+							{{ form.commentcontent }}
+					</div>
+					<input type="hidden" name="content_type" id="content_type" value={{contenttypeid}}>
+					<input type="hidden" name="object_id" id="object_id" value={{detail_posts.id}}>
+					<input type="hidden" name="parent_id" id="parent_id" value={{commentpost.id}}>
+					<input type="hidden" name="secondparent_id" id="secondparent_id" value="None">
+					<input type="hidden" name="thirdparent_id" id="thirdparent_id" value="None">
+					<div class="row">
+						<div class="col-md-6">
+							<button id="burayathreeedit" class="btn btn-primary custombtn" type="input" disabled="true">{% trans "Send" %}</button>
+						</div>
+				</form>
+					<div class="col-md-6">
+						<button id="passemptythreeedit" class="btn btn-success custombtn dotyathreeedit" type="input" >{% trans "Cancel" %}</button>
+					</div>
+				</div>
+				</div>`;
+				var mybuttonvaluethreeedit = this.value;
+				var mybuttonvaluethreeedit = mybuttonvaluethreeedit.split(",");
+				var mybuttonvaluethreelocationedit = mybuttonvaluethreeedit[0];
+				var mycontenttypeidthreeedit = mybuttonvaluethreeedit[1];
+				var myobjectidthreeedit = mybuttonvaluethreeedit[2];
+				var myparentthreeedit = mybuttonvaluethreeedit[3];
+				var mysecondparentthreeedit = mybuttonvaluethreeedit[4];
+				var mythirdparentthreeedit = mybuttonvaluethreeedit[5];
+				var mythreeslugedit = mybuttonvaluethreeedit[6];
+				var locationformthreeedit = '#addformthreeedit'+mybuttonvaluethreelocationedit;
+				$(locationformthreeedit).after(myformaddthreeedit);
+				$("#myformthreeedit input[name=feeling]").emojioneArea({
+					standalone: true,
+					autocomplete: false,
+					shortnames: true,
+					saveEmojisAs: "shortname"
+				});
+				CKEDITOR.replace('commentcontent');
+				$(locationformthreeedit).ScrollTo();
+				// $(CKEDITOR.replace('commentcontent'), myform)
+				$('#yanitucedit').hide();
+				$('.dotyathreeedit').click(function(){
+					$('#hideformthirdedit').remove();
+					$("#yanitucedit").show();
+				});
+				$(document).ready(function() {
+					ckcntfun('#burayathreeedit');
+				});
+				$('#burayathreeedit').click(function(){
+					var myformthreeedit = $(this).closest('form');
+					var commentcontent = CKEDITOR.instances["commentcontent"].getData();
+					//var commentappear = $("select[name='commentappear']", myformthreeedit).val();
+					//var publishselect = $("select[name='publishselect']", myformthreeedit).val();
+					//var feeling = $("input[name='feeling']", myformthreeedit).data("emojioneArea").getText();
+					var content_type = mycontenttypeidthreeedit;
+					var object_id = myobjectidthreeedit;
+					//var publishposts = $("input[name='publishposts']", myformthreeedit).val();
+					var parent_id = myparentthreeedit; // $("input[name='parent_id']", myformtwo).val();
+					var secondparent_id = mysecondparentthreeedit;// $("input[name='secondparent_id']", myformtwo).val();
+					var thirdparent_id = mythirdparentthreeedit; // $("input[name='thirdparent_id']", myformtwo).val();
+					var url = "/comment/"+mybuttonvaluethreelocationedit+"/"+mythreeslugedit+"/edit/";
+					var type = myformthreeedit.attr("method");
+					//add new append start
+					var postidgets = $('#postsdtlid').val();
+					var postsluggets = $('#postsdtlslug').val();
+					var postsusrgets = $('#postsdtlusrname').val();
+					//add new append stop
+					var data = {
+						//add new append startxxx
+						pstsid:mybuttonvaluetwolocationedit,
+						pstslg:mytwoslugedit,
+						postidgets:postidgets,
+						postsluggets:postsluggets,
+						postsusrgets:postsusrgets,
+						//add new append stop
+						commentcontent:commentcontent,
+						//commentappear:commentappear,
+						//publishselect:publishselect,
+						//feeling:feeling,
+						content_type:content_type,
+						object_id:object_id,
+						//publishposts:publishposts,
+						parent_id:parent_id,
+						secondparent_id:secondparent_id,
+						thirdparent_id:thirdparent_id,
+						csrfmiddlewaretoken:"{{ csrf_token }}"
+					}
+					$.ajax({
+						url:url,
+						type:type,
+						contentType:"application/x-www-form-urlencoded;charset=utf-8",
+						data:data,
+						//dataType:"json", //json yerine html veya xml de gelebilir bunu silebilir veya yorum olarak da kullanabilirsin
+						success: function(response) {
+							$("#hideformfirst").remove();
+				            $("#hideformsecond").remove();
+				            $("#hideformthird").remove();
+				            $("#hideformfourth").remove();
+				            $("#hideformfifth").remove();
+				            $("#hideformsecondedit").remove();
+				            $("#hideformthirdedit").remove();
+				            $("#hideformfourthedit").remove();
+				            $("#hideformfifthedit").remove();
+				            $("#yanitucedit").show();
+							var locationanswerthreeedit = '#editthree'+mybuttonvaluethreelocationedit;
+							$(locationanswerthreeedit).empty();
+							$(locationanswerthreeedit).append(`<div class="row"><div id="writer`+response['pk']+`" class="col-md-6 text-center fosizes">{% trans "From" %} `+response['username']+` {% trans "to" %} `+response['whois']+`</div><div id="comdates`+response['pk']+`" class="col-md-6 text-center fosizes">`+response['updateposts']+`</div></div><div class="row"><div class="col-xs-12 text-left"><blockquote class="blockquote text-left">`+response['commentcontent']+`</blockquote></div></div>`);
+							$('#yanitucedit').show();
+							$(locationanswerthreeedit).ScrollTo();
+						},
+						error: function(xhr, status, error) {
+							var err = eval("(" + xhr.responseText + ")");
+							alert(err.Message);
+						}
+					});
+					return false;
+				});
+        }
+        else if (this.id == 'yanitdortedit') {
+            // $("#yanitikigöster").show();
+            $("#hideformfirst").remove();
+            $("#hideformsecond").remove();
+            $("#hideformthird").remove();
+            $("#hideformfourth").remove();
+            $("#hideformfifth").remove();
+            $("#hideformsecondedit").remove();
+            $("#hideformthirdedit").remove();
+            $("#hideformfourthedit").remove();
+            $("#hideformfifthedit").remove();
+            var myformaddfouredit = `<div id="hideformfourthedit" class="">
+				<form id="myformfouredit" action="" method="post" enctype="multipart/form-data">
+					{% csrf_token %}
+					<div class="form-group">
+						<div id="addckwarn" class="row ml-1 mb-1"></div>
+							{{ form.commentcontent }}
+					</div>
+					<input type="hidden" name="content_type" id="content_type" value={{contenttypeid}}>
+					<input type="hidden" name="object_id" id="object_id" value={{detail_posts.id}}>
+					<input type="hidden" name="parent_id" id="parent_id" value={{commentpost.id}}>
+					<input type="hidden" name="secondparent_id" id="secondparent_id" value="None">
+					<input type="hidden" name="thirdparent_id" id="thirdparent_id" value="None">
+					<div class="row">
+						<div class="col-md-6">
+							<button id="burayafouredit" class="btn btn-primary custombtn" type="input" disabled="true">{% trans "Send" %}</button>
+						</div>
+				</form>
+					<div class="col-md-6">
+						<button id="passemptyfouredit" class="btn btn-success custombtn dotyafouredit" type="input" >{% trans "Cancel" %}</button>
+					</div>
+				</div> 
+				</div>`;
+				var mybuttonvaluefouredit = this.value;
+				var mybuttonvaluefouredit = mybuttonvaluefouredit.split(",");
+				var mybuttonvaluefourlocationedit = mybuttonvaluefouredit[0];
+				var mycontenttypeidfouredit = mybuttonvaluefouredit[1];
+				var myobjectidfouredit = mybuttonvaluefouredit[2];
+				var myparentfouredit = mybuttonvaluefouredit[3];
+				var mysecondparentfouredit = mybuttonvaluefouredit[4];
+				var mythirdparentfouredit = mybuttonvaluefouredit[5];
+				var myfourslugedit = mybuttonvaluefouredit[6];
+				var locationformfouredit = '#addformfouredit'+mybuttonvaluefourlocationedit;
+				$(locationformfouredit).after(myformaddfouredit);
+				$("#myformfouredit input[name=feeling]").emojioneArea({
+					standalone: true,
+					autocomplete: false,
+					shortnames: true,
+					saveEmojisAs: "shortname"
+				});
+				CKEDITOR.replace('commentcontent');
+				$(locationformfouredit).ScrollTo();
+				// $(CKEDITOR.replace('commentcontent'), myform)
+				$('#yanitdortedit').hide();
+				$('.dotyafouredit').click(function(){
+					$('#hideformfourthedit').remove();
+					$("#yanitdortedit").show();
+				});
+				$(document).ready(function() {
+					ckcntfun('#burayafouredit');
+				});
+				$('#burayafouredit').click(function(){
+					var myformfouredit = $(this).closest('form');
+					var commentcontent = CKEDITOR.instances["commentcontent"].getData();
+					//var commentappear = $("select[name='commentappear']", myformfouredit).val();
+					//var publishselect = $("select[name='publishselect']", myformfouredit).val();
+					//var feeling = $("input[name='feeling']", myformfouredit).data("emojioneArea").getText();
+					var content_type = mycontenttypeidfouredit;
+					var object_id = myobjectidfouredit;
+					//var publishposts = $("input[name='publishposts']", myformfouredit).val();
+					var parent_id = myparentfouredit; // $("input[name='parent_id']", myformtwo).val();
+					var secondparent_id = mysecondparentfouredit;// $("input[name='secondparent_id']", myformtwo).val();
+					var thirdparent_id = mythirdparentfouredit; // $("input[name='thirdparent_id']", myformtwo).val();
+					var url = "/comment/"+mybuttonvaluefourlocationedit+"/"+myfourslugedit+"/edit/";
+					var type = myformfouredit.attr("method");
+					//add new append start
+					var postidgets = $('#postsdtlid').val();
+					var postsluggets = $('#postsdtlslug').val();
+					var postsusrgets = $('#postsdtlusrname').val();
+					//add new append stop
+					var data = {
+						//add new append startxxx
+						pstsid:mybuttonvaluetwolocationedit,
+						pstslg:mytwoslugedit,
+						postidgets:postidgets,
+						postsluggets:postsluggets,
+						postsusrgets:postsusrgets,
+						//add new append stop
+						commentcontent:commentcontent,
+						//commentappear:commentappear,
+						//publishselect:publishselect,
+						//feeling:feeling,
+						content_type:content_type,
+						object_id:object_id,
+						//publishposts:publishposts,
+						parent_id:parent_id,
+						secondparent_id:secondparent_id,
+						thirdparent_id:thirdparent_id,
+						csrfmiddlewaretoken:"{{ csrf_token }}"
+					}
+					$.ajax({
+						url:url,
+						type:type,
+						contentType:"application/x-www-form-urlencoded;charset=utf-8",
+						data:data,
+						//dataType:"json", //json yerine html veya xml de gelebilir bunu silebilir veya yorum olarak da kullanabilirsin
+						success: function(response) {
+							$("#hideformfirst").remove();
+				            $("#hideformsecond").remove();
+				            $("#hideformthird").remove();
+				            $("#hideformfourth").remove();
+				            $("#hideformfifth").remove();
+				            $("#hideformsecondedit").remove();
+				            $("#hideformthirdedit").remove();
+				            $("#hideformfourthedit").remove();
+				            $("#hideformfifthedit").remove();
+				            $("#yanitdortedit").show();
+							var locationanswerfouredit = '#editfour'+mybuttonvaluefourlocationedit;
+							$(locationanswerfouredit).empty();
+							$(locationanswerfouredit).append(`<div class="row"><div id="writer`+response['pk']+`" class="col-md-6 text-center fosizes">{% trans "From" %} `+response['username']+` {% trans "to" %} `+response['whois']+`</div><div id="comdates`+response['pk']+`" class="col-md-6 text-center fosizes">`+response['updateposts']+`</div></div><div class="row"><div class="col-xs-12 text-left"><blockquote class="blockquote text-left">`+response['commentcontent']+`</blockquote></div></div>`);
+							$('#yanitdortedit').show();
+							$(locationanswerfouredit).ScrollTo();
+						},
+						error: function(xhr, status, error) {
+							var err = eval("(" + xhr.responseText + ")");
+							alert(err.Message);
+						}
+					});
+					return false;
+				});
+        }
+        else if (this.id == 'yanitbesedit') {
+            // $("#yanitikigöster").show();
+            $("#hideformfirst").remove();
+            $("#hideformsecond").remove();
+            $("#hideformthird").remove();
+            $("#hideformfourth").remove();
+            $("#hideformfifth").remove();
+            $("#hideformsecondedit").remove();
+            $("#hideformthirdedit").remove();
+            $("#hideformfourthedit").remove();
+            $("#hideformfifthedit").remove();
+            var myformaddfiveedit = `<div id="hideformfifththedit" class="">
+				<form id="myformfiveedit" action="" method="post" enctype="multipart/form-data">
+					{% csrf_token %}
+					<div class="form-group">
+						<div id="addckwarn" class="row ml-1 mb-1"></div>
+							{{ form.commentcontent }}
+					</div>
+					<input type="hidden" name="content_type" id="content_type" value={{contenttypeid}}>
+					<input type="hidden" name="object_id" id="object_id" value={{detail_posts.id}}>
+					<input type="hidden" name="parent_id" id="parent_id" value={{commentpost.id}}>
+					<input type="hidden" name="secondparent_id" id="secondparent_id" value="None">
+					<input type="hidden" name="thirdparent_id" id="thirdparent_id" value="None">
+					<div class="row">
+						<div class="col-md-6">
+							<button id="burayafiveedit" class="btn btn-primary custombtn" type="input" disabled="true">{% trans "Send" %}</button>
+						</div>
+				</form>
+					<div class="col-md-6">
+						<button id="passemptyfiveedit" class="btn btn-success custombtn dotyafiveedit" type="input" >{% trans "Cancel" %}</button>
+					</div>
+				</div> 
+				</div>`;
+				var mybuttonvaluefiveedit = this.value;
+				var mybuttonvaluefiveedit = mybuttonvaluefiveedit.split(",");
+				var mybuttonvaluefivelocationedit = mybuttonvaluefiveedit[0];
+				var mycontenttypeidfiveedit = mybuttonvaluefiveedit[1];
+				var myobjectidfiveedit = mybuttonvaluefiveedit[2];
+				var myparentfiveedit = mybuttonvaluefiveedit[3];
+				var mysecondparentfiveedit = mybuttonvaluefiveedit[4];
+				var mythirdparentfiveedit = mybuttonvaluefiveedit[5];
+				var myfiveslugedit = mybuttonvaluefiveedit[6];
+				var locationformfiveedit = '#addformfiveedit'+mybuttonvaluefivelocationedit;
+				$(locationformfiveedit).after(myformaddfiveedit);
+				$("#myformfiveedit input[name=feeling]").emojioneArea({
+					standalone: true,
+					autocomplete: false,
+					shortnames: true,
+					saveEmojisAs: "shortname"
+				});
+				CKEDITOR.replace('commentcontent');
+				$(locationformfiveedit).ScrollTo();
+				// $(CKEDITOR.replace('commentcontent'), myform)
+				$('#yanitbesedit').hide();
+				$('.dotyafiveedit').click(function(){
+					$('#hideformfivethedit').remove();
+					$("#yanitbesedit").show();
+				});
+				$(document).ready(function() {
+					ckcntfun('#burayafiveedit');
+				});
+				$('#burayafiveedit').click(function(){
+					var myformfouredit = $(this).closest('form');
+					var commentcontent = CKEDITOR.instances["commentcontent"].getData();
+					//var commentappear = $("select[name='commentappear']", myformfiveedit).val();
+					//var publishselect = $("select[name='publishselect']", myformfiveedit).val();
+					//var feeling = $("input[name='feeling']", myformfiveedit).data("emojioneArea").getText();
+					var content_type = mycontenttypeidfiveedit;
+					var object_id = myobjectidfiveedit;
+					//var publishposts = $("input[name='publishposts']", myformfiveedit).val();
+					var parent_id = myparentfiveedit; // $("input[name='parent_id']", myformtwo).val();
+					var secondparent_id = mysecondparentfiveedit;// $("input[name='secondparent_id']", myformtwo).val();
+					var thirdparent_id = mythirdparentfiveedit; // $("input[name='thirdparent_id']", myformtwo).val();
+					var url = "/comment/"+mybuttonvaluefivelocationedit+"/"+myfiveslugedit+"/edit/";
+					var type = myformfiveedit.attr("method");
+					//add new append start
+					var postidgets = $('#postsdtlid').val();
+					var postsluggets = $('#postsdtlslug').val();
+					var postsusrgets = $('#postsdtlusrname').val();
+					//add new append stop
+					var data = {
+						//add new append startxxx
+						pstsid:mybuttonvaluetwolocationedit,
+						pstslg:mytwoslugedit,
+						postidgets:postidgets,
+						postsluggets:postsluggets,
+						postsusrgets:postsusrgets,
+						//add new append stop
+						commentcontent:commentcontent,
+						//commentappear:commentappear,
+						//publishselect:publishselect,
+						//feeling:feeling,
+						content_type:content_type,
+						object_id:object_id,
+						//publishposts:publishposts,
+						parent_id:parent_id,
+						secondparent_id:secondparent_id,
+						thirdparent_id:thirdparent_id,
+						csrfmiddlewaretoken:"{{ csrf_token }}"
+					}
+					$.ajax({
+						url:url,
+						type:type,
+						contentType:"application/x-www-form-urlencoded;charset=utf-8",
+						data:data,
+						//dataType:"json", //json yerine html veya xml de gelebilir bunu silebilir veya yorum olarak da kullanabilirsin
+						success: function(response) {
+							$("#hideformfirst").remove();
+				            $("#hideformsecond").remove();
+				            $("#hideformthird").remove();
+				            $("#hideformfourth").remove();
+				            $("#hideformfifth").remove();
+				            $("#hideformsecondedit").remove();
+				            $("#hideformthirdedit").remove();
+				            $("#hideformfourthedit").remove();
+				            $("#hideformfifthedit").remove();
+				            $("#yanitbesedit").show();
+							var locationanswerfiveedit = '#editfive'+mybuttonvaluefivelocationedit;
+							$(locationanswerfiveedit).empty();
+							$(locationanswerfiveedit).append(`<div class="row"><div id="writer`+response['pk']+`" class="col-md-6 text-center fosizes">{% trans "From" %} `+response['username']+` {% trans "to" %} `+response['whois']+`</div><div id="comdates`+response['pk']+`" class="col-md-6 text-center fosizes">`+response['updateposts']+`</div></div><div class="row"><div class="col-xs-12 text-left"><blockquote class="blockquote text-left">`+response['commentcontent']+`</blockquote></div></div>`);
+							$('#yanitbesedit').show();
+							$(locationanswerfiveedit).ScrollTo();
+						},
+						error: function(xhr, status, error) {
+							var err = eval("(" + xhr.responseText + ")");
+							alert(err.Message);
+						}
+					});
+					return false;
+				});
+        }
+    });
+  </script>
+  <script type="text/javascript">
+  	var firstreplyfun = function(whichbtn, nwid) {
+  		//jQuery(':button').click(function () {
+  			if (whichbtn == 'yanitbir') {
+            // $("#yanitbirgöster").show();
+            this.value = $('.'+whichbtn+nwid).val();
+            $("#hideformfirst").remove();
+            $("#hideformsecond").remove();
+            $("#hideformthird").remove();
+            $("#hideformfourth").remove();
+            $("#hideformfifth").remove();
+            $("#hideformsecondedit").remove();
+            $("#hideformthirdedit").remove();
+            $("#hideformfourthedit").remove();
+            $("#hideformfifthedit").remove();
+            var cnttypid = $('#postsdtlcnttype').val();
+            var dtlpstid = $('#postsdtlid').val();
+            var myformadd = `<div id="hideformfirst" class="">
+				{% url 'postscontent' detail_posts.user.username detail_posts.pk detail_posts.slug as the_url_detail %}
+				<form id="myform" action="{{ the_url_detail }}" method="post" enctype="multipart/form-data">
+					{% csrf_token %}
+					<div class="form-group">
+						<div id="addckwarn" class="row ml-1 mb-1"></div>
+							{{ form.commentcontent }}
+					</div>
+					<input type="hidden" name="content_type" id="content_type" value=`+cnttypid+`>
+					<input type="hidden" name="object_id" id="object_id" value=`+dtlpstid+`>
+					<input type="hidden" name="parent_id" id="parent_id" value="None">
+					<input type="hidden" name="secondparent_id" id="secondparent_id" value="None">
+					<input type="hidden" name="thirdparent_id" id="thirdparent_id" value="None">
+					<div class="row">
+						<div class="col-md-6">
+							<button id="buraya" class="btn btn-primary custombtn" type="input" disabled="true">{% trans "Send" %}</button>
+						</div>
+				</form>
+					<div class="col-md-6">
+						<button id="passempty" class="btn btn-success custombtn dotya" type="input" >{% trans "Cancel" %}</button>
+					</div>
+				</div> 
+				</div>`;
+				$("#addform").after(myformadd);
+				$("#myform input[name=feeling]").emojioneArea({
+					standalone: true,
+					autocomplete: false,
+					shortnames: true,
+					saveEmojisAs: "shortname"
+				});
+				CKEDITOR.replace('commentcontent');
+				$("#addform").ScrollTo();
+				$('#yanitbir').hide();
+				$('.dotya').click(function(){
+					$('#hideformfirst').remove();
+					$("#yanitbir").show();
+				});
+				$(document).ready(function() {
+					ckcntfun('#buraya');
+				});
+				$('#buraya').click(function(){
+					var myformone = $(this).closest('form');
+					var commentcontent = CKEDITOR.instances["commentcontent"].getData();
+					//var commentappear = $("select[name='commentappear']", myformone).val();
+					//var publishselect = $("select[name='publishselect']", myformone).val();
+					//var feeling = $("input[name='feeling']", myformone).data("emojioneArea").getText();
+					//var content_type = $("input[name='content_type']", myformone).val();
+					//var object_id = $("input[name='object_id']", myformone).val();
+					var content_type = cnttypid;
+					var object_id = dtlpstid;
+					//var publishposts = $("input[name='publishposts']", myformone).val();
+					var parent_id = $("input[name='parent_id']", myformone).val();
+					var secondparent_id = $("input[name='secondparent_id']", myformone).val();
+					var thirdparent_id = $("input[name='thirdparent_id']", myformone).val();
+					var url = myformone.attr("action");
+					var type = myformone.attr("method");
+					//var url = $('#myform').attr("action");
+					//var type = $('#myform').attr("method");
+					var data = {
+						commentcontent:commentcontent,
+						//commentappear:commentappear,
+						//publishselect:publishselect,
+						//feeling:feeling,
+						content_type:content_type,
+						object_id:object_id,
+						//publishposts:publishposts,
+						parent_id:parent_id,
+						secondparent_id:secondparent_id,
+						thirdparent_id:thirdparent_id,
+						csrfmiddlewaretoken:"{{ csrf_token }}"
+					}
+					$.ajax({
+						url:url,
+						type:type,
+						contentType:"application/x-www-form-urlencoded;charset=utf-8",
+						data:data,
+						//dataType:"json", //json yerine html veya xml de gelebilir bunu silebilir veya yorum olarak da kullanabilirsin
+						success: function(response) {
+							$("#hideformfirst").remove();
+				            $("#hideformsecond").remove();
+				            $("#hideformthird").remove();
+				            $("#hideformfourth").remove();
+				            $("#hideformfifth").remove();
+				            $("#hideformsecondedit").remove();
+				            $("#hideformthirdedit").remove();
+				            $("#hideformfourthedit").remove();
+				            $("#hideformfifthedit").remove();
+				            $("#yanitbir").show();
+							//var editformaddings = `<div id="addformtwoedit`+response['pk']+`" class=""></div>`;
+							//$("#addanswers").append(editformaddings);
+							//$("#addanswers").append("<b><p id='addanswerspragraph' class=''>"+response['commentcontent']+"</p></b><button id='editcommet' class='' value="+response['pk']+",{{contenttypeid}},{{detail_posts.id}},"+response['pk']+",None,None,"+response['slug']+" type='input' >Yorum Duzenle</button>");
+							//adding new design start
+							var addingcontent = `<div class="row">
+							    <div class="col-md-12 text-center">
+									<ul class="list-group mt-3 pt-3">
+										<div id="deletdivtwo`+response['pk']+`">
+											<li class="list-group-item">
+												<div id="edittwo`+response['pk']+`">
+													<div class="row">
+														<div id="writer`+response['pk']+`" class="col-md-6 text-center fosizes">
+															{% trans "From" %} `+response['username']+` {% trans "to" %} `+response['whois']+`
+														</div>
+														<div id="comdates`+response['pk']+`" class="col-md-6 text-center fosizes">
+															`+response['updateposts']+`
+														</div>
+													</div>
+													<div class="row">
+														<div class="col-xs-12">
+															<blockquote class="blockquote text-left">
+																`+response['commentcontent']+`
+															</blockquote>
+														</div>
+													</div>
+												</div>
+												<div id="id_publishposts"></div>
+												<div id="addformtwo`+response['pk']+`" class=""></div>
+												<!-- Buraya aşağıya edit butonu ve delete ekle-->
+													<div id="addformtwoedit`+response['pk']+`" class=""></div>
+												<div class="row">
+													<div class="col-xs-4 mt-1">
+														<button id="yanitiki" class="btn btn-primary minibtn yanitiki`+response['pk']+`" onclick="firstreplyfun('yanitiki',`+response['pk']+`)" value ="`+response['pk']+`,{{contenttypeid}},{{detail_posts.id}},`+response['pk']+`,None,None" type="input" ><i class="fas fa-reply"></i></button>
+													</div>
+													<div class="col-xs-4 ml-2 mt-1">
+														<button id="editcommet" class="btn btn-success minibtn" value ="`+response['pk']+`,{{contenttypeid}},{{detail_posts.id}},`+response['pk']+`,None,None,`+response['slug']+`" type="input" ><i class="far fa-edit" ></i></button>
+													</div>
+													<div class="col-xs-4 ml-2 mt-1">
+														<button id="deletebtntwo`+response['pk']+`" class="btn btn-danger minibtn" onclick="deletesecondcomment(`+response['pk']+`, 'deletdivtwo`+response['pk']+`', 'deletebtntwo`+response['pk']+`', '`+response['slug']+`')"><i class="far fa-trash-alt"></i></button>
+													</div>
+												</div>
+												<div id="addanswerstwo`+response['pk']+`" class=""></div>
+											</li>
+										</div>
+									</ul>
+								</div>
+							</div>`;
+							$("#addanswers").append(addingcontent);
+							$(document).ready(function() {
+								//$('#maincontent'+response['pk']).html(response['commentcontent']);
+							//adding new design stop
+								editcommetfunc();
+								//firstreplyfun();
+							});
+							$("#addanswers").ScrollTo();
+						},
+						error: function(xhr, status, error) {
+							var err = eval("(" + xhr.responseText + ")");
+							alert(err.Message);
+						}
+					});
+					return false;
+				});
+        }
+        else if (whichbtn == 'yanitiki') {
+            // $("#yanitikigöster").show();
+            this.value = $('.'+whichbtn+nwid).val();
+            $("#hideformfirst").remove();
+            $("#hideformsecond").remove();
+            $("#hideformthird").remove();
+            $("#hideformfourth").remove();
+            $("#hideformfifth").remove();
+            $("#hideformsecondedit").remove();
+            $("#hideformthirdedit").remove();
+            $("#hideformfourthedit").remove();
+            $("#hideformfifthedit").remove();
+            var myformaddtwo = `<div id="hideformsecond" class="">
+				{% url 'postscontent' detail_posts.user.username detail_posts.pk detail_posts.slug as the_url_detail_two %}
+				<form id="myformtwo" action="{{ the_url_detail_two }}" method="post" enctype="multipart/form-data">
+					{% csrf_token %}
+					<div class="form-group">
+						<div id="addckwarn" class="row ml-1 mb-1"></div>
+							{{ form.commentcontent }}
+					</div>
+					<input type="hidden" name="content_type" id="content_type" value={{contenttypeid}}>
+					<input type="hidden" name="object_id" id="object_id" value={{detail_posts.id}}>
+					<input type="hidden" name="parent_id" id="parent_id" value={{commentpost.id}}>
+					<input type="hidden" name="secondparent_id" id="secondparent_id" value="None">
+					<input type="hidden" name="thirdparent_id" id="thirdparent_id" value="None">
+					<div class="row">
+						<div class="col-md-6">
+							<button id="burayatwo" class="btn btn-primary custombtn" type="input" disabled="true">{% trans "Reply" %}</button>
+						</div>
+				</form>
+					<div class="col-md-6">
+						<button id="passemptytwo" class="btn btn-success custombtn dotyatwo" type="input" >{% trans "Cancel" %}</button>
+					</div>
+				</div> 
+				</div>`;
+				var mybuttonvaluetwo = this.value;
+				var mybuttonvaluetwo = mybuttonvaluetwo.split(",");
+				var mybuttonvaluetwolocation = mybuttonvaluetwo[0];
+				var mycontenttypeidtwo = mybuttonvaluetwo[1];
+				var myobjectidtwo = mybuttonvaluetwo[2];
+				var myparenttwo = mybuttonvaluetwo[3];
+				var mysecondparenttwo = mybuttonvaluetwo[4];
+				var mythirdparenttwo = mybuttonvaluetwo[5];
+				var locationformtwo = '#addformtwo'+mybuttonvaluetwolocation;
+				$(locationformtwo).after(myformaddtwo);
+				$("#myformtwo input[name=feeling]").emojioneArea({
+					standalone: true,
+					autocomplete: false,
+					shortnames: true,
+					saveEmojisAs: "shortname"
+				});
+				CKEDITOR.replace('commentcontent');
+				$(locationformtwo).ScrollTo();
+				// $(CKEDITOR.replace('commentcontent'), myform)
+				$('#yanitiki').hide();
+				$('.dotyatwo').click(function(){
+					$('#hideformsecond').remove();
+					$("#yanitiki").show();
+				});
+				$(document).ready(function() {
+					ckcntfun('#burayatwo');
+				});
+				$('#burayatwo').click(function(){
+					var myformtwo = $(this).closest('form');
+					var commentcontent = CKEDITOR.instances["commentcontent"].getData();
+					//var commentappear = $("select[name='commentappear']", myformtwo).val();
+					//var publishselect = $("select[name='publishselect']", myformtwo).val();
+					//var feeling = $("input[name='feeling']", myformtwo).data("emojioneArea").getText();
+					var content_type = mycontenttypeidtwo;
+					var object_id = myobjectidtwo;
+					//var publishposts = $("input[name='publishposts']", myformtwo).val();
+					var parent_id = myparenttwo; // $("input[name='parent_id']", myformtwo).val();
+					var secondparent_id = mysecondparenttwo;// $("input[name='secondparent_id']", myformtwo).val();
+					var thirdparent_id = mythirdparenttwo; // $("input[name='thirdparent_id']", myformtwo).val();
+					var url = myformtwo.attr("action");
+					var type = myformtwo.attr("method");
+					var data = {
+						commentcontent:commentcontent,
+						//commentappear:commentappear,
+						//publishselect:publishselect,
+						//feeling:feeling,
+						content_type:content_type,
+						object_id:object_id,
+						//publishposts:publishposts,
+						parent_id:parent_id,
+						secondparent_id:secondparent_id,
+						thirdparent_id:thirdparent_id,
+						csrfmiddlewaretoken:"{{ csrf_token }}"
+					}
+					$.ajax({
+						url:url,
+						type:type,
+						contentType:"application/x-www-form-urlencoded;charset=utf-8",
+						data:data,
+						//dataType:"json", //json yerine html veya xml de gelebilir bunu silebilir veya yorum olarak da kullanabilirsin
+						success: function(response) {
+							$("#hideformfirst").remove();
+				            $("#hideformsecond").remove();
+				            $("#hideformthird").remove();
+				            $("#hideformfourth").remove();
+				            $("#hideformfifth").remove();
+				            $("#hideformsecondedit").remove();
+				            $("#hideformthirdedit").remove();
+				            $("#hideformfourthedit").remove();
+				            $("#hideformfifthedit").remove();
+				            $("#yanitiki").show();
+							var locationanswertwo = '#addanswerstwo'+mybuttonvaluetwolocation;
+							//$(locationanswertwo).append("<b><p id='addanswerspragraph' class=''>"+response['commentcontent']+"</p></b><button id='editcommet' class='' value="+response['pk']+"',{{contenttypeid}},{{detail_posts.id}},'"+response['pk']+"',"+response['pk']+"',None' type='input' >Yorum Duzenle iki</button>");
+							var addingcontent = `<div class="row">
+							    <div class="col-md-12 text-center">
+									<ul class="list-group mt-3 pt-3">
+										<div id="deletdivtwo`+response['pk']+`">
+											<li class="list-group-item">
+												<div id="edittwo`+response['pk']+`">
+													<div class="row">
+														<div id="writer`+response['pk']+`" class="col-md-6 text-center fosizes">
+															{% trans "From" %} `+response['username']+` {% trans "to" %} `+response['whois']+`
+														</div>
+														<div id="comdates`+response['pk']+`" class="col-md-6 text-center fosizes">
+															`+response['updateposts']+`
+														</div>
+													</div>
+													<div class="row">
+														<div class="col-xs-12">
+															<blockquote class="blockquote text-left">
+																`+response['commentcontent']+`
+															</blockquote>
+														</div>
+													</div>
+												</div>
+												<div id="id_publishposts"></div>
+												<div id="addformtwo`+response['pk']+`" class=""></div>
+												<!-- Buraya aşağıya edit butonu ve delete ekle-->
+													<div id="addformtwoedit`+response['pk']+`" class=""></div>
+												<div class="row">
+													<div class="col-xs-4 mt-1">
+														<button id="yanitiki" class="btn btn-primary minibtn yanitiki`+response['pk']+`" onclick="firstreplyfun('yanitiki',`+response['pk']+`)" value ="`+response['pk']+`,{{contenttypeid}},{{detail_posts.id}},`+response['pk']+`,None,None" type="input" ><i class="fas fa-reply"></i></button>
+													</div>
+													<div class="col-xs-4 ml-2 mt-1">
+														<button id="editcommet" class="btn btn-success minibtn" value ="`+response['pk']+`,{{contenttypeid}},{{detail_posts.id}},`+response['pk']+`,None,None,`+response['slug']+`" type="input" ><i class="far fa-edit" ></i></button>
+													</div>
+													<div class="col-xs-4 ml-2 mt-1">
+														<button id="deletebtntwo`+response['pk']+`" class="btn btn-danger minibtn" onclick="deletesecondcomment(`+response['pk']+`, 'deletdivtwo`+response['pk']+`', 'deletebtntwo`+response['pk']+`', '`+response['slug']+`')"><i class="far fa-trash-alt"></i></button>
+													</div>
+												</div>
+												<div id="addanswerstwo`+response['pk']+`" class=""></div>
+											</li>
+										</div>
+									</ul>
+								</div>
+							</div>`;
+							$(locationanswertwo).append(addingcontent);
+							//$('maincontent'+response['pk']).html(response['commentcontent']);
+							$(document).ready(function() {
+								editcommetfunc();
+								//firstreplyfun();
+							});
+							$(locationanswertwo).ScrollTo();
+						},
+						error: function(xhr, status, error) {
+							var err = eval("(" + xhr.responseText + ")");
+							alert(err.Message);
+						}
+					});
+					return false;
+				});
+        }
+        else if (whichbtn == 'yanituc') {
+            // $("#yanitucgöster").show();
+            this.value = $('.'+whichbtn+nwid).val();
+            $("#hideformfirst").remove();
+            $("#hideformsecond").remove();
+            $("#hideformthird").remove();
+            $("#hideformfourth").remove();
+            $("#hideformfifth").remove();
+            $("#hideformsecondedit").remove();
+            $("#hideformthirdedit").remove();
+            $("#hideformfourthedit").remove();
+            $("#hideformfifthedit").remove();
+            var myformaddthree = `<div id="hideformthird" class="">
+							{% url 'postscontent' detail_posts.user.username detail_posts.pk detail_posts.slug as the_url_detail_two %}
+							<form id="myformthree" action="{{ the_url_detail_two }}" method="post" enctype="multipart/form-data">
+								{% csrf_token %}
+								<div class="form-group">
+									<div id="addckwarn" class="row ml-1 mb-1"></div>
+										{{ form.commentcontent }}
+								</div>
+								<input type="hidden" name="content_type" id="content_type" value={{contenttypeid}}>
+								<input type="hidden" name="object_id" id="object_id" value={{detail_posts.id}}>
+								<input type="hidden" name="parent_id" id="parent_id" value={{subcommentpost.id}}>
+								<input type="hidden" name="secondparent_id" id="secondparent_id" value={{subcommentpost.id}}>
+								<input type="hidden" name="thirdparent_id" id="thirdparent_id" value="None">
+								<div class="row">
+									<div class="col-md-6">
+										<button id="burayathree" class="btn btn-primary custombtn" type="input" disabled="true">{% trans "Reply" %}</button>
+									</div>
+							</form>
+								<div class="col-md-6">
+									<button id="passemptythree" class="btn btn-success custombtn dotyathree" type="input" >{% trans "Cancel" %}</button>
+								</div>
+							</div> 
+						</div>`;
+				var mybuttonvaluethree = this.value;
+				var mybuttonvaluethree = mybuttonvaluethree.split(",");
+				var mybuttonvaluethreelocation = mybuttonvaluethree[0];
+				var mycontenttypeidthree = mybuttonvaluethree[1];
+				var myobjectidthree = mybuttonvaluethree[2];
+				var myparentthree = mybuttonvaluethree[3];
+				var mysecondparentthree = mybuttonvaluethree[4];
+				var mythirdparentthree = mybuttonvaluethree[5];
+				var locationformthree = '#addformthree'+mybuttonvaluethreelocation;
+				$(locationformthree).after(myformaddthree);
+				$("#myformthree input[name=feeling]").emojioneArea({
+					standalone: true,
+					autocomplete: false,
+					shortnames: true,
+					saveEmojisAs: "shortname"
+				});
+				CKEDITOR.replace('commentcontent');
+				$(locationformthree).ScrollTo();
+				$('#yanituc').hide();
+				$('.dotyathree').click(function(){
+					$('#hideformthird').remove();
+					$("#yanituc").show();
+				});
+				$(document).ready(function() {
+					ckcntfun('#burayathree');
+				});
+				$('#burayathree').click(function(){
+					var myformthree = $(this).closest('form');
+					var commentcontent = CKEDITOR.instances["commentcontent"].getData();
+					//var commentappear = $("select[name='commentappear']", myformthree).val();
+					//var publishselect = $("select[name='publishselect']", myformthree).val();
+					//var feeling = $("input[name='feeling']", myformthree).data("emojioneArea").getText();
+					var content_type = mycontenttypeidthree;
+					var object_id = myobjectidthree;
+					//var publishposts = $("input[name='publishposts']", myformthree).val();
+					var parent_id = myparentthree;
+					var secondparent_id = mysecondparentthree;
+					var thirdparent_id = mythirdparentthree;
+					var url = myformthree.attr("action");
+					var type = myformthree.attr("method");
+					var data = {
+						commentcontent:commentcontent,
+						//commentappear:commentappear,
+						//publishselect:publishselect,
+						//feeling:feeling,
+						content_type:content_type,
+						object_id:object_id,
+						//publishposts:publishposts,
+						parent_id:parent_id,
+						secondparent_id:secondparent_id,
+						thirdparent_id:thirdparent_id,
+						csrfmiddlewaretoken:"{{ csrf_token }}"
+					}
+					$.ajax({
+						url:url,
+						type:type,
+						contentType:"application/x-www-form-urlencoded;charset=utf-8",
+						data:data,
+						//dataType:"json", //json yerine html veya xml de gelebilir bunu silebilir veya yorum olarak da kullanabilirsin
+						success: function(response) {
+							$("#hideformfirst").remove();
+				            $("#hideformsecond").remove();
+				            $("#hideformthird").remove();
+				            $("#hideformfourth").remove();
+				            $("#hideformfifth").remove();
+				            $("#hideformsecondedit").remove();
+				            $("#hideformthirdedit").remove();
+				            $("#hideformfourthedit").remove();
+				            $("#hideformfifthedit").remove();
+				            $("#yanituc").show();
+							var locationanswerthree = '#addanswersthree'+mybuttonvaluethreelocation;
+							//$(locationanswerthree).append("<b><p id='addanswerspragraph' class=''>"+response['commentcontent']+"</p></b><button id='editcommet' class='' value="+response['pk']+"',{{contenttypeid}},{{detail_posts.id}},'"+response['pk']+"',"+response['pk']+",''"+response['pk']+"' type='input' >Yorum Duzenle uc</button>");
+							var addingcontent = `<ul class="list-group">
+								<div id="deletdivthree`+response['pk']+`">
+								<li class="list-group-item">
+									<div id="editthree`+response['pk']+`">
+										<div class="row">
+											<div id="writer`+response['pk']+`" class="col-md-6 text-center fosizes">
+												{% trans "From" %} `+response['username']+` {% trans "to" %} `+response['whois']+`
+											</div>
+											<div id="comdates`+response['pk']+`" class="col-md-6 text-center fosizes">
+												`+response['updateposts']+`
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-xs-12">
+												<blockquote class="blockquote text-left">
+													`+response['commentcontent']+`
+												</blockquote>
+											</div>
+										</div>
+									</div>
+									<div id="id_publishposts"></div>
+									<div id="addformthree`+response['pk']+`" class=""></div>
+									<div id="addformthreeedit`+response['pk']+`" class=""></div>
+									<div class="row">
+										<div class="col-xs-4 mt-1">
+											<button id="yanituc" class="btn btn-primary minibtn yanituc`+response['pk']+`" onclick="firstreplyfun('yanituc',`+response['pk']+`)" value ="`+response['pk']+`,{{contenttypeid}},{{detail_posts.id}},`+response['pk']+`,`+response['pk']+`,None" type="input" ><i class="fas fa-reply"></i></button>
+										</div>
+										<div class="col-xs-4 ml-2 mt-1">
+											<button id="yanitucedit" class="btn btn-success minibtn" value ="`+response['pk']+`,{{contenttypeid}},{{detail_posts.id}},`+response['pk']+`,`+response['pk']+`,None,`+response['slug']+`" type="input" ><i class="far fa-edit" ></i></button>
+										</div>
+										<div class="col-xs-4 ml-2 mt-1">
+											<button id="deletebtnthree`+response['pk']+`" class="btn btn-danger minibtn" onclick="deletesecondcomment(`+response['pk']+`, 'deletdivthree`+response['pk']+`', 'deletebtnthree`+response['pk']+`', '`+response['slug']+`')"><i class="far fa-trash-alt"></i></button>
+										</div>
+									</div>
+									<div id="addanswersthree`+response['pk']+`" class=""></div>
+									</li>
+									</div>
+							</ul>`;
+							$(locationanswerthree).append(addingcontent);
+							//$('maincontent'+response['pk']).html(response['commentcontent']);
+							$(document).ready(function() {
+								editcommetfunc();
+								//firstreplyfun();
+							});
+							$(locationanswerthree).ScrollTo();
+						},
+						error: function(xhr, status, error) {
+							var err = eval("(" + xhr.responseText + ")");
+							alert(err.Message);
+						}
+					});
+					return false;
+				});
+        }
+        else if (whichbtn == 'yanitdort') {
+            // $("#yanitdortgöster").show();
+            this.value = $('.'+whichbtn+nwid).val();
+            $("#hideformfirst").remove();
+            $("#hideformsecond").remove();
+            $("#hideformthird").remove();
+            $("#hideformfourth").remove();
+            $("#hideformfifth").remove();
+            $("#hideformsecondedit").remove();
+            $("#hideformthirdedit").remove();
+            $("#hideformfourthedit").remove();
+            $("#hideformfifthedit").remove();
+            var myformaddfour = `<div id="hideformfourth" class="">
+											{% url 'postscontent' detail_posts.user.username detail_posts.pk detail_posts.slug as the_url_detail_two %}
+											<form id="myformfour" action="{{ the_url_detail_two }}" method="post" enctype="multipart/form-data">
+												{% csrf_token %}
+												<div class="form-group">
+													<div id="addckwarn" class="row ml-1 mb-1"></div>
+														{{ form.commentcontent }}
+												</div>
+												<input type="hidden" name="content_type" id="content_type" value={{contenttypeid}}>
+												<input type="hidden" name="object_id" id="object_id" value={{detail_posts.id}}>
+												<input type="hidden" name="parent_id" id="parent_id" value={{secondsubcommentpost.id}}>
+												<input type="hidden" name="secondparent_id" id="secondparent_id" value={{secondsubcommentpost.id}}>
+												<input type="hidden" name="thirdparent_id" id="thirdparent_id" value={{secondsubcommentpost.id}}>
+												<div class="row">
+													<div class="col-md-6">
+														<button id="burayafour" class="btn btn-primary custombtn" type="input" disabled="true">{% trans "Reply" %}</button>
+													</div>
+											</form>
+												<div class="col-md-6">
+													<button id="passemptyfour" class="btn btn-success custombtn dotyafour" type="input" >{% trans "Cancel" %}</button>
+												</div>
+											</div> 
+				
+				</div>`;
+				var mybuttonvaluefour = this.value;
+				var mybuttonvaluefour = mybuttonvaluefour.split(",");
+				var mybuttonvaluefourlocation = mybuttonvaluefour[0];
+				var mycontenttypeidfour = mybuttonvaluefour[1];
+				var myobjectidfour = mybuttonvaluefour[2];
+				var myparentfour = mybuttonvaluefour[3];
+				var mysecondparentfour = mybuttonvaluefour[4];
+				var mythirdparentfour = mybuttonvaluefour[5];
+				var locationformfour = '#addformfour'+mybuttonvaluefourlocation;
+				$(locationformfour).after(myformaddfour);
+				$("#myformfour input[name=feeling]").emojioneArea({
+					standalone: true,
+					autocomplete: false,
+					shortnames: true,
+					saveEmojisAs: "shortname"
+				});
+				CKEDITOR.replace('commentcontent');
+				$(locationformfour).ScrollTo();
+				$('#yanitdort').hide();
+				$('.dotyafour').click(function(){
+					$('#hideformfourth').remove();
+					$("#yanitdort").show();
+				});
+				$(document).ready(function() {
+					ckcntfun('#burayafour');
+				});
+				$('#burayafour').click(function(){
+					var myformfour = $(this).closest('form');
+					var commentcontent = CKEDITOR.instances["commentcontent"].getData();
+					//var commentappear = $("select[name='commentappear']", myformfour).val();
+					//var publishselect = $("select[name='publishselect']", myformfour).val();
+					//var feeling = $("input[name='feeling']", myformfour).data("emojioneArea").getText();
+					var content_type = mycontenttypeidfour;
+					var object_id = myobjectidfour;
+					//var publishposts = $("input[name='publishposts']", myformfour).val();
+					var parent_id = myparentfour;
+					var secondparent_id = mysecondparentfour;
+					var thirdparent_id = mythirdparentfour;
+					var url = myformfour.attr("action");
+					var type = myformfour.attr("method");
+					var data = {
+						commentcontent:commentcontent,
+						//commentappear:commentappear,
+						//publishselect:publishselect,
+						//feeling:feeling,
+						content_type:content_type,
+						object_id:object_id,
+						//publishposts:publishposts,
+						parent_id:parent_id,
+						secondparent_id:secondparent_id,
+						thirdparent_id:thirdparent_id,
+						csrfmiddlewaretoken:"{{ csrf_token }}"
+					}
+					$.ajax({
+						url:url,
+						type:type,
+						contentType:"application/x-www-form-urlencoded;charset=utf-8",
+						data:data,
+						//dataType:"json", //json yerine html veya xml de gelebilir bunu silebilir veya yorum olarak da kullanabilirsin
+						success: function(response) {
+							$("#hideformfirst").remove();
+				            $("#hideformsecond").remove();
+				            $("#hideformthird").remove();
+				            $("#hideformfourth").remove();
+				            $("#hideformfifth").remove();
+				            $("#hideformsecondedit").remove();
+				            $("#hideformthirdedit").remove();
+				            $("#hideformfourthedit").remove();
+				            $("#hideformfifthedit").remove();
+				            $("#yanitdort").show();
+							var locationanswerfour = '#addanswersfour'+mybuttonvaluefourlocation;
+							//$(locationanswerfour).append("<b><p id='addanswerspragraph' class=''>"+response['commentcontent']+"</p></b><button id='editcommet' class='' value="+response['pk']+"',{{contenttypeid}},{{detail_posts.id}},'"+response['pk']+"',"+response['pk']+",''"+response['pk']+"' type='input' >Yorum Duzenle dort</button>");
+							var addingcontent = `<ul class="list-group">
+								<div id="deletdivfour`+response['pk']+`">
+									<li class="list-group-item">
+										<div id="editfour`+response['pk']+`">
+											<div class="row">
+												<div id="writer`+response['pk']+`" class="col-md-6 text-center fosizes">
+													{% trans "From" %} `+response['username']+` {% trans "to" %} `+response['whois']+`
+												</div>
+												<div id="comdates`+response['pk']+`" class="col-md-6 text-center fosizes">
+													`+response['updateposts']+`
+												</div>
+											</div>
+											<div class="row">
+												<div class="col-xs-12">
+													<blockquote class="blockquote text-left">
+														`+response['commentcontent']+`
+													</blockquote>
+												</div>
+											</div>
+										</div>
+										<div id="id_publishposts"></div>
+										<div id="addformfour`+response['pk']+`" class=""></div>
+										<div id="addformfouredit`+response['pk']+`" class=""></div>
+										<div class="row">
+											<div class="col-xs-4 mt-1">
+												<button id="yanitdort" class="btn btn-primary minibtn yanitdort`+response['pk']+`" onclick="firstreplyfun('yanitdort',`+response['pk']+`)" value ="`+response['pk']+`,{{contenttypeid}},{{detail_posts.id}},`+response['pk']+`,`+response['pk']+`,`+response['pk']+`" type="input" ><i class="fas fa-reply"></i></button>
+											</div>
+											<div class="col-xs-4 ml-2 mt-1">
+												<button id="yanitdortedit" class="btn btn-success minibtn" value ="`+response['pk']+`,{{contenttypeid}},{{detail_posts.id}},`+response['pk']+`,`+response['pk']+`,`+response['pk']+`,`+response['slug']+`" type="input" ><i class="far fa-edit"></i></button>
+											</div>
+											<div class="col-xs-4 ml-2 mt-1">
+												<button id="deletebtnfour`+response['pk']+`" class="btn btn-danger minibtn" onclick="deletesecondcomment(`+response['pk']+`, 'deletdivfour`+response['pk']+`', 'deletebtnfour`+response['pk']+`', '`+response['slug']+`')"><i class="far fa-trash-alt"></i></button>
+											</div>
+										</div>
+										<div id="addanswersfour`+response['pk']+`" class=""></div>
+									</li>
+								</div>
+							</ul>`;
+							$(locationanswerfour).append(addingcontent);
+							//$('maincontent'+response['pk']).html(response['commentcontent']);
+							$(document).ready(function() {
+								editcommetfunc();
+								//firstreplyfun();
+							});
+							$(locationanswerfour).ScrollTo();
+						},
+						error: function(xhr, status, error) {
+							var err = eval("(" + xhr.responseText + ")");
+							alert(err.Message);
+						}
+					});
+					return false;
+				});
+        }
+        else if (whichbtn == 'yanitbes') {
+            // $("#yanitbesgöster").show();
+            this.value = $('.'+whichbtn+nwid).val();
+            $("#hideformfirst").remove();
+            $("#hideformsecond").remove();
+            $("#hideformthird").remove();
+            $("#hideformfourth").remove();
+            $("#hideformfifth").remove();
+            $("#hideformsecondedit").remove();
+            $("#hideformthirdedit").remove();
+            $("#hideformfourthedit").remove();
+            $("#hideformfifthedit").remove();
+            var myformaddfive = `<div id="hideformfifth" class="">
+														{% url 'postscontent' detail_posts.user.username detail_posts.pk detail_posts.slug as the_url_detail_two %}
+														<form id="myformfive" action="{{ the_url_detail_two }}" method="post" enctype="multipart/form-data">
+															{% csrf_token %}
+															<div class="form-group">
+																<div id="addckwarn" class="row ml-1 mb-1"></div>
+																	{{ form.commentcontent }}
+															</div>
+															<input type="hidden" name="content_type" id="content_type" value={{contenttypeid}}>
+															<input type="hidden" name="object_id" id="object_id" value={{detail_posts.id}}>
+															<input type="hidden" name="parent_id" id="parent_id" value={{thirdsubcommentpost.parent_id}}>
+															<input type="hidden" name="secondparent_id" id="secondparent_id" value={{thirdsubcommentpost.parent_id}}>
+															<input type="hidden" name="thirdparent_id" id="thirdparent_id" value={{thirdsubcommentpost.parent_id}}>
+															<div class="row">
+															<div class="col-md-6">
+																<button id="burayafive" class="btn btn-primary custombtn" type="input" disabled="true">{% trans "Send" %}</button>
+															</div>
+														</form>
+															<div class="col-md-6">
+																<button id="passemptyfive" class="btn btn-success custombtn dotyafive" type="input" >{% trans "Cancel" %}</button>
+															</div>
+														</div>
+				</div>`;
+				var mybuttonvaluefive = this.value;
+				var mybuttonvaluefive = mybuttonvaluefive.split(",");
+				var mybuttonvaluefivelocation = mybuttonvaluefive[0];
+				var mycontenttypeidfive = mybuttonvaluefive[1];
+				var myobjectidfive = mybuttonvaluefive[2];
+				var myparentfive = mybuttonvaluefive[3];
+				var mysecondparentfive = mybuttonvaluefive[4];
+				var mythirdparentfive = mybuttonvaluefive[5];
+				var isfiveanswers = mybuttonvaluefivelocation;
+				var locationformfive = '#addformfive'+mybuttonvaluefivelocation;
+				$(locationformfive).after(myformaddfive);
+				$("#myformfive input[name=feeling]").emojioneArea({
+					standalone: true,
+					autocomplete: false,
+					shortnames: true,
+					saveEmojisAs: "shortname"
+				});
+				CKEDITOR.replace('commentcontent');
+				$(locationformfive).ScrollTo();
+				$('#yanitbes').hide();
+				$('.dotyafive').click(function(){
+					$('#hideformfifth').remove();
+					$("#yanitbes").show();
+				});
+				$(document).ready(function() {
+					ckcntfun('#burayafive');
+				});
+				$('#burayafive').click(function(){
+					var myformfive = $(this).closest('form');
+					var commentcontent = CKEDITOR.instances["commentcontent"].getData();
+					//var commentappear = $("select[name='commentappear']", myformfive).val();
+					//var publishselect = $("select[name='publishselect']", myformfive).val();
+					//var feeling = $("input[name='feeling']", myformfive).data("emojioneArea").getText();
+					var content_type = mycontenttypeidfive;
+					var object_id = myobjectidfive;
+					//var publishposts = $("input[name='publishposts']", myformfive).val();
+					var parent_id = myparentfive;
+					var secondparent_id = mysecondparentfive;
+					var thirdparent_id = mythirdparentfive;
+					var url = myformfive.attr("action");
+					var type = myformfive.attr("method");
+					var data = {
+						commentcontent:commentcontent,
+						//commentappear:commentappear,
+						//publishselect:publishselect,
+						//feeling:feeling,
+						isfiveanswers:isfiveanswers,
+						content_type:content_type,
+						object_id:object_id,
+						//publishposts:publishposts,
+						parent_id:parent_id,
+						secondparent_id:secondparent_id,
+						thirdparent_id:thirdparent_id,
+						csrfmiddlewaretoken:"{{ csrf_token }}"
+					}
+					$.ajax({
+						url:url,
+						type:type,
+						contentType:"application/x-www-form-urlencoded;charset=utf-8",
+						data:data,
+						//dataType:"json", //json yerine html veya xml de gelebilir bunu silebilir veya yorum olarak da kullanabilirsin
+						success: function(response) {
+							$("#hideformfirst").remove();
+				            $("#hideformsecond").remove();
+				            $("#hideformthird").remove();
+				            $("#hideformfourth").remove();
+				            $("#hideformfifth").remove();
+				            $("#hideformsecondedit").remove();
+				            $("#hideformthirdedit").remove();
+				            $("#hideformfourthedit").remove();
+				            $("#hideformfifthedit").remove();
+				            $("#yanitbes").show();
+							var locationanswerfive = '#addanswersfive'+mybuttonvaluefivelocation;
+							//$(locationanswerfive).append("<b><p id='addanswerspragraph' class=''>"+response['commentcontent']+"</p></b><button id='editcommet' class='' value="+response['pk']+"',{{contenttypeid}},{{detail_posts.id}},'"+response['pk']+"',"+response['pk']+",''"+response['pk']+"' type='input' >Yorum Duzenle bes</button>");
+							var addingcontent = `<ul class="list-group">
+								<div id="deletdivfive`+response['pk']+`">
+									<li class="list-group-item">
+										<div id="editfive`+response['pk']+`">
+											<div class="row">
+												<div id="writer`+response['pk']+`" class="col-md-6 text-center fosizes">
+													{% trans "From" %} `+response['username']+` {% trans "to" %} `+response['whois']+`
+												</div>
+												<div id="comdates`+response['pk']+`" class="col-md-6 text-center fosizes">
+													`+response['updateposts']+`
+												</div>
+											</div>
+											<div class="row">
+												<div class="col-xs-12">
+													<blockquote class="blockquote text-left">
+														`+response['commentcontent']+`
+													</blockquote>
+												</div>
+											</div>
+										</div>
+										<div id="id_publishposts"></div>
+										<div id="addformfive`+response['pk']+`" class=""></div>
+										<div id="addformfiveedit`+response['pk']+`" class=""></div>
+										<div class="row">
+											<div class="col-xs-4 mt-1">
+												<button id="yanitbes" class="btn btn-primary minibtn yanitbes`+response['pk']+`" onclick="firstreplyfun('yanitbes',`+response['pk']+`)" value ="`+response['pk']+`,{{contenttypeid}},{{detail_posts.id}},`+response['parent']+`,`+response['parent']+`,`+response['parent']+`" type="input" ><i class="fas fa-reply"></i></button>
+											</div>
+											<div class="col-xs-4 ml-2 mt-1">
+												<button id="yanitbesedit" class="btn btn-success minibtn" value ="`+response['pk']+`,{{contenttypeid}},{{detail_posts.id}},`+response['parent']+`,`+response['parent']+`,`+response['parent']+`,`+response['slug']+`" type="input" ><i class="far fa-edit" ></i></button>
+											</div>
+											<div class="col-xs-4 ml-2 mt-1">
+												<button id="deletebtnfive{{ thirdsubcommentpost.id }}" class="btn btn-danger minibtn" onclick="deletesecondcomment(`+response['pk']+`, 'deletdivfive`+response['pk']+`', 'deletebtnfive`+response['pk']+`', '`+response['slug']+`')"><i class="far fa-trash-alt"></i></button>
+											</div>
+										</div>
+										<div id="addanswersfive`+response['pk']+`" class=""></div>
+									</li>
+								</div>
+							</ul>`;
+							$(locationanswerfive).append(addingcontent);
+							//$('maincontent'+response['pk']).html(response['commentcontent']);
+							$(document).ready(function() {
+								editcommetfunc();
+								//firstreplyfun();
+							});
+							$(locationanswerfive).ScrollTo();
+						},
+						error: function(xhr, status, error) {
+							var err = eval("(" + xhr.responseText + ")");
+							alert(err.Message);
+						}
+					});
+					return false;
+				});
+        }
+  		//});
+  	}
+  </script>
+  <script type="text/javascript">
+  	var editcommetfunc = function(){
+  		jQuery(':button').click(function () {
+  			if (this.id == 'editcommet') {
+	  			$("#hideformfirst").remove();
+	            $("#hideformsecond").remove();
+	            $("#hideformthird").remove();
+	            $("#hideformfourth").remove();
+	            $("#hideformfifth").remove();
+	            $("#hideformsecondedit").remove();
+	            $("#hideformthirdedit").remove();
+	            $("#hideformfourthedit").remove();
+	            $("#hideformfifthedit").remove();
+				var mybuttonvaluetwoedit = this.value;
+				var mybuttonvaluetwoedit = mybuttonvaluetwoedit.split(",");
+				var mybuttonvaluetwolocationedit = mybuttonvaluetwoedit[0];
+				var mycontenttypeidtwoedit = mybuttonvaluetwoedit[1];
+				var myobjectidtwoedit = mybuttonvaluetwoedit[2];
+				var myparenttwoedit = mybuttonvaluetwoedit[3];
+				var mysecondparenttwoedit = mybuttonvaluetwoedit[4];
+				var mythirdparenttwoedit = mybuttonvaluetwoedit[5];
+				var mytwoslugedit = mybuttonvaluetwoedit[6];
+				var locationformtwoedit = '#addformtwoedit'+mybuttonvaluetwolocationedit;
+				var myformaddtwoedit = `<div id="hideformsecondedit" class="">
+					<!--{% url 'postscontentedit' detail_posts.user.username detail_posts.pk detail_posts.slug as the_url_detail_two_edit %}-->
+					<!-- {{ the_url_detail_two_edit }} -->
+					<form id="myformtwoedit" action="" method="post" enctype="multipart/form-data">
+						{% csrf_token %}
+						<div class="form-group">
+						<div id="addckwarn" class="row ml-1 mb-1"></div>
+							{{ form.commentcontent }}
+					</div>
+						<input type="hidden" name="content_type" id="content_type" value={{contenttypeid}}>
+						<input type="hidden" name="object_id" id="object_id" value={{detail_posts.id}}>
+						<input type="hidden" name="parent_id" id="parent_id" value=`+mybuttonvaluetwolocationedit+`>
+						<input type="hidden" name="secondparent_id" id="secondparent_id" value="None">
+						<input type="hidden" name="thirdparent_id" id="thirdparent_id" value="None">
+						<div class="row">
+							<div class="col-md-6">
+								<button id="burayatwoedit" class="btn btn-primary custombtn" type="input" disabled="true">{% trans "Send" %}</button>
+							</div>
+					</form>
+					<div class="col-md-6">
+						<button id="passemptytwoedit" class="btn btn-success custombtn dotyatwoedit" type="input" >{% trans "Cancel" %}</button>
+					</div>
+				</div>
+					</div>`;
+					$(locationformtwoedit).after(myformaddtwoedit);
+					$("#myformtwoedit input[name=feeling]").emojioneArea({
+						standalone: true,
+						autocomplete: false,
+						shortnames: true,
+						saveEmojisAs: "shortname"
+					});
+					CKEDITOR.replace('commentcontent');
+					$(locationformtwoedit).ScrollTo();
+					// $(CKEDITOR.replace('commentcontent'), myform)
+					$('#yanitikiedit').hide();
+					$('.dotyatwoedit').click(function(){
+						$('#hideformsecondedit').remove();
+						$("#yanitikiedit").show();
+					});
+					$(document).ready(function() {
+						ckcntfun('#burayatwoedit');
+					});
+					$('#burayatwoedit').click(function(){
+						var myformtwoedit = $(this).closest('form');
+						var commentcontent = CKEDITOR.instances["commentcontent"].getData();
+						//var commentappear = $("select[name='commentappear']", myformtwoedit).val();
+						//var publishselect = $("select[name='publishselect']", myformtwoedit).val();
+						//var feeling = $("input[name='feeling']", myformtwoedit).data("emojioneArea").getText();
+						var content_type = mycontenttypeidtwoedit;
+						var object_id = myobjectidtwoedit;
+						//var publishposts = $("input[name='publishposts']", myformtwoedit).val();
+						var parent_id = myparenttwoedit; // $("input[name='parent_id']", myformtwo).val();
+						var secondparent_id = mysecondparenttwoedit;// $("input[name='secondparent_id']", myformtwo).val();
+						var thirdparent_id = mythirdparenttwoedit; // $("input[name='thirdparent_id']", myformtwo).val();
+						var url = "/comment/"+mybuttonvaluetwolocationedit+"/"+mytwoslugedit+"/edit/";
+						var type = myformtwoedit.attr("method");
+						//add new append start
+						var postidgets = $('#postsdtlid').val();
+						var postsluggets = $('#postsdtlslug').val();
+						var postsusrgets = $('#postsdtlusrname').val();
+						//add new append stop
+						var data = {
+							//add new append startxxx
+							pstsid:mybuttonvaluetwolocationedit,
+							pstslg:mytwoslugedit,
+							postidgets:postidgets,
+							postsluggets:postsluggets,
+							postsusrgets:postsusrgets,
+							//add new append stop
+							commentcontent:commentcontent,
+							//commentappear:commentappear,
+							//publishselect:publishselect,
+							//feeling:feeling,
+							content_type:content_type,
+							object_id:object_id,
+							//publishposts:publishposts,
+							parent_id:parent_id,
+							secondparent_id:secondparent_id,
+							thirdparent_id:thirdparent_id,
+							csrfmiddlewaretoken:"{{ csrf_token }}"
+						}
+						$.ajax({
+							url:url,
+							type:type,
+							contentType:"application/x-www-form-urlencoded;charset=utf-8",
+							data:data,
+							//dataType:"json", //json yerine html veya xml de gelebilir bunu silebilir veya yorum olarak da kullanabilirsin
+							success: function(response) {
+								$("#hideformfirst").remove();
+					            $("#hideformsecond").remove();
+					            $("#hideformthird").remove();
+					            $("#hideformfourth").remove();
+					            $("#hideformfifth").remove();
+					            $("#hideformsecondedit").remove();
+					            $("#hideformthirdedit").remove();
+					            $("#hideformfourthedit").remove();
+					            $("#hideformfifthedit").remove();
+								var locationanswertwoedit = '#edittwo'+mybuttonvaluetwolocationedit;
+								$(locationanswertwoedit).empty();
+								$(locationanswertwoedit).append(`<div class="row"><div id="writer`+response['pk']+`" class="col-md-6 text-center fosizes">{% trans "From" %} `+response['username']+` {% trans "to" %} `+response['whois']+`</div><div id="comdates`+response['pk']+`" class="col-md-6 text-center fosizes">`+response['updateposts']+`</div></div><div class="row"><div class="col-xs-12 text-left"><blockquote class="blockquote text-left">`+response['commentcontent']+`</blockquote></div></div>`);
+								$('#yanitikiedit').show();
+								$(locationanswertwoedit).ScrollTo();
+							},
+							error: function(xhr, status, error) {
+								var err = eval("(" + xhr.responseText + ")");
+								alert(err.Message);
+							}
+						});
+						return false;
+					});
+			}	
+		});
+  	}
+  </script>
+{% endblock %}
+{% block head_title %}
+	{% blocktrans %}Post Detail Show{% endblocktrans %}
+{% endblock %}
+
+{% block extra_head %}
+{% endblock %}
+ 
+{% block body %}
+{% block mynavbar %}
+	{% include "myincludes/mynavbar.html" %}
+{% endblock %}
+{% block content %}
+	<section class="userdetailsection">
+		<div class="container">
+			<div class="page-header">
+		 		<div class="row">
+		 			<div class="col-md-12 text-center mt-1 pt-2">
+						<h3>{% trans "Post Detail" %}</h3>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+ 
+{% if request.user.is_authenticated %}
+	<input type="hidden" id= "postsdtlid" name="postsdtlid" value="{{detail_posts.id}}">
+	<input type="hidden" id= "postsdtlcnttype" name="postsdtlcnttype" value="{{contenttypeid}}">
+	<input type="hidden" id= "postsdtlslug" name="postsdtlslug" value="{{detail_posts.slug}}">
+	<input type="hidden" id= "postsdtlusrname" name="postsdtlusrname" value="{{detail_posts.user.id}}">
+    <!--{{detail_posts.id}}-->
+    <!--{{ detail_posts.postcontent }}-->
+    <!-- gönderinin silinmesi veya güncellenmesi işlemi akttaki yorum -->
+     <!--{% url 'updatepostajax' detail_posts.pk detail_posts.slug as the_url_update %}
+    {% url 'deletepostajax' detail_posts.pk detail_posts.slug as the_url_delete %}
+    <a href = "{{ the_url_update }}" class=""><h1>{{ detail_posts.id }}</h1></a>
+    <a href = "{{ the_url_delete }}" class=""><h1>{{ detail_posts.id }}</h1></a>-->
+    
+    <!--<button id="yanitbir" class="" type="input" >Yorum Yap</button>-->
+    <section class="createdsontent">
+		<div class="container">
+			{% if followcnt == True or delegecntg == True or detail_posts.user == request.user %}
+				<div id="contentplace"></div>
+					<div id="contentids{{ detail_posts.pk }}" class="mt-4 pt-4">
+						<div class="row border-top border-primary">
+							<div id="feelsmain{{ detail_posts.pk }}" class="col-md-3 text-center mt-1 pt-2">
+								{{ detail_posts.feeling }}
+							</div>
+							<script type="text/javascript">
+								$(document).ready(function() {
+								  function convert() {
+								      var input = $('#feelsmain{{ detail_posts.pk }}').text();
+								      var output = emojione.toImage(input);
+								      document.getElementById('feelsmain{{ detail_posts.pk }}').innerHTML = output;
+								  }
+								  convert();
+								});
+							</script>
+							<div class="col-md-3 text-center mt-1 pt-2 fosizes">
+								{{ detail_posts.user.username }}
+							</div>
+							<div class="col-md-3 text-center mt-1 pt-2 fosizes">
+								{{ detail_posts.createdates }}
+							</div>
+							<div class="col-md-3 text-center mt-1 pt-2 fosizes">
+								{% for tag in detail_posts.postgrouplabels.all %}
+									<!--<a href="/{{ detail_posts.creategrouppost.groupname }}/{{ tag.name }}/relatedposts">{{ tag.name }}</a>-->
+									<a href="/{{ tag.name }}/relatedposts">{{ tag.name }}</a>
+								{% endfor %}
+							</div>
+						<!-- </div> -->
+						<!-- carosel photo start -->
+						<!-- <div class="row"> -->
+							<div class="col-md-12 text-center mt-1 mb-1 pt-1">
+								{% photo_show_list detail_posts.id as photolist %}
+								<input id="wsipperphotourllist{{ detail_posts.pk }}" type="hidden" name="" value="{{ photolist }}">
+								<!-- for picture design -->
+								<div class="swiper-container slider{{ detail_posts.pk }}">
+									<div id="wrapper{{ detail_posts.pk }}" class="swiper-wrapper">
+										<!--<div class="swiper-slide"><img id="slide{{ detail_posts.pk }}" src=""></div>-->
+										<!-- Add Pagination -->
+									</div>
+								  <div class="swiper-pagination"></div>
+								  <!-- Add Arrows -->
+								  <div class="swiper-button-next"></div>
+								  <div class="swiper-button-prev"></div>
+								</div>
+								<script type="text/javascript">
+									$(document).ready(function() {
+										//photos add
+										var ptlst = $('#wsipperphotourllist{{ detail_posts.pk }}').val();
+										ptlst = ptlst.substr(1);
+										nnptlst = ptlst.length;
+										ptlst = ptlst.substr(0, nnptlst-1);
+										var listptlst = ptlst.split(",");
+										for (let i = 0; i < listptlst.length; i++) {
+											let element = listptlst[i];
+											if (element == "\'false\'") {
+												element = element;
+											}
+											else{
+												$('#wrapper{{ detail_posts.pk }}').append(`<div class="swiper-slide"><img id="slide{{ detail_posts.pk }}" class="img-fluid" src=`+element+`></div>`);
+											}
+										}
+										{% if detail_posts.multiphoto %}
+											$('#wrapper{{ detail_posts.pk }}').append(`<div class="swiper-slide"><video id="slide{{ detail_posts.pk }}" class="img-responsive myvidswidth" controls> <source src="{{ detail_posts.multiphoto.url }}" type="video/mp4"></video>`);
+										{% endif %}
+										(() => {
+											const sliderEl = document.querySelector('.slider{{ detail_posts.pk }}');
+											  if(!sliderEl){
+											    return;
+											  }
+											  const slider = new Swiper(sliderEl, {
+											    loop: true,
+											    /*
+											    autoplay: {
+											      delay: 5000,
+											      disableOnInteraction: false
+											    },
+											    */
+											    pagination: {
+											      el: '.swiper-pagination',
+											      clickable: true,
+											      //type: 'progressbar'
+											    },
+											    navigation: {
+											      nextEl: '.swiper-button-next',
+											      prevEl: '.swiper-button-prev',
+											    },
+											  });
+											})();
+									});
+									//$('#slide{{ detail_posts.pk }}').prop(src, )
+								</script>
+							</div>
+						</div>
+						<!-- carosel photo stop -->
+						<!-- text start -->
+						<div class="row">
+							<div class="col-md-12">
+								<blockquote class="blockquote text-center mt-1">
+									<span>{{ detail_posts.postsgroupwrite|safe }}</span>
+								</blockquote>
+							</div>
+						</div>
+						<!-- text stop -->
+					</div>
+					<div class="row">
+						<div class="col-md-12 text-center mt-2">
+							<button id="yanitbir" class="btn btn-primary btn-block" type="input" >{% trans "Comment" %}</button>
+						</div>
+					</div>
+			{% endif %}
+		</div>
+	</section>
+	<section id="addingfirstforms">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-12 text-center">
+			    <div id="id_publishposts"></div>
+			    <div id="addform" class=""></div>
+			    <div id="addanswers" class=""></div>
+			</div>
+		</div>
+	    </div>
+    </section>
+    
+    <section id="commentulli">
+				<ul class="list-group mt-3 pt-3">
+				{% for commentpost in commentcontent %}
+					{% if not commentpost.parent %}
+						<div id="deletdivtwo{{ commentpost.id }}">
+							<div class="container-fluid">
+						<li class="list-group-item border-top border-primary">
+						<div id="edittwo{{ commentpost.id }}">
+							<div class="row">
+								<div id="writer{{ commentpost.id }}" class="col-md-6 text-center fosizes">
+									{% trans "From" %} {{ commentpost.user.username }} {% trans "to" %} {{ commentpost.whoto }}
+								</div>
+								<div id="comdates{{ commentpost.id }}" class="col-md-6 text-center fosizes">
+									{{ commentpost.updateposts }}
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-12">
+									<blockquote class="blockquote text-left">
+										{{ commentpost.commentcontent|safe }}
+									</blockquote>
+								</div>
+							</div>
+						</div>
+						<div id="id_publishposts"></div>
+						<div id="addformtwo{{ commentpost.id }}" class=""></div>
+						<div id="addformtwoedit{{ commentpost.id }}" class=""></div>
+						<div class="row">
+							<div class="col-xs-4 mt-1">
+								<button id="yanitiki" class="btn btn-primary minibtn yanitiki{{ commentpost.id }}" value ="{{ commentpost.id }},{{contenttypeid}},{{detail_posts.id}},{{commentpost.id}},None,None" type="input" ><i class="fas fa-reply"></i></button>
+							</div>
+						<!-- Buraya aşağıya edit butonu ve delete ekle-->
+						{% if commentpost.user == request.user %}
+							<!--<div id="addformtwoedit{{ commentpost.id }}" class=""></div>-->
+							<div class="col-xs-4 ml-2 mt-1">
+								<button id="yanitikiedit" class="btn btn-success minibtn" value ="{{ commentpost.id }},{{contenttypeid}},{{detail_posts.id}},{{commentpost.id}},None,None,{{ commentpost.slug }}" type="input" ><i class="far fa-edit" ></i></button>
+							</div>
+							<div class="col-xs-4 ml-2 mt-1">
+								<button id="deletebtntwo{{ commentpost.id }}" class="btn btn-danger minibtn" onclick="deletesecondcomment({{ commentpost.id }}, 'deletdivtwo{{ commentpost.id }}', 'deletebtntwo{{ commentpost.id }}', '{{ commentpost.slug }}')"><i class="far fa-trash-alt"></i></button>
+							</div>
+						{% endif %}
+							</div>
+						</div>
+						<div id="addanswerstwo{{ commentpost.id }}" class=""></div>
+						
+						{%if commentpost.replies %}
+							<!-- collapse add start-->
+							{% shcont detail_posts.id contenttypeid commentpost.id as cmtflg %}
+							{% if cmtflg != False %}
+							<div class="panel-group ml-3 pl-3">
+							    <div class="panel panel-default">
+							      <div class="panel-heading">
+							        <div class="text-left mt-2">
+							          <a data-toggle="collapse" class="text-secondary" href="#collapse{{ commentpost.id }}">{% trans "Show Replies" %}</a>
+							        </div>
+							      </div>
+							      <div id="collapse{{ commentpost.id }}" class="panel-collapse collapse">
+							{% endif %}
+							<!-- collapse add stop-->
+							<ul class="list-group">
+							{% for ch in commentpost.replies.get_queryset %}
+								{% with subcommentpost=ch  %}
+									<div id="deletdivthree{{ subcommentpost.id }}">
+									<li class="list-group-item">
+										<div id="editthree{{ subcommentpost.id }}">
+											<div class="row">
+												<div id="writer{{ subcommentpost.id }}" class="col-md-6 text-center fosizes">
+													{% trans "From" %} {{ subcommentpost.user.username }} {% trans "to" %} {{ subcommentpost.whoto }}
+												</div>
+												<div id="comdates{{ subcommentpost.id }}" class="col-md-6 text-center fosizes">
+													{{ subcommentpost.updateposts }}
+												</div>
+											</div>
+											<div class="row">
+												<div class="col-xs-12">
+													<blockquote class="blockquote text-left">
+														{{ subcommentpost.commentcontent|safe }}
+													</blockquote>
+												</div>
+											</div>
+										</div>
+										<div id="id_publishposts"></div>
+										<div id="addformthree{{ subcommentpost.id }}" class=""></div>
+										<!--<div id="addanswersthree{{ subcommentpost.id }}" class=""></div>-->
+										<div id="addformthreeedit{{ subcommentpost.id }}" class=""></div>
+										<div class="row">
+											<div class="col-xs-4 mt-1">
+												<button id="yanituc" class="btn btn-primary minibtn yanituc{{ subcommentpost.id }}" value ="{{ subcommentpost.id }},{{contenttypeid}},{{detail_posts.id}},{{subcommentpost.id}},{{subcommentpost.id}},None" type="input" ><i class="fas fa-reply"></i></button>
+											</div>
+										<!-- Buraya aşağıya edit butonu ekle-->
+										{% if subcommentpost.user == request.user %}
+											<!--<div id="addformthreeedit{{ subcommentpost.id }}" class=""></div>-->
+											<div class="col-xs-4 ml-2 mt-1">
+												<button id="yanitucedit" class="btn btn-success minibtn" value ="{{ subcommentpost.id }},{{contenttypeid}},{{detail_posts.id}},{{subcommentpost.id}},{{subcommentpost.id}},None,{{ subcommentpost.slug }}" type="input" ><i class="far fa-edit" ></i></button>
+											</div>
+											<div class="col-xs-4 ml-2 mt-1">
+												<button id="deletebtnthree{{ subcommentpost.id }}" class="btn btn-danger minibtn" onclick="deletesecondcomment({{ subcommentpost.id }}, 'deletdivthree{{ subcommentpost.id }}', 'deletebtnthree{{ subcommentpost.id }}', '{{ subcommentpost.slug }}')"><i class="far fa-trash-alt"></i></button>
+											</div>
+										{% endif %}
+										</div>
+										<div id="addanswersthree{{ subcommentpost.id }}" class=""></div>
+										<!-- add new signal comment -->
+										{% commentadding detail_posts.id contenttypeid subcommentpost.id as cmtflg %}
+										{% if cmtflg != False %}
+											<ul class="list-group">
+												{% for contentnw in cmtflg %}
+													{% for mynewer in contentnw %}
+														<div id="deletdivtwonew{{ mynewer.id }}">
+															<li class="list-group-item">
+															<div id="edittwonew{{ mynewer.id }}">
+																<div class="row">
+																	<div id="writer{{ mynewer.id }}" class="col-md-6 text-center fosizes">
+																		{% trans "From" %} {{ mynewer.writer }} {% trans "to" %} {{ mynewer.whoto }}
+																	</div>
+																	<div id="comdates{{ mynewer.id }}" class="col-md-6 text-center fosizes">
+																		{{ mynewer.crtdt }}
+																	</div>
+																</div>
+																<div class="row">
+																	<div class="col-xs-12">
+																		<blockquote class="blockquote text-left">
+																			{{ mynewer.contentget|safe }}
+																		</blockquote>
+																	</div>
+																</div>
+															</div>
+															<div id="id_publishposts"></div>
+															<div id="addformtwonew{{ mynewer.id }}" class=""></div>
+															<div id="addformtwoeditnew{{ mynewer.id }}" class=""></div>
+															<div class="row">
+																<div class="col-xs-4 mt-1">
+																	<button id="yanitikinew" class="btn btn-primary minibtn" value ="{{ mynewer.id }},{{contenttypeid}},{{detail_posts.id}},{{mynewer.id}},None,None" onclick="newreplyfun({{ mynewer.id }},{{contenttypeid}},{{detail_posts.id}},{{mynewer.id}},'None','None')" type="input" ><i class="fas fa-reply"></i></button>
+																</div>
+															<!-- Buraya aşağıya edit butonu ve delete ekle-->
+															{% if mynewer.writer == request.user.username %}
+																<!--<div id="addformtwoedit{{ commentpost.id }}" class=""></div>-->
+																<div class="col-xs-4 ml-2 mt-1">
+																	<button id="yanitikieditnew" class="btn btn-success minibtn" value ="{{ mynewer.id }},{{contenttypeid}},{{detail_posts.id}},{{mynewer.id}},None,None,{{ mynewer.slug }}" onclick="neweditfun({{ mynewer.id }},{{contenttypeid}},{{detail_posts.id}},{{mynewer.id}},'None','None','{{ mynewer.slug }}')" type="input" ><i class="far fa-edit" ></i></button>
+																</div>
+																<div class="col-xs-4 ml-2 mt-1">
+																	<button id="deletebtntwonew{{ mynewer.id }}" class="btn btn-danger minibtn" onclick="deletesecondcomment({{ mynewer.id }}, 'deletdivtwonew{{ mynewer.id }}', 'deletebtntwonew{{ mynewer.id }}', '{{ mynewer.slug }}')"><i class="far fa-trash-alt"></i></button>
+																</div>
+															{% endif %}
+															</div>
+															<div id="addanswerstwonew{{ mynewer.id }}" class=""></div>
+															</li>
+														</div>
+													{% endfor %}
+												{% endfor %}
+											</ul>
+										{% endif %}
+										<!-- add new signal comment -->
+										
+										
+										
+										{%if commentpost.secondreplies %}
+										<ul class="list-group">
+											{% for secondch in ch.secondreplies.get_queryset %}
+												{% with secondsubcommentpost=secondch  %}
+													<div id="deletdivfour{{ secondsubcommentpost.id }}">
+													<li class="list-group-item">
+														<div id="editfour{{ secondsubcommentpost.id }}">
+															<div class="row">
+																<div id="writer{{ secondsubcommentpost.id }}" class="col-md-6 text-center fosizes">
+																	{% trans "From" %} {{ secondsubcommentpost.user.username }} {% trans "to" %} {{ secondsubcommentpost.whoto }}
+																</div>
+																<div id="comdates{{ secondsubcommentpost.id }}" class="col-md-6 text-center fosizes">
+																	{{ secondsubcommentpost.updateposts }}
+																</div>
+															</div>
+															<div class="row">
+																<div class="col-xs-12">
+																	<blockquote class="blockquote text-left">
+																		{{ secondsubcommentpost.commentcontent|safe }}
+																	</blockquote>
+																</div>
+															</div>
+														</div>
+														<!-- reply button place original -->
+														<div id="id_publishposts"></div>
+														<div id="addformfour{{ secondsubcommentpost.id }}" class=""></div>
+														<!--<div id="addanswersfour{{ secondsubcommentpost.id }}" class=""></div>-->
+														<div id="addformfouredit{{ secondsubcommentpost.id }}" class=""></div>
+														<div class="row">
+															<div class="col-xs-4 mt-1">
+																<button id="yanitdort" class="btn btn-primary minibtn yanitdort{{ secondsubcommentpost.id }}" value ="{{ secondsubcommentpost.id }},{{contenttypeid}},{{detail_posts.id}},{{secondsubcommentpost.id}},{{secondsubcommentpost.id}},{{secondsubcommentpost.id}}" type="input" ><i class="fas fa-reply"></i></button>
+															</div>
+														<!-- Buraya aşağıya edit butonu ekle-->
+														{% if secondsubcommentpost.user == request.user %}
+															<!--<div id="addformfouredit{{ secondsubcommentpost.id }}" class=""></div>-->
+															<div class="col-xs-4 ml-2 mt-1">
+																<button id="yanitdortedit" class="btn btn-success minibtn" value ="{{ secondsubcommentpost.id }},{{contenttypeid}},{{detail_posts.id}},{{secondsubcommentpost.id}},{{secondsubcommentpost.id}},{{secondsubcommentpost.id}},{{ secondsubcommentpost.slug }}" type="input" ><i class="far fa-edit"></i></button>
+															</div>
+															<div class="col-xs-4 ml-2 mt-1">
+																<button id="deletebtnfour{{ secondsubcommentpost.id }}" class="btn btn-danger minibtn" onclick="deletesecondcomment({{ secondsubcommentpost.id }}, 'deletdivfour{{ secondsubcommentpost.id }}', 'deletebtnfour{{ secondsubcommentpost.id }}', '{{ secondsubcommentpost.slug }}')"><i class="far fa-trash-alt"></i></button>
+															</div>
+														{% endif %}
+														</div>
+														<div id="addanswersfour{{ secondsubcommentpost.id }}" class=""></div>
+														
+														
+														
+														{%if commentpost.thirdreplies %}
+														<ul class="list-group">
+															{% for thirdch in secondch.thirdreplies.get_queryset %}
+																{% with thirdsubcommentpost=thirdch  %}
+																<div id="deletdivfive{{ thirdsubcommentpost.id }}">
+																<li class="list-group-item">
+																	<div id="editfive{{ thirdsubcommentpost.id }}">
+																		<div class="row">
+																			<div id="writer{{ thirdsubcommentpost.id }}" class="col-md-6 text-center fosizes">
+																				{% trans "From" %} {{ thirdsubcommentpost.user.username }} {% trans "to" %} {{ thirdsubcommentpost.whoto }}
+																			</div>
+																			<div id="comdates{{ thirdsubcommentpost.id }}" class="col-md-6 text-center fosizes">
+																				{{ thirdsubcommentpost.updateposts }}
+																			</div>
+																		</div>
+																		<div class="row">
+																			<div class="col-xs-12">
+																				<blockquote class="blockquote text-left">
+																					{{ thirdsubcommentpost.commentcontent|safe }}
+																				</blockquote>
+																			</div>
+																		</div>
+																	</div>
+																	<!--reply button original place-->
+																	<div id="id_publishposts"></div>
+																	<div id="addformfive{{ thirdsubcommentpost.id }}" class=""></div>
+																	<!--<div id="addanswersfive{{ thirdsubcommentpost.id }}" class=""></div>-->
+																	<div id="addformfiveedit{{ thirdsubcommentpost.id }}" class=""></div>
+																	<div class="row">
+																		<div class="col-xs-4 mt-1">
+																			<button id="yanitbes" class="btn btn-primary minibtn yanitbes{{ thirdsubcommentpost.id }}" value ="{{ thirdsubcommentpost.id }},{{contenttypeid}},{{detail_posts.id}},{{thirdsubcommentpost.parent_id}},{{thirdsubcommentpost.parent_id}},{{thirdsubcommentpost.parent_id}}" type="input" ><i class="fas fa-reply"></i></button>
+																		</div>
+																	<!-- Buraya aşağıya edit butonu ekle-->
+																	{% if secondsubcommentpost.user == request.user %}
+																		<!--<div id="addformfiveedit{{ thirdsubcommentpost.id }}" class=""></div>-->
+																		<div class="col-xs-4 ml-2 mt-1">
+																			<button id="yanitbesedit" class="btn btn-success minibtn" value ="{{ thirdsubcommentpost.id }},{{contenttypeid}},{{detail_posts.id}},{{thirdsubcommentpost.parent_id}},{{thirdsubcommentpost.parent_id}},{{thirdsubcommentpost.parent_id}},{{ thirdsubcommentpost.slug }}" type="input" ><i class="far fa-edit" ></i></button>
+																		</div>
+																		<div class="col-xs-4 ml-2 mt-1">
+																			<button id="deletebtnfive{{ thirdsubcommentpost.id }}" class="btn btn-danger minibtn" onclick="deletesecondcomment({{ thirdsubcommentpost.id }}, 'deletdivfive{{ thirdsubcommentpost.id }}', 'deletebtnfive{{ thirdsubcommentpost.id }}', '{{ thirdsubcommentpost.slug }}')"><i class="far fa-trash-alt"></i></button>
+																		</div>
+																	{% endif %}
+																	</div>
+																	<div id="addanswersfive{{ thirdsubcommentpost.id }}" class=""></div>
+																	
+																	
+																	
+																</li>
+																</div>
+																{% endwith %}
+															{% endfor %}
+														</ul>
+														{% endif %}
+													</li>
+													</div>
+												{% endwith %}
+											{% endfor %}
+										</ul>
+										{% endif %}
+									</li>
+									</div>
+								{% endwith %}
+							{% endfor %}
+							</ul>
+							</div>
+							</div>
+							</div>
+						{% endif %}
+						</li>
+						</div>
+					{% endif %}
+				{% endfor %}
+				</ul>
+				<!-- paginate start-->
+									{% if is_paginated %}
+									<div class="container-fluid">
+										<div class="row mt-3 pt-2">
+											<div class="col-md-12" >
+												<nav aria-label="Page navigation example">
+													<ul class="pagination justify-content-center">
+														{% if commentcontent.has_previous %}
+														    <li class="page-item">
+														        <span><a class="page-link" href="?page={{ commentcontent.previous_page_number }}">{% trans "Previous" %}</a></span>
+														    </li>
+														{% endif %}
+														    <li class="page-item disabled">
+														        <span class="page-link">{% trans "Page"%} {{ commentcontent.number }} {%trans "of" %} {{ commentcontent.paginator.num_pages }}</span>
+														    </li>
+														{% if commentcontent.has_next %}
+														    <li class="page-item">
+														        <span><a class="page-link" href="?page={{ commentcontent.next_page_number }}">{%trans "Next" %}</a></span>
+														    </li>
+														{% endif %}
+													</ul>
+												</nav>
+											</div>
+										</div>
+									</div>
+									{% else %}
+										    <p>{% trans "No more pages to display" %}</p>
+									{% endif %}
+									<!-- paginate stop-->
+	</section>
+
+
+{% endif %}
+ 
+{% endblock %}
+{% endblock %}
+{% block myfooter %}
+  {% include "myincludes/myfooter.html" %}
+{% endblock %}

@@ -1,0 +1,161 @@
+{% extends "account/base.html" %}
+{% load i18n %}
+{% load static %}
+{% load poll_extras %}
+{% block bodyicijs %}
+	<script type="text/javascript">
+		var closegroupshow = function closegroupshow (getpk){
+			var dropdow = $('#dropdowncontent');
+			$(dropdow).val("");
+			var loaddata = "#loadclick"+getpk;
+			var groupinform = "#groupdetaildiv"+getpk;
+			var clsbtn = "#closedbutton"+getpk;
+			$(groupinform).empty();
+			$(clsbtn).remove();
+			$(loaddata).show();
+		}
+		var groupshowload = function groupshowload (getpk) {
+			var dropdow = $('#dropdowncontent').val();
+			var beforeopenloaddata = "#loadclick"+dropdow;
+			var beforegroupinform = "#groupdetaildiv"+dropdow;
+			var beforeclsbtn = "#closedbutton"+dropdow;
+			$(beforeopenloaddata).show();
+			$(beforegroupinform).empty();
+			$(beforeclsbtn).remove();
+			$('#dropdowncontent').val(getpk);
+			var loaddata = "#loadclick"+getpk;
+			var urlget = $(loaddata).val();
+			var contentaddplace = "#groupdetaildiv"+getpk;
+			//$(contentaddplace).load(urlget);
+			$(contentaddplace).load(urlget, function(response, status, xhr) {
+				if ( status == "error" ) {
+					var msg = "Sorry but there was an error: ";
+					$( "#error" ).html( msg + xhr.status + " " + xhr.statusText );
+				}
+				$(loaddata).hide();
+				//$(this).find("a").append("Profilim");
+				$(this).find("a").append("{% trans 'Community Profile' %}");
+				var closedbutton = '<button id="closedbutton'+getpk+'" onclick="closegroupshow('+getpk+')" class="btn btn-primary btn-block" type="input" >Closed Group</button>';
+				var closebtnplace = "#closedplace"+getpk;
+				$(closebtnplace).after(closedbutton);
+			});
+			//$.get(urlget, function(data) {
+				//var data = $(data);
+				//$(contentaddplace).html(data);
+			//});
+			
+		}
+	</script>
+{% endblock %}
+{% block head_title %}
+	{% blocktrans %}Post Positive Voter by the Number of Listed{% endblocktrans %}
+{% endblock %}
+
+{% block extra_head %}
+{% endblock %}
+ 
+{% block body %}
+	{% block mynavbar %}
+	  {% include "myincludes/mynavbar.html" %}
+	{% endblock %}
+{% block content %}
+ 
+{% if request.user.is_authenticated %}
+
+    {% if request.user.account_verified %}
+    	<section class="userdetailsection">
+		<div class="container">
+			<div class="page-header">
+		 		<div class="row">
+		 			<div class="col-md-12 text-center mt-1 pt-2">
+								<h3>{% trans "Rating" %}</h3>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	{% if list_exams %}
+	<input type="hidden" id= "dropdowncontent" name="dropdowncontent" value="">
+        <section class="joinerscls">
+        <div class="container">
+        <div class="row">
+        	<div class="col-md-12 text-center mt-4 pt-2">
+	    <div id="grouplistdiv"> 
+			{% for post in list_exams %}
+					<div class="col-md-12 text-center mt-2 pt-4">
+						{{ post.whichgroup.groupname|safe }}
+					</div>
+				    {% url 'groupshowlist' post.postpositivevotesgroup.pk post.postpositivevotesgroup.slug as the_url_detail %}
+				<div class="col-md-6 text-center mt-2">
+				    <a href = "{{ the_url_detail }}" class=""><h1>{% trans "Go to" %} {{ post.whichgroup.groupname }}</h1></a>
+				</div>
+				<div class="col-md-6 text-center mt-2">
+				    <button id="loadclick{{ post.pk }}" onclick="groupshowload({{ post.pk }})" class="btn btn-primary custombtn" value="{{ the_url_detail }}" type="input" >{% trans "Community Show" %}</button>
+				</div>
+				<div class="col-md-12 text-center mt-2">
+					<div id="groupdetaildiv{{ post.pk }}"></div>
+				</div>
+				<div class="col-md-12 text-center mt-2">
+					<div id="closedplace{{ post.pk }}"></div>
+				</div>
+				<div class="col-md-12 text-center mt-2">
+					<div id="error"></div>
+				</div>
+				</div>
+			{% endfor %}
+    {% endif %}
+    	<!-- paginate start-->
+		{% if is_paginated %}
+			<div class="row">
+				<div class="col-md-12 text-center mt-3 pt-2" >
+					<nav aria-label="Page navigation example">
+						<ul class="pagination justify-content-center">
+							{% if list_exams.has_previous %}
+							    <li class="page-item">
+							        <span><a class="page-link" href="?page={{ list_exams.previous_page_number }}">{% trans "Previous" %}</a></span>
+							    </li>
+							{% endif %}
+							    <li class="page-item disabled">
+							        <span class="page-link">{% trans "Page"%} {{ list_exams.number }} {%trans "of" %} {{ list_exams.paginator.num_pages }}</span>
+							    </li>
+							{% if list_exams.has_next %}
+							    <li class="page-item">
+							        <span><a class="page-link" href="?page={{ list_exams.next_page_number }}">{%trans "Next" %}</a></span>
+							    </li>
+							{% endif %}
+						</ul>
+					</nav>
+				</div>
+			</div>
+		{% else %}
+			<div class="row">
+				<div class="col-md-12 text-center mt-4 pt-4">
+			    <p>{% trans "No more pages to display" %}</p>
+			  </div>
+			</div>
+		{% endif %}
+		<!-- paginate stop-->
+    </div>
+    </div>
+    </div>
+    </section>
+    {% else %}
+    	<section>
+				<div class="container">
+					<div class="row"> 
+						<div class="col-md-12 text-center mt-1 pt-2">
+							<h2>{% blocktrans %}you need to confirm your account via email{% endblocktrans %}
+					</div>
+				</div>
+			</div>
+		</section>
+    {% endif %}
+
+{% endif %}
+ 
+{% endblock content %}
+{% endblock body %}
+
+{% block myfooter %}
+  {% include "myincludes/myfooter.html" %}
+{% endblock %}

@@ -1,0 +1,134 @@
+{% extends "account/base.html" %}
+
+{% load i18n %}
+
+{% block extrajavascript %}
+<script type="text/javascript">
+  $(document).ready(function(){
+    $("#signup_form").on("keyup change", function(event){
+        form_control();
+    });
+    var form_control = function(){
+      if($("#id_email").val().length == 0)
+        $("#signupclick").prop("disabled", true);
+    else if($("#id_username").val().length == 0)
+        $("#signupclick").prop("disabled", true);
+    else if($("#id_first_name").val().length == 0)
+        $("#signupclick").prop("disabled", true);
+    else if($("#id_last_name").val().length == 0)
+        $("#signupclick").prop("disabled", true);
+    else if($("#id_password1").val().length == 0)
+        $("#signupclick").prop("disabled", true);
+    else if($("#id_password2").val().length == 0)
+        $("#signupclick").prop("disabled", true);
+    else
+        $("#signupclick").prop("disabled", false);
+    }
+  });
+</script>
+{% endblock %}
+
+{% block head_title %}
+  {% trans "Signup" %}
+{% endblock %}
+
+{% block mynavbar %}
+  {% include "myincludes/mynavbar.html" %}
+{% endblock %}
+
+{% block content %}
+  <section id="signupsection">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12 text-center mt-1 pt-1">
+          <h4>{% trans "Sign Up" %}</h4>
+          <!--<p class="myfontsize">{% blocktrans %}Already have an account? Then please <a href="{{ login_url }}">Sign In</a>.{% endblocktrans %}</p>-->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="formsect">
+    <div class="container">
+      <form class="" id="signup_form" method="post" action="{% url 'account_signup' %}">
+        {% if form.errors %}
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <div class="col-md-12 mt-4 pt-1 push-4">
+                        <span class="errorspan">{{ error|escape }}</span>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+                <div class="col-md-12 mt-4 pt-1 push-4">
+                    <span class="errorspan">{{ error|escape }}</span>
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% csrf_token %}
+        <div class="form-group mt-1 pt-1">
+          <!--<label for="id_email" class="col-md-4 control-label">{% trans "E-mail:" %}</label>-->
+          <div class="col-md-12 center-block">
+            <input type="email" name="email" placeholder="{% trans 'E-mail address' %}" class="form-control" maxlength="150" required="" id="id_email">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <!--<label for="id_username" class="col-md-4 control-label">{% trans "Username:" %}</label>-->
+          <div class="col-md-12 center-block">
+            <input type="text" name="username" placeholder="{% trans 'Username' %}" class="form-control" minlength="4" maxlength="150" required="" id="id_username">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <!--<label for="id_first_name" class="col-md-4 control-label">{% trans "First Name:" %}</label>-->
+              <div class="col-md-12 center-block">
+                <input type="text" name="first_name" placeholder="{% trans 'First Name:' %}" class="form-control" maxlength="255" required="" id="id_first_name">
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <!--<label for="id_last_name" class="col-md-4 control-label">{% trans "Last Name:" %}</label>-->
+              <div class="col-md-12 center-block">
+                <input type="text" name="last_name" placeholder="{% trans 'Last Name:' %}" class="form-control" maxlength="255" required="" id="id_last_name">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <!--<label for="id_password1" class="col-md-4 control-label">{% trans "Password:" %}</label>-->
+              <div class="col-md-12 center-block">
+                <input type="password" name="password1" placeholder="{% trans 'Password:' %}" class="form-control" required="" id="id_password1">
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <!--<label for="id_password2" class="col-md-4 control-label">{% trans "Password(again):" %}</label>-->
+                <div class="col-md-12 center-block">
+                  <input type="password" name="password2" placeholder="{% trans 'Password(again):' %}" class="form-control" required="" id="id_password2">
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-12 center-block">
+          <div class="g-recaptcha" data-sitekey="6Ler5XQUAAAAALmun6SLqIMNpqDl5RVCUUlo4EKP"></div>
+        </div>
+        {% if redirect_field_value %}
+        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+        {% endif %}
+        <div class="pt-3">
+          <button class="btn btn-primary btn-block" type="submit" id="signupclick" disabled>{% trans "Sign Up" %}</button>
+        </div>
+      </form>
+    </div>
+  </section>
+{% endblock %}
+
+{% block myfooter %}
+  {% include "myincludes/myfooter.html" %}
+{% endblock %}

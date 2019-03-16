@@ -1,0 +1,197 @@
+{% extends "account/base.html" %}
+{% load i18n %}
+{% load static %}
+{% load poll_extras %}
+{% block bodyicijs %}
+
+  <script type="text/javascript">
+	  $(document).ready(function(){
+		  var processstars = function processstars (ids, ups, downs) {
+			  var ids = ids;
+			  var exportup = ups;
+			  var exportdown = downs;
+			  var deltype = '#deltype'+ids;
+			  var deltypesplit = deltype.val();
+			  var deltypeget = deltypesplit.split(",");
+			  var deltypepk = deltypeget[0];
+			  var delgrouppk = deltypeget[1];
+			  var delpostid = deltypeget[2];
+			  var getform = '#myform'+ids;
+			  var url = $(getform).attr("action");
+			  var type = 'POST';
+			  var data = {
+				  deltypepk:deltypepk,
+				  delgrouppk:delgrouppk,
+				  delpostid:delpostid,
+				  exportup:exportup,
+				  exportdown:exportdown,
+				  csrfmiddlewaretoken:"{{ csrf_token }}"
+			  }
+			  $.ajax({
+				  url:url,
+				  type:type,
+				  data:data,
+				  contentType:"application/x-www-form-urlencoded;charset=utf-8",
+				  success: function(response) {
+					  geterrordata = response['error'];
+					  getwarndata = response['warn'];
+					  getcountdata = response['count'];
+					  var place = '#vote'+ids;
+					  if (geterrordata != undefined){
+						  $('#addbtnblck'+ids).empty();
+						  $('#addbtnblck'+ids).append(geterrordata);
+					  }
+					  else if (getwarndata != undefined) {
+						  $('#addbtnblck'+ids).empty();
+						  $('#addbtnblck'+ids).append(getwarndata);
+					  }
+					  else {
+						  $(place+'span.count').empty();
+						  $(place+'span.count').append(getcountdata);
+					  }
+				  },
+				  error: function(xhr, status, error) {
+					  var err = eval("(" + xhr.responseText + ")");
+					  alert(err.Message);
+				  }
+			  });
+			  return false;
+		  }
+	  });
+  </script>
+{% endblock %}
+
+{% block head_title %}
+	{% blocktrans %}Posts Delete to have been Like{% endblocktrans %}
+{% endblock %}
+
+{% block extra_head %}
+{% endblock %}
+ 
+{% block body %}
+	{% block mynavbar %}
+	  {% include "myincludes/mynavbar.html" %}
+	{% endblock %}
+{% block content %}
+ 
+{% if request.user.is_authenticated %}
+
+    {% if request.user.account_verified %}
+    	<section class="userdetailsection">
+		<div class="container">
+			<div class="page-header">
+		 		<div class="row">
+		 			<div class="col-md-12 text-center mt-1 pt-2">
+								<h3>{{ selectgroup.groupname }} {% trans "Posts Delete to have been Like" %}</h3>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	{% if list_exams %}
+        <section class="joinerscls">
+        <div class="container">
+        <div class="row">
+        	<div class="col-md-12 text-center mt-4 pt-2">
+	    <div id="fullist"> 
+			{% for usershow in list_exams %}
+			    <div id="lastcase{{ usershow.pk }}" class="col-md-12"></div>
+				<div id="lister{{ usershow.pk }}">
+					<div class="row border-top border-primary">
+					{% getphotolink usershow.user.username as photolinkget %}
+					<div class="col-md-2 text-center mt-2">
+						<img src="{{ photolinkget }}" alt="{{ usershow.user.username }}" class="img-fluid rounded-circle imgwidth">
+					</div>
+					<div class="col-md-2 text-center mt-2 pt-4">
+						{{ usershow.user.username }}
+					</div>
+					<div class="col-md-2 text-center mt-2 pt-4">
+						{{ usershow.deletestatus }}
+					</div>
+					
+					
+					<div class="col-md-2 text-center mt-2 pt-4">
+						{% url 'deletevoteprocess' selectgroup.pk selectgroup.slug as membership_url %}
+						<form id="myform{{ usershow.pk }}" action="{{ membership_url }}" method="post" enctype="multipart/form-data">
+							{% csrf_token %}
+							<input type="hidden" id= "deltype{{ usershow.pk }}" name="deltype{{ usershow.pk }}" value="{{ usershow.pk }},{{ usershow.groupwhich.pk }},{{ usershow.groupdelpost.pk }}">
+						</form>
+						<div id="addbtnblck{{ usershow.pk }}"></div>
+					</div>
+					<div class="col-md-4 text-center mt-2 pt-4">
+						<div id="vote{{ usershow.pk }}" class="upvote">
+							<a class="upvote"></a>
+							<span class="count">{% my_post_tag usershow.pk %}</span>
+							<a class="downvote"></a>
+						</div>
+						<script type="text/javascript">
+							$(document).ready(function(){
+								var callback = function(data) {
+									processstars(data.id, data.upvoted, data.downvoted);
+								};
+								$('#vote{{ usershow.pk }}').upvote({id: {{ usershow.pk }}, callback: callback});
+							});
+						</script>
+					</div>
+					</div>
+				</div>
+			{% endfor %}
+	{% else %}
+		<p>{{ list_exams_nothing }}</p>
+    {% endif %}
+    	<!-- paginate start-->
+		{% if is_paginated %}
+			<div class="row">
+				<div class="col-md-12 text-center mt-3 pt-2" >
+					<nav aria-label="Page navigation example">
+						<ul class="pagination justify-content-center">
+							{% if list_exams.has_previous %}
+							    <li class="page-item">
+							        <span><a class="page-link" href="?page={{ list_exams.previous_page_number }}">{% trans "Previous" %}</a></span>
+							    </li>
+							{% endif %}
+							    <li class="page-item disabled">
+							        <span class="page-link">{% trans "Page"%} {{ list_exams.number }} {%trans "of" %} {{ list_exams.paginator.num_pages }}</span>
+							    </li>
+							{% if list_exams.has_next %}
+							    <li class="page-item">
+							        <span><a class="page-link" href="?page={{ list_exams.next_page_number }}">{%trans "Next" %}</a></span>
+							    </li>
+							{% endif %}
+						</ul>
+					</nav>
+				</div>
+			</div>
+		{% else %}
+			<div class="row">
+				<div class="col-md-12 text-center mt-4 pt-4">
+			    <p>{% trans "No more pages to display" %}</p>
+			  </div>
+			</div>
+		{% endif %}
+		<!-- paginate stop-->
+    </div>
+    </div>
+    </div>
+    </div>
+    </section>
+    {% else %}
+    	<section>
+				<div class="container">
+					<div class="row"> 
+						<div class="col-md-12 text-center mt-1 pt-2">
+							<h2>{% blocktrans %}you need to confirm your account via email{% endblocktrans %}
+					</div>
+				</div>
+			</div>
+		</section>
+    {% endif %}
+
+{% endif %}
+ 
+{% endblock content %}
+{% endblock body %}
+
+{% block myfooter %}
+  {% include "myincludes/myfooter.html" %}
+{% endblock %}

@@ -1,0 +1,325 @@
+{% extends "account/base.html" %}
+{% load i18n %}
+{% block bodyicijs %}
+	<script type="text/javascript">
+		$(document).ready(function() {
+			if ($('#join{{ joinprint }}').length != 0) {
+				var btntext = $("#join{{ joinprint }}").val();
+				var btntext = btntext.split(",");
+				var btntext = btntext[0]
+				if (btntext == "UNJOINED"){
+					$("#join{{ joinprint }}").html('Join Us');
+				}
+				else if (btntext == "JOINED") {
+					$("#join{{ joinprint }}").html('Member');
+				}
+				else if (btntext == "SENDEDREQUEST") {
+					$("#join{{ joinprint }}").html('Joining Sent');
+				}
+				else if (btntext == "BLOCKED") {
+					$("#join{{ joinprint }}").html('Blocked');
+				}
+				else if (btntext == "UNBLOCKED") {
+					$("#join{{ joinprint }}").html('Blocked Removed');
+				}
+				else {
+					$("#join{{ joinprint }}").html('Error');
+				}
+			}
+			
+		});
+	</script>
+	<script type="text/javascript">
+		var blckfunck = function blckfunck () {
+			$('#requcancelkid').remove();
+			$('#requblckid').remove();
+			var numargschange = "#numargs";
+			var btnwhich = '#requacptid';
+			var btnvalue = $(btnwhich).val();
+			//$(numargschange).attr('value', '');
+			var btnvaldata = btnvalue.split(",");
+			var membertype = btnvaldata[0];
+			//$(numargschange).attr('value', membertype);
+			$(numargschange).val(membertype);
+			var btnaddn = '<button id="join'+membertype+'" class="btn btn-primary btn-block" type="input" onclick="memberatack()" name="join'+membertype+'" value="'+btnvalue+'" >Request Accept</button>';
+			$(btnwhich).remove();
+			$('#addbtnblck').after(btnaddn);
+			//$(btnwhich).attr('id', 'join'+membertype);
+			//$(btnwhich).attr('name', 'join'+membertype);
+			//$(btnwhich).attr('value', btnvalue);
+			//$(btnwhich).attr('onclick', 'memberatack()');
+			memberatack();
+			
+		}
+		var blckfuncktwo = function blckfuncktwo () {
+			$('#requacptid').remove();
+			$('#requblckid').remove();
+			var numargschange = "#numargs";
+			var btnwhich = '#requcancelkid';
+			var btnvalue = $(btnwhich).val();
+			//$(numargschange).attr('value', '');
+			var btnvaldata = btnvalue.split(",");
+			var membertype = btnvaldata[0];
+			//$(numargschange).attr('name', 'join'+membertype);
+			$(numargschange).val(membertype);
+			var btnaddn = '<button id="join'+membertype+'" class="btn btn-primary btn-block" type="input" onclick="memberatack()" name="join'+membertype+'" value="'+btnvalue+'" >User Cancel</button>';
+			$(btnwhich).remove();
+			$('#addbtnblck').after(btnaddn);
+			//$(btnwhich).attr('id', 'join'+membertype);
+			//$(btnwhich).attr('name', 'join'+membertype);
+			//$(btnwhich).attr('value', btnvalue);
+			//$(btnwhich).attr('onclick', 'memberatack()');
+			memberatack();
+			
+		}
+		
+		var blckfunckthree = function blckfunckthree () {
+			$('#requcancelkid').remove();
+			$('#requacptid').remove();
+			var numargschange = "#numargs";
+			var btnwhich = '#requblckid';
+			var btnvalue = $(btnwhich).val();
+			//$(numargschange).attr('value', '');
+			var btnvaldata = btnvalue.split(",");
+			var membertype = btnvaldata[0];
+			//$(numargschange).attr('name', 'join'+membertype);
+			$(numargschange).val(membertype);
+			var btnaddn = '<button id="join'+membertype+'" class="btn btn-primary btn-block" type="input" onclick="memberatack()" name="join'+membertype+'" value="'+btnvalue+'" >User Block</button>';
+			$(btnwhich).remove();
+			$('#addbtnblck').after(btnaddn);
+			//$(btnwhich).attr('id', 'join'+membertype);
+			//$(btnwhich).attr('name', 'join'+membertype);
+			//$(btnwhich).attr('value', btnvalue);
+			//$(btnwhich).attr('onclick', 'memberatack()');
+			memberatack();
+			
+		}
+	</script>
+	<script type="text/javascript">
+		var memberatack = function memberatack () {
+			var numargs = $("#numargs").val();
+			var idtype = "#join"+numargs; //"#join{{ joinprint }}"
+			var btnvaldata = $(idtype).attr("value");
+			var btnvaldata = btnvaldata.split(",");
+			var membertype = btnvaldata[0];//showdata joinprint yerine
+			var url = btnvaldata[1];
+			var grouppk = btnvaldata[2];
+			var userpk = btnvaldata[3];
+			var type = 'POST';
+			var numargschange = "#numargs";
+			$(numargschange).attr('value', '');
+			if ($('.g-recaptcha').length) {
+				var recaptcha = grecaptcha.getResponse();
+				var data = {
+					membertype:membertype,
+					grouppk:grouppk,
+					userpk:userpk,
+					recaptcha:recaptcha,
+					csrfmiddlewaretoken:"{{ csrf_token }}"
+				}
+			}
+			else {
+				var data = {
+					membertype:membertype,
+					grouppk:grouppk,
+					userpk:userpk,
+					csrfmiddlewaretoken:"{{ csrf_token }}"
+				}
+			}
+			$.ajax({
+				url:url,
+				type:type,
+				data:data,
+				contentType:"application/x-www-form-urlencoded;charset=utf-8",
+				success: function(response) {
+					console.log(response);
+					getshowdata = response['showdata'];
+					getmembertype = response['membertype'];
+					getgrouppk = response['grouppk'];
+					getuserpk = response['userpk'];
+					if (getshowdata == 'error'){
+						idtype.html('Error');
+					}
+					else if (getshowdata == 'SENDEDREQUEST'){
+						if (response['membertypeone'] != undefined && response['membertypetwo'] != undefined && response['membertypethree'] != undefined) {
+							getmembertypeone = response['membertypeone'];
+							getmembertypetwo = response['membertypetwo'];
+							getmembertypethree = response['membertypethree'];
+							getblgrouppk = response['grouppk'];
+							getblgroupslug = response['groupslug'];
+							getblgroupuserpk = response['userpk'];
+							$(idtype).remove();
+							//kabul et reddet blokla butunları eklenmeli
+							var btnacceptr = '<button id="requacptid" class="btn btn-primary btn-block" type="input" onclick="blckfunck()" name="requacpt" value="'+getmembertypeone+',/group/'+getblgrouppk+'/'+getblgroupslug+'/list/,'+getblgrouppk+','+getblgroupuserpk+'" >Request Accept</button>';
+							var btnusrcancel = '<button id="requcancelkid" class="btn btn-primary btn-block" type="input" onclick="blckfuncktwo()" name="requcancelkid" value="'+getmembertypetwo+',/group/'+getblgrouppk+'/'+getblgroupslug+'/list/,'+getblgrouppk+','+getblgroupuserpk+'" >User Cancel</button>';
+							var btnblockr = '<button id="requblckid" class="btn btn-primary btn-block" type="input" onclick="blckfunckthree()" name="requblckid" value="'+getmembertypethree+',/group/'+getblgrouppk+'/'+getblgroupslug+'/list/,'+getblgrouppk+','+getblgroupuserpk+'" >User Block</button>';
+							$('#addbtnblck').after(btnacceptr);
+							$('#addbtnblck').after(btnusrcancel);
+							$('#addbtnblck').after(btnblockr);
+						}
+						else{
+							$(idtype).remove();
+							var btnrequestcancel = '<button id="join'+getshowdata+'" onclick="memberatack()" class="btn btn-primary btn-block" type="input" name="join'+getshowdata+'" value="'+getshowdata+','+url+','+getgrouppk+','+getuserpk+'">Cancel Request</button>';
+							$(numargschange).attr('value', getshowdata);
+							$('#addbtnblck').after(btnrequestcancel);
+						}
+					}
+					else{
+						$(idtype).attr('name', 'join'+getshowdata);
+						$(idtype).attr('value', getshowdata+','+url+','+getgrouppk+','+getuserpk);
+						$(idtype).attr('id', 'join'+getshowdata);
+						$(numargschange).attr('value', getshowdata);
+						var twoidtype = "#join"+getshowdata;
+						if (getshowdata == "UNJOINED"){
+							$(twoidtype).html("Join Us");
+						}
+						else if (getshowdata == "JOINED"){
+							$(twoidtype).html("Member");
+						}
+						else if (getshowdata == "SENDEDREQUEST"){
+							$(twoidtype).html("Joining Sent");
+						}
+						else if (getshowdata == "BLOCKED"){
+							$(twoidtype).html("Blocked");
+						}
+						else if (getshowdata == "UNBLOCKED"){
+							$(twoidtype).html("Blocked Removed");
+						}
+						else{
+							$(twoidtype).html("Error");
+						}
+					}
+				},
+				error: function(xhr, status, error) {
+					var err = eval("(" + xhr.responseText + ")");
+					alert(err.Message);
+				}
+			});
+			return false;
+		}
+	</script>
+{% endblock %}
+
+{% block head_title %}
+	{% blocktrans %}Group Detail{% endblocktrans %}
+{% endblock %}
+
+{% block extra_head %}
+{% endblock %}
+
+ 
+{% block body %}
+	{% block mynavbar %}
+	  {% include "myincludes/mynavbar.html" %}
+	{% endblock %}
+	{% block content %}
+		<section class="userdetailsection">
+			<div class="container">
+				<div class="page-header">
+			 		<div class="row">
+			 			<div class="col-md-12 text-center mt-1 pt-2">
+							{% if request.user.is_authenticated %}
+							 
+								<h3>{% trans "Welcome" %} {{request.user.username}}</h3>
+						</div>
+					</div>
+				</div>
+							
+							{% if request.user.profile.account_verified %}
+								{% if group_detail %}
+									<input type="hidden" id= "numargs" name="numargs" value="{{ joinprint }}">
+									<div class="table-responsive">
+										<table class="table">
+											<tbody>
+												<tr>
+													<th>
+														<div class="text-center">
+															<div class="contentbigphoto">
+																{% if group_detail.bigphoto %}
+																	<img class="img-fluid rounded-circle" style='max-width: 30%;' id='bigphotocontent' src='{{ post.bigphoto.url }}' alt='' />
+																{% else %}
+																	<img class="img-fluid rounded-circle" style='max-width: 30%;' id='bigphotocontent' src='/media/defaultimages/1asuk2018-05-15-203455.jpg' alt='' />
+																{% endif %}
+															</div>
+														</div>
+													</th>
+												</tr>
+												<tr>
+													<th>
+														<div class="text-center">
+															<p class="lead text-primary font-weight">
+																{{ group_detail.groupname }}
+															</p>
+														</div>
+													</th>
+												</tr>
+												<!--adding recaptha start-->
+												{% if captchacontrol == 'True' %}
+													<tr>
+														<th>
+															<div class="text-center">
+																<div class="g-recaptcha" data-sitekey="6Ler5XQUAAAAALmun6SLqIMNpqDl5RVCUUlo4EKP"></div>
+															</div>
+														</th>
+													</tr>
+												{% endif %}
+												<!--adding recaptha stop-->
+												<tr>
+													<td>
+														<blockquote class="blockquote text-center mt-3">
+															{{ group_detail.aboutgroup|safe }}
+															<p>
+																{% for tag in group_detail.grouplabels.all %}
+																	<!--<a href="/{{ group_detail.groupname }}/{{ tag.name }}/relatedgroup">{{ tag.name }}</a>-->
+																	<a href="/{{ tag.name }}/relatedgroup">{{ tag.name }}</a>
+																{% endfor %}
+															</p>
+														</blockquote>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+									{% if request.user.id != group_detail.user.pk %}
+										<div class="row">
+											{% url 'groupshowlist' group_detail.pk group_detail.slug as membership_url %}
+											<form id="myform" action="{{ membership_url }}" method="post" enctype="multipart/form-data">
+												{% csrf_token %}
+												{{ form }}
+											</form>
+											<div class="col-md-12 mt-1 mb-2">
+												<!-- st -->
+												<div id="addbtnblck"></div>
+												<button id="join{{ joinprint }}" onclick="memberatack()" class="btn btn-primary btn-block" type="input" name="join{{ joinprint }}" value="{{ joinprint }},{{ membership_url }},{{ group_detail.pk }},{{ request.user.id }}"></button>
+												<!-- sp -->
+												<a href="/group/create/now">{% trans "Community Create" %}</a>
+											</div>
+										</div>
+									{% elif request.user.id == group_detail.user.pk %}
+										<div class="row">
+											<div class="col-md-12 mt-1 mb-1">
+												{% url 'updategroupajax' post.pk post.slug as the_url %}
+												<button id="editnameclick" class="btn btn-primary btn-block" value="{{ the_url }}," type="input" >{% trans "Edit" %}</button>
+											</div>
+										</div>
+									{% else %}
+										<div class="row"></div>
+									{% endif %}
+								{% else %}
+									<h2>{% blocktrans %}No Content{% endblocktrans %}</h2>
+								{% endif %}
+							{% else %} 
+								<div class="col-md-12 text-center mt-1 pt-2">
+									<h2>{% blocktrans %}you need to confirm your account via email{% endblocktrans %}</h2>
+								</div>
+							{% endif %}
+						{% endif %}
+			</div>
+		</section>
+ 
+	{% endblock content %}
+{% endblock body %}
+
+{% block myfooter %}
+  {% include "myincludes/myfooter.html" %}
+{% endblock %}

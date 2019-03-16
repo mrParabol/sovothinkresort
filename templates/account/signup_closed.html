@@ -1,0 +1,26 @@
+{% extends "account/base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{% trans "Sign Up Closed" %}{% endblock %}
+{% block mynavbar %}
+  {% include "myincludes/mynavbar.html" %}
+{% endblock %}
+{% block content %}
+	<section id="verificationsection">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12 text-center mt-1 pt-1">
+            <h4>{% trans "Sign Up Closed" %}</h4>
+            <!--<p class="myfontsize">{% blocktrans %}Already have an account? Then please <a href="{{ login_url }}">Sign In</a>.{% endblocktrans %}</p>-->
+          </div>
+          <div class="text-center">
+    		<p class="lead text-primary font-weight pt-2">{% trans "We are sorry, but the sign up is currently closed." %}</p>
+		</div>
+        </div>
+      </div>
+    </section>
+{% endblock %}
+{% block myfooter %}
+  {% include "myincludes/myfooter.html" %}
+{% endblock %}

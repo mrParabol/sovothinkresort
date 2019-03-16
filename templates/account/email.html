@@ -1,0 +1,121 @@
+{% extends "account/base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{% trans "Account" %}{% endblock %}
+{% block mynavbar %}
+  {% include "myincludes/mynavbar.html" %}
+{% endblock %}
+
+{% block content %}
+  <section id="changepasswordsection">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12 text-center mt-1 pt-1">
+            <h4>{% trans "E-mail Addresses" %}</h4>
+            <!--<p class="myfontsize">{% blocktrans %}Already have an account? Then please <a href="{{ login_url }}">Sign In</a>.{% endblocktrans %}</p>-->
+          </div>
+        </div>
+      </div>
+    </section>
+{% if user.emailaddress_set.all %}
+  <div class="text-center">
+    <p class="lead text-primary font-weight pt-2">{% trans 'The following e-mail addresses are associated with your account:' %}</p>
+  </div>
+<section id="formsect">
+  <div class="container">
+<form action="{% url 'account_email' %}" class="email_list" method="post">
+{% csrf_token %}
+<fieldset class="blockLabels">
+
+  {% for emailaddress in user.emailaddress_set.all %}
+<div class="ctrlHolder">
+  <div class="form-group">
+    <div class="col-md-12 center-block">
+      <div class="checkbox">
+      <label for="email_radio_{{forloop.counter}}" class="{% if emailaddress.primary %}primary_email{%endif%} control-label">
+
+      <input id="email_radio_{{forloop.counter}}" type="radio" name="email" {% if emailaddress.primary or user.emailaddress_set.count == 1 %}checked="checked"{%endif %} value="{{emailaddress.email}}"/>
+
+{{ emailaddress.email }}
+    {% if emailaddress.verified %}
+    <span class="verified">{% trans "Verified" %}</span>
+    {% else %}
+    <span class="unverified">{% trans "Unverified" %}</span>
+    {% endif %}
+      {% if emailaddress.primary %}<span class="primary">{% trans "Primary" %}</span>{% endif %}
+</label>
+</div>
+</div>
+</div>
+</div>
+  {% endfor %}
+
+<div class="buttonHolder">
+  <div class="row pt-3">
+    <div class="col-md-4 text-center mt-2">
+      <button class="secondaryAction btn btn-primary custombtn" type="submit" name="action_primary" >{% trans 'Make Primary' %}</button>
+    </div>
+    <div class="col-md-4 text-center mt-2">
+      <button class="secondaryAction btn btn-success custombtn" type="submit" name="action_send" >{% trans 'Re-send Verification' %}</button>
+    </div>
+    <div class="col-md-4 text-center mt-2">
+      <button class="primaryAction btn btn-warning custombtn" type="submit" name="action_remove" >{% trans 'Remove' %}</button>
+    </div>
+  </div>
+</div>
+
+</fieldset>
+</form>
+
+{% else %}
+<div class="text-center">
+<p class="lead text-primary font-weight pt-2"><strong>{% trans 'Warning:'%}</strong> {% trans "You currently do not have any e-mail address set up. You should really add an e-mail address so you can receive notifications, reset your password, etc." %}</p>
+</div>
+</div>
+</section>
+
+{% endif %}
+
+<section id="formsectwo">
+      <div class="container">
+        <div class="text-center">
+          <p class="lead text-primary font-weight pt-2">{% trans "Add E-mail Address" %}</p>
+        </div>
+
+    <form method="post" action="{% url 'account_email' %}" class="add_email">
+        {% csrf_token %}
+        <div class="form-group">
+          <!--<label for="id_email">E-mail:</label>-->
+          <input type="email" class="form-control" name="email" size="30" placeholder="E-mail address" required="" id="id_email">
+        </div>
+        <!--{{ form.as_p }}-->
+        <div class="pt-3">
+          <button class="btn btn-primary btn-block" name="action_add" type="submit">{% trans "Add E-mail" %}</button>
+        </div>
+    </form>
+
+  </div>
+</section>
+
+{% endblock %}
+
+
+{% block extra_body %}
+<script type="text/javascript">
+(function() {
+  var message = "{% trans 'Do you really want to remove the selected e-mail address?' %}";
+  var actions = document.getElementsByName('action_remove');
+  if (actions.length) {
+    actions[0].addEventListener("click", function(e) {
+      if (! confirm(message)) {
+        e.preventDefault();
+      }
+    });
+  }
+})();
+</script>
+{% endblock %}
+{% block myfooter %}
+  {% include "myincludes/myfooter.html" %}
+{% endblock %}

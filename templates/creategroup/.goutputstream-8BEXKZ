@@ -1,0 +1,216 @@
+{% extends "account/base.html" %}
+{% block bodyicijs %}
+	<script type="text/javascript">
+		$(document).ready(function() {
+			var btntext = $("#join{{ joinprint }}").val();
+			var btntext = btntext.split(",");
+			var btntext = btntext[0]
+			if (btntext == "UNJOINED"){
+				$("#join{{ joinprint }}").html('Join Us');
+			}
+			else if (btntext == "JOINED") {
+				$("#join{{ joinprint }}").html('Member');
+			}
+			else if (btntext == "SENDEDREQUEST") {
+				$("#join{{ joinprint }}").html('Joining Sent');
+			}
+			else if (btntext == "BLOCKED") {
+				$("#join{{ joinprint }}").html('Blocked');
+			}
+			else if (btntext == "UNBLOCKED") {
+				$("#join{{ joinprint }}").html('Blocked Removed');
+			}
+			else {
+				$("#join{{ joinprint }}").html('Error');
+			}
+			
+		});
+	</script>
+	<script type="text/javascript">
+		var blckfunck = function blckfunck () {
+			$('#requcancelkid').remove();
+			$('#requblckid').remove();
+			var numargschange = "#numargs";
+			var btnwhich = '#requacptid';
+			var btnvalue = $(btnwhich).val();
+			//$(numargschange).attr('value', '');
+			var btnvaldata = btnvalue.split(",");
+			var membertype = btnvaldata[0];
+			alert(membertype);
+			//$(numargschange).attr('value', membertype);
+			$(numargschange).val(membertype);
+			var btnaddn = '<button id="join'+membertype+'" class="" type="input" onclick="memberatack()" name="join'+membertype+'" value="'+btnvalue+'" >Request Accept</button>';
+			//$(btnwhich).attr('id', 'join'+membertype);
+			//$(btnwhich).attr('name', 'join'+membertype);
+			//$(btnwhich).attr('value', btnvalue);
+			//$(btnwhich).attr('onclick', 'memberatack()');
+			memberatack();
+			
+		}
+		var blckfuncktwo = function blckfuncktwo () {
+			$('#requacptid').remove();
+			$('#requblckid').remove();
+			var numargschange = "#numargs";
+			var btnwhich = '#requcancelkid';
+			var btnvalue = $(btnwhich).val();
+			//$(numargschange).attr('value', '');
+			var btnvaldata = btnvalue.split(",");
+			var membertype = btnvaldata[0];
+			//$(numargschange).attr('name', 'join'+membertype);
+			$(numargschange).val(membertype);
+			$(btnwhich).attr('id', 'join'+membertype);
+			$(btnwhich).attr('name', 'join'+membertype);
+			$(btnwhich).attr('value', btnvalue);
+			$(btnwhich).attr('onclick', 'memberatack()');
+			memberatack();
+			
+		}
+		
+		var blckfunckthree = function blckfunckthree () {
+			$('#requcancelkid').remove();
+			$('#requacptid').remove();
+			var numargschange = "#numargs";
+			var btnwhich = '#requblckid';
+			var btnvalue = $(btnwhich).val();
+			//$(numargschange).attr('value', '');
+			var btnvaldata = btnvalue.split(",");
+			var membertype = btnvaldata[0];
+			//$(numargschange).attr('name', 'join'+membertype);
+			$(numargschange).val(membertype);
+			$(btnwhich).attr('id', 'join'+membertype);
+			$(btnwhich).attr('name', 'join'+membertype);
+			$(btnwhich).attr('value', btnvalue);
+			$(btnwhich).attr('onclick', 'memberatack()');
+			memberatack();
+			
+		}
+	</script>
+	<script type="text/javascript">
+		var memberatack = function memberatack () {
+			var numargs = $("#numargs").val();
+			var idtype = "#join"+numargs; //"#join{{ joinprint }}"
+			var btnvaldata = $(idtype).attr("value");
+			var btnvaldata = btnvaldata.split(",");
+			var membertype = btnvaldata[0];//showdata joinprint yerine
+			var url = btnvaldata[1];
+			var grouppk = btnvaldata[2];
+			var userpk = btnvaldata[3];
+			var type = 'POST';
+			var numargschange = "#numargs";
+			$(numargschange).attr('value', '');
+			var data = {
+				membertype:membertype,
+				grouppk:grouppk,
+				userpk:userpk,
+				csrfmiddlewaretoken:"{{ csrf_token }}"
+			}
+			$.ajax({
+				url:url,
+				type:type,
+				data:data,
+				contentType:"application/x-www-form-urlencoded;charset=utf-8",
+				success: function(response) {
+					console.log(response);
+					getshowdata = response['showdata'];
+					getmembertype = response['membertype'];
+					getgrouppk = response['grouppk'];
+					getuserpk = response['userpk'];
+					if (getshowdata == 'error'){
+						idtype.html('Error');
+					}
+					else if (getshowdata == 'SENDEDREQUEST'){
+						if (response['membertypeone'] != undefined && response['membertypetwo'] != undefined && response['membertypethree'] != undefined) {
+							getmembertypeone = response['membertypeone'];
+							getmembertypetwo = response['membertypetwo'];
+							getmembertypethree = response['membertypethree'];
+							getblgrouppk = response['grouppk'];
+							getblgroupslug = response['groupslug'];
+							getblgroupuserpk = response['userpk'];
+							$(idtype).remove();
+							//kabul et reddet blokla butunları eklenmeli
+							var btnacceptr = '<button id="requacptid" class="" type="input" onclick="blckfunck()" name="requacpt" value="'+getmembertypeone+',/group/'+getblgrouppk+'/'+getblgroupslug+'/list/,'+getblgrouppk+','+getblgroupuserpk+'" >Request Accept</button>';
+							var btnusrcancel = '<button id="requcancelkid" class="" type="input" onclick="blckfuncktwo()" name="requcancelkid" value="'+getmembertypetwo+',/group/'+getblgrouppk+'/'+getblgroupslug+'/list/,'+getblgrouppk+','+getblgroupuserpk+'" >User Cancel</button>';
+							var btnblockr = '<button id="requblckid" class="" type="input" onclick="blckfunckthree()" name="requblckid" value="'+getmembertypethree+',/group/'+getblgrouppk+'/'+getblgroupslug+'/list/,'+getblgrouppk+','+getblgroupuserpk+'" >User Block</button>';
+							$('#addbtnblck').after(btnacceptr);
+							$('#addbtnblck').after(btnusrcancel);
+							$('#addbtnblck').after(btnblockr);
+						}
+						else{
+							$(idtype).remove();
+							var btnrequestcancel = '<button id="join'+getshowdata+'" onclick="memberatack()" class="" type="input" name="join'+getshowdata+'" value="'+getshowdata+','+url+','+getgrouppk+','+getuserpk+'">Cancel Request</button>';
+							$(numargschange).attr('value', getshowdata);
+							$('#addbtnblck').after(btnrequestcancel);
+						}
+					}
+					else{
+						$(idtype).attr('name', 'join'+getshowdata);
+						$(idtype).attr('value', getshowdata+','+url+','+getgrouppk+','+getuserpk);
+						$(idtype).attr('id', 'join'+getshowdata);
+						$(numargschange).attr('value', getshowdata);
+						var twoidtype = "#join"+getshowdata;
+						if (getshowdata == "UNJOINED"){
+							$(twoidtype).html("Join Us");
+						}
+						else if (getshowdata == "JOINED"){
+							$(twoidtype).html("Member");
+						}
+						else if (getshowdata == "SENDEDREQUEST"){
+							$(twoidtype).html("Joining Sent");
+						}
+						else if (getshowdata == "BLOCKED"){
+							$(twoidtype).html("Blocked");
+						}
+						else if (getshowdata == "UNBLOCKED"){
+							$(twoidtype).html("Blocked Removed");
+						}
+						else{
+							$(twoidtype).html("Error");
+						}
+					}
+				},
+				error: function(xhr, status, error) {
+					var err = eval("(" + xhr.responseText + ")");
+					alert(err.Message);
+				}
+			});
+			return false;
+		}
+	</script>
+{% endblock %}
+
+{% block head_title %}
+Götlerr
+{% endblock %}
+
+{% block extra_head %}
+berksan taşağım benim
+{% endblock %}
+ 
+{% block body %}
+{% block content %}
+ 
+{% if request.user.is_authenticated %}
+ 
+<h2>Hoş Geldin {{request.user.username}}</h2>
+
+    {% if request.user.profile.account_verified %} <h2>onaylı kullanıcısın</h2> {% else %} <h2>onaylı değilsin, emailden onayla</h2> {% endif %}
+
+		<input type="hidden" id= "numargs" name="numargs" value="{{ joinprint }}">
+        {{ group_detail.aboutgroup|safe }}
+        {{ group_detail.groupname }}
+        {% url 'groupshowlist' group_detail.pk group_detail.slug as membership_url %}
+        <form id="myform" action="{{ membership_url }}" method="post" enctype="multipart/form-data">
+			{% csrf_token %}
+			{{ form }}
+        </form>
+        <div id="addbtnblck"></div>
+        <button id="join{{ joinprint }}" onclick="memberatack()" class="" type="input" name="join{{ joinprint }}" value="{{ joinprint }},{{ membership_url }},{{ group_detail.pk }},{{ request.user.id }}"></button>
+    <br>
+
+
+<div><a href="/group/create/now"/>Profilim</div>
+
+{% endif %}
+ 
+{% endblock content %}
+{% endblock body %}

@@ -1,0 +1,2194 @@
+{% extends "account/base.html" %}
+{% load i18n %}
+{% load static %}
+{% load poll_extras %}
+{% block bodyicijs %}
+  <script type="text/javascript">
+	  $(document).ready(function() {
+		  $("#feeling").emojioneArea({
+			  standalone: true,
+			  autocomplete: false,
+			  shortnames: true,
+			  saveEmojisAs: "shortname"
+			  });
+	  });
+  </script>
+  <script type="text/javascript">
+	  var mydatas = function (data) {
+		var data = data;
+		return data;
+	  }
+	  var myforminformation = function (dataforminformation) {
+	    var dataforminformation = dataforminformation;
+		return dataforminformation;
+	  }
+  </script>
+  
+  <script type="text/javascript">
+	  //labeller formda selecte işlenecek, forma select konacak
+	  var labelselect = function labelselect () {
+		  var label = document.getElementById("selectidvalue");
+		  var selectget = document.getElementById("addvalueoptions");
+		  //var labelval = "";
+		  for (var i = 0; i < label.length; i++) {
+			  //labelval +=label[i].value + ",";
+			  var option = document.createElement("option");
+			  var strongcontrol = label[i].text;
+			  if (strongcontrol.startsWith("#")) {
+				  var regulartext = label[i].text;
+				  option.text = regulartext.replace("#", "");
+				  option.value = label[i].value;
+				  selectget.add(option);
+			  }
+			  else {
+				  var boldcont = label[i].text;
+				  option.text = boldcont;
+				  option.value = label[i].value;
+				  option.style.font = "italic bold 20px arial,serif";
+				  selectget.add(option);
+			  }
+		  }
+		  selectget.removeAttribute("hidden");
+	  }
+  </script>
+  <script type="text/javascript">
+	  var getgroupinformation = function getgroupinformation () {
+		  $("#labeladd").hide();
+		  var groupinform = $("#groupinformandlabel").val();
+		  var parseinform = groupinform.split(",");
+		  var whichpk = parseinform[0];
+		  var whichslug = parseinform[1];
+		  $("#grouppknum").val(whichpk);
+		  $("#groupslugchar").val(whichslug);
+		  labelselect();
+	  }
+  </script>
+  <script type="text/javascript">
+	  var deleteparse = function (getpk) {
+		  var getpk = getpk;
+		  var deleteclickids = '#deleteclick'+getpk;
+		  var deletedata = $(deleteclickids).attr("value");
+		  var parsedatas = deletedata.split(",");
+		  var url = parsedatas[0];
+		  var valuepk = parsedatas[1];
+		  var valueslug = parsedatas[2];
+		  var currentpk = parsedatas[3];
+		  var postesttype = "application/x-www-form-urlencoded";
+		  var retudata = {
+			  url:url,
+			  valuepk:valuepk,
+			  valueslug:valueslug,
+			  currentpk:currentpk,
+			  postesttype:postesttype
+		  }
+		  return retudata;
+	  }
+  </script>
+  <script type="text/javascript">
+	  var deletesecond = function deletesecond (getpk) {
+		  var getpk = getpk;
+		  var deleteclickbuttonids = '#deleteclick'+getpk;
+		  $(deleteclickbuttonids).click(function() {
+			  var retudata = deleteparse(getpk);
+			  var url = retudata['url'];
+			  var valuepk = retudata['valuepk'];
+			  var valueslug = retudata['valueslug'];
+			  var postesttype = retudata['postesttype'];
+			  var currentpk = retudata['currentpk'];
+			  var type = 'POST';
+			  var data = {
+				  valuepk:valuepk,
+				  valueslug:valueslug,
+				  postesttype:postesttype,
+				  csrfmiddlewaretoken:"{{ csrf_token }}"
+			  }
+			  $.ajax({
+				  url:url,
+				  type:type,
+				  data:data,
+				  contentType:"application/x-www-form-urlencoded;charset=utf-8",
+				  success: function(response) {
+					  console.log(response);
+					  var deleteclickids = '#deleteclick'+currentpk;
+					  var deleteplaceids = '#contentids'+currentpk;
+					  var editformplaceids = '#editformplace'+currentpk;
+					  var editclickidsdel = '#editnameclick'+currentpk;
+					  $(deleteplaceids).remove();
+					  $(deleteclickids).remove();
+					  $(editformplaceids).remove();
+					  $(editclickidsdel).remove();
+				  },
+				  error: function(xhr, status, error) {
+					  var err = eval("(" + xhr.responseText + ")");
+					  alert(err.Message);
+				  }
+			  });
+			  return false;
+		  });
+	  }
+  </script>
+  <script type="text/javascript">
+	  var deletethird = function deletethird (getpk) {
+		  var getpk = getpk;
+		  var deleteclickbuttonids = '#deleteclick'+getpk;
+		  var retudata = deleteparse(getpk);
+		  var url = retudata['url'];
+		  var valuepk = retudata['valuepk'];
+		  var valueslug = retudata['valueslug'];
+		  var postesttype = retudata['postesttype'];
+		  var currentpk = retudata['currentpk'];
+		  var type = 'POST';
+		  var data = {
+			  valuepk:valuepk, 
+			  valueslug:valueslug,
+			  postesttype:postesttype,
+			  csrfmiddlewaretoken:"{{ csrf_token }}"
+		  }
+		  $.ajax({
+			  url:url,
+			  type:type,
+			  data:data,
+			  contentType:"application/x-www-form-urlencoded;charset=utf-8",
+			  success: function(response) {
+				  console.log(response);
+				  var deleteclickids = '#deleteclick'+currentpk;
+				  var deleteplaceids = '#contentids'+currentpk;
+				  var editformplaceids = '#editformplace'+currentpk;
+				  var editclickidsdel = '#editnameclick'+currentpk;
+				  $(deleteplaceids).remove();
+				  $(deleteclickids).remove();
+				  $(editformplaceids).remove();
+				  $(editclickidsdel).remove();
+			  },
+			  error: function(xhr, status, error) {
+				  var err = eval("(" + xhr.responseText + ")");
+				  alert(err.Message);
+			  }
+		  });
+		  return false;
+	  }
+  </script>
+  <script type="text/javascript">
+	  var editparse = function (getpk) {
+		  var getpk = getpk;
+		  var editclickids = '#editnameclick'+getpk;
+		  var editdata = $(editclickids).attr("value");
+		  var parsedatas = editdata.split(",");
+		  var url = parsedatas[0];
+		  var valuepk = parsedatas[1];
+		  var valueslug = parsedatas[2];
+		  var currentpk = parsedatas[3];
+		  var postesttype = "application/x-www-form-urlencoded";
+		  var retudata = {
+			  url:url,
+			  valuepk:valuepk,
+			  valueslug:valueslug,
+			  currentpk:currentpk,
+			  postesttype:postesttype
+		  }
+		  return retudata;
+	  }
+  </script>
+  <script type="text/javascript">
+	  //labeller formda selecte işlenecek, forma select konacak
+	  var labelselecttwo = function labelselecttwo () {
+		  var label = document.getElementById("selectidvalue");
+		  var selectget = document.getElementById("addvalueoptionstwo");
+		  //var labelval = "";
+		  for (var i = 0; i < label.length; i++) {
+			  //labelval +=label[i].value + ",";
+			  var option = document.createElement("option");
+			  var strongcontrol = label[i].text;
+			  if (strongcontrol.startsWith("#")) {
+				  var regulartext = label[i].text;
+				  option.text = regulartext.replace("#", "");
+				  option.value = label[i].value;
+				  selectget.add(option);
+			  }
+			  else {
+				  var boldcont = label[i].text;
+				  option.text = boldcont;
+				  option.value = label[i].value;
+				  option.style.font = "italic bold 20px arial,serif";
+				  selectget.add(option);
+			  }
+		  }
+		  selectget.removeAttribute("hidden");
+	  }
+  </script>
+  <script type="text/javascript">
+	  var getgroupinformationtwo = function getgroupinformationtwo () {
+		  $("#labeladdtwo").hide();
+		  var groupinform = $("#groupinformandlabel").val();
+		  var parseinform = groupinform.split(",");
+		  var whichpk = parseinform[0];
+		  var whichslug = parseinform[1];
+		  $("#grouppknum").val(whichpk);
+		  $("#groupslugchar").val(whichslug);
+		  labelselecttwo();
+	  }
+  </script>
+  <script type="text/javascript">
+	  var editAjaxFormadd = function editAjaxFormadd (getpk) {
+		  var retudata = editparse(getpk);
+		  var updateurl = retudata['url'];
+		  var getinputvalue = $("#editinputval").val();
+		  var ajaxformeditremove = "#ajaxformedit"+getinputvalue;
+		  $("#editformcontrol").remove();
+		  $(ajaxformeditremove).remove();
+		  var getpk = getpk;
+		  $("#editinputval").val(getpk);
+		  var ajaxformedit = 'ajaxformedit'+getpk;
+		  var formeditplace = '#editformplace'+getpk;
+		  var deleteclickbtnplace = '#deleteclick'+getpk;
+		  var editclickbtnplace = '#editnameclick'+getpk;
+		  var formadd = `<div id=ajaxformedit`+getpk+` class="">
+			<form id="myformajaxedit" action="`+updateurl+`" method="post" enctype="multipart/form-data">
+				{% csrf_token %}
+					<div class="form-group">
+						<div id="addckwarn" class="row ml-1 mb-1"></div>
+				    {{ form.postsgroupwrite }}
+					</div>
+					<div class="form-group">
+						<div class="custom-file">
+							{{ form.multiphoto }}
+							<label class="multiphoto custom-file-label" for="multiphoto">{% trans "Choose Photos" %}</label>
+						</div>
+						<div class="table-responsive">
+						  <table class="table">
+								<tbody>
+									<tr>
+										<th>
+										    <div class="text-center">
+												<div class="divmultiphoto">
+												    <ul id="photoul" class="list-group"></ul>
+												</div>
+											</div>
+										</th>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="custom-file">
+							{{ form.multifiles }}
+							<label class="multifiles custom-file-label" for="multifiles">{% trans "Choose Videos" %}</label>
+						</div>
+						<div class="table-responsive">
+						   <table class="table">
+								<tbody>
+									<tr>
+										<th>
+										    <div class="text-center">
+												<div class="divmultifiles">
+												    <ul id="fileul" class="list-group"></ul>
+												</div>
+											</div>
+										</th>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<!-- feeling area-->
+					<div class="form-group row">
+					  <label class="col-2 col-form-label font-weight-bold">{% trans "Select Feeling" %}</label>
+					  <div class="col-10 text-right">
+					    {{ form.feeling }}
+					  </div>
+					</div>
+					<!-- feeling area-->
+			    {{ form.grouppknum }}
+			    {{ form.groupslugchar }}
+				<select hidden class="custom-select" id="addvalueoptionstwo" ></select>
+				<input type="hidden" id= "postesttype" name="postesttype" value="application/x-www-form-urlencoded">
+			</form>
+			<button id="labeladdtwo" class="btn btn-primary btn-block mt-1" type="input" onclick="getgroupinformationtwo()" name="labeladd" >{% trans "Label Add" %}</button>
+			<div id="tothisaddpostbuttontwo"></div>
+			<button id="burayaajax" onclick="editAjaxForm(`+getpk+`)" class="btn btn-primary btn-block mt-2" type="input" name="createpostone" disabled="true">{% trans "Send" %}</button>
+			<button id="iptalajax" onclick="cancelAjax(`+getpk+`)" class="btn btn-primary btn-block mt-2" type="input" >{% trans "Cancel" %}</button>
+			</div>
+			`;
+			$("#firstpostform").remove();
+			$(deleteclickbtnplace).hide();
+			$(editclickbtnplace).hide();
+			$(formeditplace).after(formadd);
+			CKEDITOR.replace('postsgroupwrite');
+			$(document).ready(function() {
+				getgroupinformationtwo();
+			});
+			$(document).ready(function() {
+				$("#feeling").emojioneArea({
+					standalone: true,
+					autocomplete: false,
+					shortnames: true,
+					saveEmojisAs: "shortname"
+				});
+				//change input chapter start
+				$('input#multifiles').change(function(){
+  			$('#fileul').empty();
+  			if ($('#multifiles').valid()==true) {
+				  var multifilescontent = $("#multifiles").get(0).files;
+				  for (var blabla = 0; blabla < multifilescontent.length; blabla++) {
+				  	var getmultp = multifilescontent[blabla];
+				  	$('#fileul').append("<li class='list-group-item'>"+getmultp.name+"</li>");
+				  }
+				}
+				else{
+					$('#fileul').append("<li class='list-group-item'>"+"{%trans 'files must be in jpg,jpeg or png format'%}"+"</li>");
+				}
+  		});
+  		$('input#multiphoto').change(function(){
+  			$('#photoul').empty();
+  			//alert($('#multiphoto').valid());
+  			if ($('#multiphoto').valid()==true) {
+	  			var multifilescontent = $("#multiphoto").get(0).files;
+				  for (var blabla = 0; blabla < multifilescontent.length; blabla++) {
+				  	var getmultp = multifilescontent[blabla];
+				  	$('#photoul').append("<li class='list-group-item'>"+getmultp.name+"</li>");
+				  }
+			  }
+			  else{
+			  	$('#photoul').append("<li class='list-group-item'>"+"{%trans 'files must be in mp4 format and file size should be smaller than 50mb'%}"+"</li>");
+			  }
+  		});
+  		//change input chapter start
+  		//form control validate and ckeditor validate start
+  		$.validator.addMethod('filesize', function (value, element, arg) {
+        var minsize=50;
+        var sizecont = [];
+        var elementlenght = element.files;
+        for (let blablam = 0; blablam < elementlenght.length; blablam++) {
+			    let getmultpi = elementlenght[blablam];
+			    if(getmultpi.size > minsize && getmultpi.size <= arg){
+	        	sizecont.push('true');
+	        }
+	        else{
+	        	sizecont.push('false');
+	        }
+			  }
+			  for (let blablam = 0; blablam < sizecont.length; blablam++) {
+			    let getmultpi = sizecont[blablam];
+			    if(getmultpi == 'false'){
+	        	$.validator.messages.filesize = '{% trans "file size must be less than 1.2MB and more than 50KB" %}';
+	        	return false;
+	        	break;
+	        }
+	        else{
+	        	if (blablam+1 == sizecont.length) {
+	        		$.validator.messages.filesize = '{% trans "file receive" %}';
+	        		return true;
+	        		break;
+	        	}
+	        }
+			  }
+      });
+      $.validator.addMethod('photofilesize', function (value, element, arg) {
+        var minsize=1000;
+        if(element.files[0].size > minsize && element.files[0].size <= arg){
+        	$.validator.messages.photofilesize = '{% trans "file receive" %}';
+          return true;
+        }
+        else{
+        	$.validator.messages.photofilesize = '{% trans "file size must be less than 1.2MB." %}';
+          return false;
+        }
+      });
+  		$('#myformajaxedit').validate({
+  			rules: {
+  				postsgroupwrite:{
+  					required:true,
+  					minlength:10,
+  				},
+  				multiphoto:{
+  					extension: 'mp4',
+  					accept: "video/*",
+  					photofilesize: 100000000
+  				},
+  				multifiles:{
+  					extension: 'jpg|jpeg|png',
+  					accept: "image/*",
+  					filesize: 10000000
+  				}
+  			},
+  			message : {
+  				postsgroupwrite:{
+  					required:'{% trans "Please enter Text" %}',
+  					minlength:'{% trans "Please enter 10 characters" %}'
+  				},
+  				multiphoto: {
+  					photofilesize:'{% trans "file size must be less than 50MB." %}',
+  					multiphoto:'{% trans "Please upload a valid .mp4 file type." %}',
+  					accept: '{% trans "Please upload a valid .mp4 file type." %}'
+  				},
+  				multifiles: {
+  					filesize:'{% trans "file size must be less than 1.2MB." %}',
+  					multifiles:'{% trans "Please upload a valid file type." %}',
+  					accept: '{% trans "Please upload a valid file type." %}'
+  				}
+  			}
+  		});
+  		/*
+  		CKEDITOR.instances['postsgroupwrite'].on('focus', function () {
+			   //do something
+			 });
+			 */
+
+			 //deal with copying the ckeditor text into the actual textarea
+			CKEDITOR.on('instanceReady', function () {
+				var instance = 'postsgroupwrite';
+			  $.each(CKEDITOR.instances, function (instance) {
+			    CKEDITOR.instances[instance].on("keyup", CK_jQ);
+			    CKEDITOR.instances[instance].on("paste", CK_jQ);
+			    CKEDITOR.instances[instance].on("keypress", CK_jQ);
+			    CKEDITOR.instances[instance].on("blur", CK_jQ);
+			    CKEDITOR.instances[instance].on("change", CK_jQ);
+			  });
+			});
+
+			function CK_jQ() {
+				var conlists = "";
+			  for (instance in CKEDITOR.instances) {
+			    //var sim = CKEDITOR.instances[instance].updateElement();
+			    var message =  jQuery.trim(CKEDITOR.instances[instance].getData());
+			    message = message.replace(/<[^>]*>/gi, '');
+			    message = message.replace(/&nbsp;/gi, '');
+			    message = R.replace(/<[^>]*>/g, '', R.toString(message));
+			    message = R.replace(/ /g, '', message);
+			    var messageLength = R.trim(message).length;
+			    if (messageLength < 14) {
+			    	conlists = false;
+			    }
+			    else{
+			    	conlists = true;
+			    }
+			  }
+			  if (conlists == false) {
+			  	$('#addckwarn').empty();
+			  	$('#addckwarn').append('{%trans "content must contain at least 10 characters"%}');
+			  	$('#burayaajax').prop("disabled", true);
+			  }
+			  else{
+			  	$('#addckwarn').empty();
+			  	var al = $('#burayaajax').prop("disabled");
+			  	$('#burayaajax').prop("disabled", false);
+			  }
+			}
+  		//stop
+			});
+			$("#ajaxformedit"+getpk).ScrollTo();
+	  }
+  </script>
+  <script type="text/javascript">
+	  var cancelAjax = function cancelAjax (getpk) {
+		  var currentpk = getpk;
+		  //var editformplaceids = '#editformplace'+currentpk;
+		  var ajaxformedit = '#ajaxformedit'+currentpk;
+		  var editclickidsdel = '#editnameclick'+currentpk;
+		  var deleteclickshow = '#deleteclick'+currentpk;
+		  //$(editformplaceids).remove();
+		  $(ajaxformedit).remove();
+		  $(editclickidsdel).show();
+		  $(deleteclickshow).show();
+		  var mainformadd = `<div id="firstpostform" class="">
+			{% url 'creategrouppostsajax' whichgroup.pk whichgroup.slug as the_url %}
+			<form id="myform" action="{{ the_url }}" method="post" enctype="multipart/form-data">
+			    {% csrf_token %}
+					<div class="form-group">
+						<div id="addckwarn" class="row ml-1 mb-1"></div>
+				    {{ form.postsgroupwrite }}
+					</div>
+					<div class="form-group">
+						<div class="custom-file">
+							{{ form.multiphoto }}
+							<label class="multiphoto custom-file-label" for="multiphoto">{% trans "Choose Photos" %}</label>
+						</div>
+						<div class="table-responsive">
+						  <table class="table">
+								<tbody>
+									<tr>
+										<th>
+										    <div class="text-center">
+												<div class="divmultiphoto">
+												    <ul id="photoul" class="list-group"></ul>
+												</div>
+											</div>
+										</th>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="custom-file">
+							{{ form.multifiles }}
+							<label class="multifiles custom-file-label" for="multifiles">{% trans "Choose Videos" %}</label>
+						</div>
+						<div class="table-responsive">
+						   <table class="table">
+								<tbody>
+									<tr>
+										<th>
+										    <div class="text-center">
+												<div class="divmultifiles">
+												    <ul id="fileul" class="list-group"></ul>
+												</div>
+											</div>
+										</th>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<!-- feeling area-->
+					<div class="form-group row">
+					  <label class="col-2 col-form-label font-weight-bold">{% trans "Select Feeling" %}</label>
+					  <div class="col-10 text-right">
+					    {{ form.feeling }}
+					  </div>
+					</div>
+					<!-- feeling area-->
+			    {{ form.grouppknum }}
+			    {{ form.groupslugchar }}
+			    <select hidden class="custom-select" id="addvalueoptions" ></select>
+			    <input type="hidden" id= "postesttype" name="postesttype" value="application/x-www-form-urlencoded">
+			</form>
+			<button id="labeladd" class="btn btn-primary btn-block mt-1" type="input" onclick="getgroupinformation()" name="labeladd" >{% trans "Label Add" %}</button>
+			<div id="tothisaddpostbutton"></div>
+			<div class=" col-md-12 text-center mt-2">
+			<div id="captchaadd"></div>
+			</div>
+			<button id="buraya" onclick="thisclickmainform()" class="btn btn-primary btn-block mt-2" type="input" name="createpostone" disabled="true">{% trans "Send" %}</button>
+			</div>
+			`;
+		   $('#formchangerdiv').after(mainformadd);
+		   CKEDITOR.replace('postsgroupwrite');
+		   $(document).ready(function() {
+			   $("#feeling").emojioneArea({
+				   standalone: true,
+				   autocomplete: false,
+				   shortnames: true,
+				   saveEmojisAs: "shortname"
+			   });
+		   });
+		   // recaptcha control coding
+		   if ($('#adddeleterecapct').length){
+		   	var onloadCallback = function() {
+		   		grecaptcha.render('captchaadd', {
+		   			'sitekey' : '6Ler5XQUAAAAALmun6SLqIMNpqDl5RVCUUlo4EKP'
+		   		});
+		   	};
+		   	onloadCallback();
+		   	$('#adddeleterecapct').remove();
+		   }
+		   $("#firstpostform").ScrollTo();
+	  }
+  </script>
+  <script type="text/javascript">
+	  var editAjaxForm = function editAjaxForm (getpk) {
+		  var mainformadd = `<div id="firstpostform" class="">
+			{% url 'creategrouppostsajax' whichgroup.pk whichgroup.slug as the_url %}
+			<form id="myform" action="{{ the_url }}" method="post" enctype="multipart/form-data">
+			    {% csrf_token %}
+					<div class="form-group">
+						<div id="addckwarn" class="row ml-1 mb-1"></div>
+				    {{ form.postsgroupwrite }}
+					</div>
+					<div class="form-group">
+						<div class="custom-file">
+							{{ form.multiphoto }}
+							<label class="multiphoto custom-file-label" for="multiphoto">{% trans "Choose Photos" %}</label>
+						</div>
+						<div class="table-responsive">
+						  <table class="table">
+								<tbody>
+									<tr>
+										<th>
+										    <div class="text-center">
+												<div class="divmultiphoto">
+												    <ul id="photoul" class="list-group"></ul>
+												</div>
+											</div>
+										</th>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="custom-file">
+							{{ form.multifiles }}
+							<label class="multifiles custom-file-label" for="multifiles">{% trans "Choose Videos" %}</label>
+						</div>
+						<div class="table-responsive">
+						   <table class="table">
+								<tbody>
+									<tr>
+										<th>
+										    <div class="text-center">
+												<div class="divmultifiles">
+												    <ul id="fileul" class="list-group"></ul>
+												</div>
+											</div>
+										</th>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<!-- feeling area-->
+					<div class="form-group row">
+					  <label class="col-2 col-form-label font-weight-bold">{% trans "Select Feeling" %}</label>
+					  <div class="col-10 text-right">
+					    {{ form.feeling }}
+					  </div>
+					</div>
+					<!-- feeling area-->
+			    {{ form.grouppknum }}
+			    {{ form.groupslugchar }}
+			    <select hidden class="custom-select" id="addvalueoptions" ></select>
+			    <input type="hidden" id= "postesttype" name="postesttype" value="application/x-www-form-urlencoded">
+			</form>
+			<button id="labeladd" class="btn btn-primary btn-block mt-1" type="input" onclick="getgroupinformation()" name="labeladd" >{% trans "Label Add" %}</button>
+			<div id="tothisaddpostbutton"></div>
+			<div class=" col-md-12 text-center mt-2">
+			<div id="captchaadd"></div>
+			</div>
+			<button id="buraya" onclick="thisclickmainform()" class="btn btn-primary btn-block mt-2" type="input" name="createpostone" disabled="true">{% trans "Send" %}</button>
+			</div>
+			`;
+		  var getpk = getpk;
+		  var ajaxformeditremove = '#ajaxformedit'+getpk;
+		  var deleteclickbtnplace = '#deleteclick'+getpk;
+		  var editclickbtnplace = '#editnameclick'+getpk;
+		  var deleteclickbuttonids = '#deleteclick'+getpk;
+		  var changecontent = '#contentids'+getpk;
+		  var retudata = editparse(getpk);
+		  var url = retudata['url'];
+		  var valuepk = retudata['valuepk'];
+		  var valueslug = retudata['valueslug'];
+		  var postesttype = retudata['postesttype'];
+		  var currentpk = retudata['currentpk'];
+		  var type = 'POST';
+		  var postsgroupwrite = CKEDITOR.instances["postsgroupwrite"].getData();
+		  var feeling = $("#feeling").val();
+		  var postgrouplabels = $("#addvalueoptionstwo").val();
+		  var postesttype = $("#postesttype").val();
+		  var grouppknum = $("#grouppknum").val();
+		  var groupslugchar = $("#groupslugchar").val();
+		  var url = url;
+		  var type = type;
+		  var valuepk = valuepk;
+		  var valueslug = valueslug;
+		  var data = {
+			  postsgroupwrite:postsgroupwrite,
+			  feeling:feeling,
+			  postgrouplabels:postgrouplabels,
+			  postesttype:postesttype,
+			  grouppknum:grouppknum,
+			  groupslugchar:groupslugchar,
+			  valuepk:valuepk,
+			  valueslug:valueslug,
+			  csrfmiddlewaretoken:"{{ csrf_token }}"
+		  }
+		  var dataforminformation = {
+			  url:url,
+			  type:type
+		  }
+		  var formDatamine = new FormData($('#myformajaxedit')[0]);
+		  var url = myforminformation(dataforminformation).url;
+		  var type = myforminformation(dataforminformation).type;
+		  var csrfmiddlewaretoken = mydatas(data).csrfmiddlewaretoken;
+		  var postsgroupwrite = mydatas(data).postsgroupwrite;
+		  var feeling = mydatas(data).feeling;
+		  var postgrouplabels = mydatas(data).postgrouplabels;
+		  var postesttype = mydatas(data).postesttype;
+		  var grouppknum = mydatas(data).grouppknum;
+		  var groupslugchar = mydatas(data).groupslugchar;
+		  var valuepk = mydatas(data).valuepk;
+		  var valueslug = mydatas(data).valueslug;
+		  var multiphoto = $("#multiphoto")[0].files[0];
+		  //var multifiles = $("#multifiles")[0].files[0];
+			  var multifiles = [];
+			  var multifilescontent = $("#multifiles").get(0).files;
+			  for (var blabla = 0; blabla < multifilescontent.length; blabla++) {
+			  	var getmultp = multifilescontent[blabla];
+			  	multifiles.push(getmultp)
+			  }
+		  formDatamine.append('url', url);
+		  formDatamine.append('type', type);
+		  formDatamine.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
+		  formDatamine.append('postsgroupwrite', postsgroupwrite);
+		  formDatamine.append('feeling', feeling);
+		  formDatamine.append('postgrouplabels', postgrouplabels);
+		  formDatamine.append('grouppknum', grouppknum);
+		  formDatamine.append('groupslugchar', groupslugchar);
+		  formDatamine.append('valuepk', valuepk);
+		  formDatamine.append('valueslug', valueslug);
+		  formDatamine.append('postesttype', postesttype);
+		  formDatamine.append('multiphoto', multiphoto);
+		  formDatamine.append('multifiles', multifiles);
+		  $.ajax({
+			  url:url,
+			  type:type,
+			  contentType:false,
+			  processData: false,
+			  data:formDatamine,
+			  success: function(response) {
+				  console.log(response);
+				  $(changecontent).empty();
+				  //new adding start
+				  var mywidth = $(window).width();
+					  var swsliderwdth = '';
+					  var classadding = '';
+					  if (mywidth >= 1200) {
+					  	swsliderwdth = 760;
+					  	classadding = ' ml-4 pl-4';
+					  }
+					  else if (1024 <= mywidth && mywidth < 1200){
+					  	swsliderwdth = 760;
+					  	classadding = ' ml-4 pl-4';
+					  }
+					  else if (992 <= mywidth && mywidth < 1024){
+					  	swsliderwdth = 760;
+					  }
+					  else if (768 <= mywidth && mywidth < 992){
+					  	swsliderwdth = 690;
+					  }
+					  else if (576 <= mywidth && mywidth < 768){
+					  	swsliderwdth = 550;
+					  }
+					  else if (414 <= mywidth && mywidth < 576){
+					  	swsliderwdth = 384;
+					  }
+					  else if (411 <= mywidth && mywidth < 414){
+					  	swsliderwdth = 381;
+					  }
+					  else if (375 <= mywidth && mywidth < 411){
+					  	swsliderwdth = 345;
+					  }
+					  else if (360 <= mywidth && mywidth < 375){
+					  	swsliderwdth = 330;
+					  }
+					  else if (320 <= mywidth && mywidth < 360){
+					  	swsliderwdth = 290;
+					  }
+					  else {
+					  	swsliderwdth = 180;
+					  }
+				  var forappendaddcontent = `
+					  <div id="contentids`+response['pk']+`" class="mt-4 pt-4">
+								<div class="row border-top border-primary">
+									<div id="feels`+response['pk']+`" class="col-md-4 text-center mt-1 pt-2">
+									</div>
+									<div id="dates`+response['pk']+`" class="col-md-4 text-center mt-1 pt-2 fosizes">
+									</div>
+									<div class="col-md-4 text-center mt-1 pt-2 fosizes">
+									<div id="labeladdscript`+response['pk']+`"</div>
+									</div>
+								</div>
+								<div class="row`+classadding+`">
+									<div class="col-md-12 text-center mt-1 mb-1 pt-1">
+										<div style="width:`+swsliderwdth+`px;" class="swiper-container slider`+response['pk']+`">
+											<div id="wrapper`+response['pk']+`" class="swiper-wrapper">
+											</div>
+										  <div class="swiper-pagination"></div>
+										  <div class="swiper-button-next"></div>
+										  <div class="swiper-button-prev"></div>
+										</div>
+									</div>
+									<div class="col-md-12">
+										<blockquote class="blockquote text-center mt-1">
+											<span id="postsgroupwriteid`+response['pk']+`"></span>
+										</blockquote>
+									</div>
+								</div>
+							</div>
+							<div id="exists`+response['pk']+`"></div>
+							<!--<div class="row">
+								<div id="deleteclickbtnid`+response['pk']+`" class="col-md-6 text-center mt-2">
+								</div>
+								<div id="editclickbtnid`+response['pk']+`" class="col-md-6 text-center mt-2"></div>
+							</div>
+							<div id="editfrmdiv`+response['pk']+`"></div>-->
+					  `;
+				  //new addingstop
+				  //$(changecontent).append('<span>'+response["postsgroupwrite"]+'</span>');
+				  $(changecontent).append(forappendaddcontent);
+				  //new add start ***
+				  //feeling add
+					  var feelingtext = response['feeling'];
+					  if (feelingtext != null || feelingtext != ''){
+						  var placefeeling = "#feels"+response['pk'];
+						  var outputfeel = emojione.toImage(feelingtext);
+						  $(placefeeling).append(outputfeel);
+					  }
+					  //feeling add stop
+					  //dates add
+					  var datesplace = "#dates"+response['pk'];
+					  if (response['createdates'] != null || response['createdates'] != ''){
+					  	$(datesplace).append(response['createdates']);//saati güzel ayarla
+					  }
+					  //dates add stop
+					  //label add start
+					  var labelsplace = "#labeladdscript"+response['pk'];
+					  if (response['postgrouplabels'] != null || response['postgrouplabels'] != ''){
+					  	for(let i =0; i<response['postgrouplabels'].length; i++){
+					  		let mylabel = `<a href="/`+response['groupnameajax']+`/`+response['postgrouplabels'][i]+`/relatedposts">`+response['postgrouplabels'][i]+`</a>`;
+					  		$(labelsplace).append(mylabel);
+					  	}
+					  }
+					  //label add finished
+					  //add photo start
+					  if (response['multifiles'] != null || response['multifiles'] != ''){
+					  	var getarray = response['multifiles'];
+					  	for(let i = 0; i < getarray.length; i++) {
+				  			let element = getarray[i];
+				  			if (element == '' || element == null){
+				  				element = element;
+				  			}
+				  			else{
+				  				var wheres = '#wrapper'+response['pk'];
+				  				var imgid = '#slide'+response['pk'];
+				  				$(wheres).append(`<div class="swiper-slide"><img id="`+imgid+`" class="img-fluid" src=`+element+`></div>`);
+				  			}
+				  		}
+				  		if (response['multiphoto'] != null && response['multiphoto'] != false && response['multiphoto'] != undefined){
+				  			$(wheres).append(`<div class="swiper-slide"><video id="`+imgid+`" class="img-responsive myvidswidth" controls> <source src="`+response['multiphoto']+`" type="video/mp4"></video>`);
+				  		}
+					  }
+					  $(document).ready(function() {
+						  (() => {
+								const sliderEl = document.querySelector('.slider'+response['pk']);
+								  if(!sliderEl){
+								    return;
+								  }
+								  const swipper = new Swiper(sliderEl, {
+								    loop: true,
+								    /*
+								    autoplay: {
+								      delay: 5000,
+								      disableOnInteraction: false
+								    },
+								    */
+								    pagination: {
+								      el: '.swiper-pagination',
+								      clickable: true,
+								      //type: 'progressbar'
+								    },
+								    navigation: {
+								      nextEl: '.swiper-button-next',
+								      prevEl: '.swiper-button-prev',
+								    },
+								  });
+								})();
+						});
+					  //add photo stop
+					  //write contett start
+					  if (response['postsgroupwrite'] != null || response['postsgroupwrite'] != ''){
+					  	$('#postsgroupwriteid'+response['pk']).html(response['postsgroupwrite']);
+					  }
+					  //write content stop
+				  //new add stop ***
+				  $(ajaxformeditremove).remove();
+				  //$(deleteclickbtnplace).show();
+				  //$(editclickbtnplace).show();
+				  var newdefsiv = $('#neweditadd'+getpk);
+				  if(newdefsiv){
+				  	var buttonrowadd = `
+				  		<div class="row">
+								<div id="deleteclickbtnid`+response['pk']+`" class="col-md-6 text-center mt-2">
+								</div>
+								<div id="editclickbtnid`+response['pk']+`" class="col-md-6 text-center mt-2"></div>
+							</div>
+							<div id="editfrmdiv`+response['pk']+`">
+							<div id="editformplace`+response['pk']+`">
+				  	`;
+				  	$('#exists'+response['pk']).after(buttonrowadd);
+				  	var adddeletebutton = '<button id="deleteclick'+response["pk"]+'" class="btn btn-primary custombtn" type="input" >{% trans "Delete" %}</button>';
+					  var editaddbutton = '<button id="editnameclick'+response["pk"]+'" onclick="editAjaxFormadd('+response["pk"]+')" class="btn btn-primary custombtn" type="input" >{% trans "Edit" %}</button>';
+				  	$("#editclickbtnid"+response['pk']).append(editaddbutton);
+					  $("#deleteclickbtnid"+response['pk']).append(adddeletebutton);
+					  var deleteclickids = '#deleteclick'+response["pk"];
+					  var editclickids = '#editnameclick'+response["pk"];
+					  $(deleteclickids).prop('value', '/group/posts/'+response["pk"]+'/'+response["slug"]+'/delete/'+','+response["valuepk"]+','+response["valueslug"]+','+response["pk"]);
+					  $(editclickids).prop('value', '/group/posts/'+response["pk"]+'/'+response["slug"]+'/update/'+','+response["valuepk"]+','+response["valueslug"]+','+response["pk"]);
+					  deletesecond(response["pk"]);
+				  }
+				  else {
+				  	$(deleteclickbtnplace).show();
+				  	$(editclickbtnplace).show();
+				  }
+				  $('#newcontids').empty();
+				  $('#formchangerdiv').after(mainformadd);
+				  CKEDITOR.replace('postsgroupwrite');
+				  $(document).ready(function() {
+				  	getgroupinformation();
+				  });
+				  $(document).ready(function() {
+					  $("#feeling").emojioneArea({
+						  standalone: true,
+						  autocomplete: false,
+						  shortnames: true,
+						  saveEmojisAs: "shortname"
+					  });
+					  //change input chapter start
+						$('input#multifiles').change(function(){
+		  			$('#fileul').empty();
+		  			if ($('#multifiles').valid()==true) {
+						  var multifilescontent = $("#multifiles").get(0).files;
+						  for (var blabla = 0; blabla < multifilescontent.length; blabla++) {
+						  	var getmultp = multifilescontent[blabla];
+						  	$('#fileul').append("<li class='list-group-item'>"+getmultp.name+"</li>");
+						  }
+						}
+						else{
+							$('#fileul').append("<li class='list-group-item'>"+"{%trans 'files must be in jpg,jpeg or png format'%}"+"</li>");
+						}
+		  		});
+		  		$('input#multiphoto').change(function(){
+		  			$('#photoul').empty();
+		  			//alert($('#multiphoto').valid());
+		  			if ($('#multiphoto').valid()==true) {
+			  			var multifilescontent = $("#multiphoto").get(0).files;
+						  for (var blabla = 0; blabla < multifilescontent.length; blabla++) {
+						  	var getmultp = multifilescontent[blabla];
+						  	$('#photoul').append("<li class='list-group-item'>"+getmultp.name+"</li>");
+						  }
+					  }
+					  else{
+					  	$('#photoul').append("<li class='list-group-item'>"+"{%trans 'files must be in mp4 format and file size should be smaller than 50mb'%}"+"</li>");
+					  }
+		  		});
+		  		//change input chapter start
+		  		//form control validate and ckeditor validate start
+		  		$.validator.addMethod('filesize', function (value, element, arg) {
+		        var minsize=50;
+		        var sizecont = [];
+		        var elementlenght = element.files;
+		        for (let blablam = 0; blablam < elementlenght.length; blablam++) {
+					    let getmultpi = elementlenght[blablam];
+					    if(getmultpi.size > minsize && getmultpi.size <= arg){
+			        	sizecont.push('true');
+			        }
+			        else{
+			        	sizecont.push('false');
+			        }
+					  }
+					  for (let blablam = 0; blablam < sizecont.length; blablam++) {
+					    let getmultpi = sizecont[blablam];
+					    if(getmultpi == 'false'){
+			        	$.validator.messages.filesize = '{% trans "file size must be less than 1.2MB and more than 50KB" %}';
+			        	return false;
+			        	break;
+			        }
+			        else{
+			        	if (blablam+1 == sizecont.length) {
+			        		$.validator.messages.filesize = '{% trans "file receive" %}';
+			        		return true;
+			        		break;
+			        	}
+			        }
+					  }
+		      });
+		      $.validator.addMethod('photofilesize', function (value, element, arg) {
+		        var minsize=1000;
+		        if(element.files[0].size > minsize && element.files[0].size <= arg){
+		        	$.validator.messages.photofilesize = '{% trans "file receive" %}';
+		          return true;
+		        }
+		        else{
+		        	$.validator.messages.photofilesize = '{% trans "file size must be less than 1.2MB." %}';
+		          return false;
+		        }
+		      });
+		  		$('#myform').validate({
+		  			rules: {
+		  				postsgroupwrite:{
+		  					required:true,
+		  					minlength:10,
+		  				},
+		  				multiphoto:{
+		  					extension: 'mp4',
+		  					accept: "video/*",
+		  					photofilesize: 100000000
+		  				},
+		  				multifiles:{
+		  					extension: 'jpg|jpeg|png',
+		  					accept: "image/*",
+		  					filesize: 10000000
+		  				}
+		  			},
+		  			message : {
+		  				postsgroupwrite:{
+		  					required:'{% trans "Please enter Text" %}',
+		  					minlength:'{% trans "Please enter 10 characters" %}'
+		  				},
+		  				multiphoto: {
+		  					photofilesize:'{% trans "file size must be less than 50MB." %}',
+		  					multiphoto:'{% trans "Please upload a valid .mp4 file type." %}',
+		  					accept: '{% trans "Please upload a valid .mp4 file type." %}'
+		  				},
+		  				multifiles: {
+		  					filesize:'{% trans "file size must be less than 1.2MB." %}',
+		  					multifiles:'{% trans "Please upload a valid file type." %}',
+		  					accept: '{% trans "Please upload a valid file type." %}'
+		  				}
+		  			}
+		  		});
+		  		/*
+		  		CKEDITOR.instances['postsgroupwrite'].on('focus', function () {
+					   //do something
+					 });
+					 */
+
+					 //deal with copying the ckeditor text into the actual textarea
+					CKEDITOR.on('instanceReady', function () {
+						var instance = 'postsgroupwrite';
+					  $.each(CKEDITOR.instances, function (instance) {
+					    CKEDITOR.instances[instance].on("keyup", CK_jQ);
+					    CKEDITOR.instances[instance].on("paste", CK_jQ);
+					    CKEDITOR.instances[instance].on("keypress", CK_jQ);
+					    CKEDITOR.instances[instance].on("blur", CK_jQ);
+					    CKEDITOR.instances[instance].on("change", CK_jQ);
+					  });
+					});
+
+					function CK_jQ() {
+						var conlists = "";
+					  for (instance in CKEDITOR.instances) {
+					    //var sim = CKEDITOR.instances[instance].updateElement();
+					    var message =  jQuery.trim(CKEDITOR.instances[instance].getData());
+					    message = message.replace(/<[^>]*>/gi, '');
+					    message = message.replace(/&nbsp;/gi, '');
+					    message = R.replace(/<[^>]*>/g, '', R.toString(message));
+					    message = R.replace(/ /g, '', message);
+					    var messageLength = R.trim(message).length;
+					    if (messageLength < 14) {
+					    	conlists = false;
+					    }
+					    else{
+					    	conlists = true;
+					    }
+					  }
+					  if (conlists == false) {
+					  	$('#addckwarn').empty();
+					  	$('#addckwarn').append('{%trans "content must contain at least 10 characters"%}');
+					  	$('#buraya').prop("disabled", true);
+					  }
+					  else{
+					  	$('#addckwarn').empty();
+					  	var al = $('#buraya').prop("disabled");
+					  	$('#buraya').prop("disabled", false);
+					  }
+					}
+		  		//stop
+				  });
+				  // recaptcha control coding
+				  if ($('#adddeleterecapct').length){
+				  	var onloadCallback = function() {
+				  		grecaptcha.render('captchaadd', {
+				  			'sitekey' : '6Ler5XQUAAAAALmun6SLqIMNpqDl5RVCUUlo4EKP'
+				  		});
+				  	};
+				  	onloadCallback();
+				  	$('#adddeleterecapct').remove();
+				  }
+				  $("#contentids"+response["pk"]).ScrollTo();
+			   },
+			  error: function(xhr, status, error) {
+				  var err = eval("(" + xhr.responseText + ")");
+				  alert(err.Message);
+			  }
+		  });
+		  return false;
+	  }
+  </script>
+  <script type="text/javascript">
+	  var thisclickmainform = function() {
+		  var postsgroupwrite = CKEDITOR.instances["postsgroupwrite"].getData();
+		  var feeling = $("#feeling").val();
+		  var postgrouplabels = $("#addvalueoptions").val();//selected option data getting
+		  var postesttype = $("#postesttype").val();
+		  var grouppknum = $("#grouppknum").val();
+		  var groupslugchar = $("#groupslugchar").val();
+		  var url = $("#myform").attr("action");
+		  var type = $("#myform").attr("method");
+		  var data = {
+			  postsgroupwrite:postsgroupwrite,
+			  feeling:feeling,
+			  postgrouplabels:postgrouplabels,
+			  postesttype:postesttype,
+			  grouppknum:grouppknum,
+			  groupslugchar:groupslugchar,
+			  csrfmiddlewaretoken:"{{ csrf_token }}"
+		  }
+		  var dataforminformation = {
+			  url:url,
+			  type:type
+		  }
+		  var formDatamine = new FormData($('#myform')[0]);
+		  var url = myforminformation(dataforminformation).url;
+		  var type = myforminformation(dataforminformation).type;
+		  var csrfmiddlewaretoken = mydatas(data).csrfmiddlewaretoken;
+		  var postsgroupwrite = mydatas(data).postsgroupwrite;
+		  var postgrouplabels = mydatas(data).postgrouplabels;
+		  var postesttype = mydatas(data).postesttype;
+		  var grouppknum = mydatas(data).grouppknum;
+		  var groupslugchar = mydatas(data).groupslugchar;
+		  var multiphoto = $("#multiphoto")[0].files[0];
+		  //var multifiles = $("#multifiles")[0].files[0];
+			  var multifiles = [];
+			  var multifilescontent = $("#multifiles").get(0).files;
+			  for (var blabla = 0; blabla < multifilescontent.length; blabla++) {
+			  	var getmultp = multifilescontent[blabla];
+			  	multifiles.push(getmultp)
+			  }
+		  formDatamine.append('url', url);
+		  formDatamine.append('type', type);
+		  formDatamine.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
+		  formDatamine.append('postsgroupwrite', postsgroupwrite);
+		  formDatamine.append('feeling', feeling);
+		  formDatamine.append('postgrouplabels', postgrouplabels);
+		  formDatamine.append('grouppknum', grouppknum);
+		  formDatamine.append('groupslugchar', groupslugchar);
+		  formDatamine.append('postesttype', postesttype);
+		  formDatamine.append('multiphoto', multiphoto);
+		  formDatamine.append('multifiles', multifiles);
+		  if ($('.g-recaptcha').length) {
+			  	formDatamine.append('recaptcha', grecaptcha.getResponse());
+			  }
+		  $.ajax({
+			  url:url,
+			  type:type,
+			  contentType:false,
+			  processData: false,
+			  data:formDatamine,
+				  success: function(response) {
+				  	/*
+					  console.log(response);
+					  var editformplace = '<div id="editformplace'+response["pk"]+'"></div>';
+					  var adddeletebutton = '<button id="deleteclick'+response["pk"]+'" class="" type="input" >Delete</button>';
+					  var addcontent = '<div id="contentids'+response["pk"]+'"><span>'+response["postsgroupwrite"]+'</span></div>';
+					  var editaddbutton = '<button id="editnameclick'+response["pk"]+'" onclick="editAjaxFormadd('+response["pk"]+')" class="" type="input" >Edit</button>';
+					  $("#contentplace").after(editformplace);
+					  $("#contentplace").after(editaddbutton);
+					  $("#contentplace").after(adddeletebutton);
+					  $("#contentplace").after(addcontent);
+					  var deleteclickids = '#deleteclick'+response["pk"];
+					  var editclickids = '#editnameclick'+response["pk"];
+					  $(deleteclickids).prop('value', '/group/posts/'+response["pk"]+'/'+response["slug"]+'/delete/'+','+response["valuepk"]+','+response["valueslug"]+','+response["pk"]);
+					  $(editclickids).prop('value', '/group/posts/'+response["pk"]+'/'+response["slug"]+'/update/'+','+response["valuepk"]+','+response["valueslug"]+','+response["pk"]);
+					  deletesecond(response["pk"]);
+					  */
+					  //editAjaxForm(response["pk"]);
+					  if ($('#captchaadd').length) {
+					  	grecaptcha.reset();
+					  }
+					  //new add syntax start
+					  var mywidth = $(window).width();
+					  var swsliderwdth = '';
+					  var classadding = '';
+					  if (mywidth >= 1200) {
+					  	swsliderwdth = 760;
+					  	classadding = ' ml-4 pl-4';
+					  }
+					  else if (1024 <= mywidth && mywidth < 1200){
+					  	swsliderwdth = 760;
+					  	classadding = ' ml-4 pl-4';
+					  }
+					  else if (992 <= mywidth && mywidth < 1024){
+					  	swsliderwdth = 760;
+					  }
+					  else if (768 <= mywidth && mywidth < 992){
+					  	swsliderwdth = 690;
+					  }
+					  else if (576 <= mywidth && mywidth < 768){
+					  	swsliderwdth = 550;
+					  }
+					  else if (414 <= mywidth && mywidth < 576){
+					  	swsliderwdth = 384;
+					  }
+					  else if (411 <= mywidth && mywidth < 414){
+					  	swsliderwdth = 381;
+					  }
+					  else if (375 <= mywidth && mywidth < 411){
+					  	swsliderwdth = 345;
+					  }
+					  else if (360 <= mywidth && mywidth < 375){
+					  	swsliderwdth = 330;
+					  }
+					  else if (320 <= mywidth && mywidth < 360){
+					  	swsliderwdth = 290;
+					  }
+					  else {
+					  	swsliderwdth = 180;
+					  }
+					  var addingresultform = `
+					  <div id="contentids`+response['pk']+`" class="mt-4 pt-4">
+								<div class="row border-top border-primary">
+									<div id="feels`+response['pk']+`" class="col-md-4 text-center mt-1 pt-2">
+									</div>
+									<div id="dates`+response['pk']+`" class="col-md-4 text-center mt-1 pt-2 fosizes">
+									</div>
+									<div class="col-md-4 text-center mt-1 pt-2 fosizes">
+									<div id="labeladdscript`+response['pk']+`"</div>
+									</div>
+								</div>
+								<div class="row`+classadding+`">
+									<div class="col-md-12 text-center mt-1 mb-1 pt-1">
+										<div style="width:`+swsliderwdth+`px;" class="swiper-container slider`+response['pk']+`">
+											<div id="wrapper`+response['pk']+`" class="swiper-wrapper">
+											</div>
+										  <div class="swiper-pagination"></div>
+										  <div class="swiper-button-next"></div>
+										  <div class="swiper-button-prev"></div>
+										</div>
+									</div>
+									<div class="col-md-12">
+										<blockquote class="blockquote text-center mt-1">
+											<span id="postsgroupwriteid`+response['pk']+`"></span>
+										</blockquote>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-6 text-center mt-2">
+									<div id="deleteclickbtnid`+response['pk']+`" ></div>
+								</div>
+								<div class="col-md-6 text-center mt-2">
+									<div id="editclickbtnid`+response['pk']+`"></div>
+								</div>
+							</div>
+							<div id="editfrmdiv`+response['pk']+`"></div>
+					  `;
+					  var editformplace = '<div id="editformplace'+response["pk"]+'"></div>';
+					  var adddeletebutton = '<button id="deleteclick'+response["pk"]+'" class="btn btn-primary custombtn" type="input" >{% trans "Delete" %}</button>';
+					  var editaddbutton = '<button id="editnameclick'+response["pk"]+'" onclick="editAjaxFormadd('+response["pk"]+')" class="btn btn-primary custombtn" type="input" >{% trans "Edit" %}</button>';
+					  $("#contentplace").after(addingresultform);
+					  $("#editfrmdiv"+response['pk']).after(editformplace);
+					  //feeling add
+					  var feelingtext = response['feeling'];
+					  if (feelingtext != null || feelingtext != ''){
+						  var placefeeling = "#feels"+response['pk'];
+						  var outputfeel = emojione.toImage(feelingtext);
+						  $(placefeeling).append(outputfeel);
+					  }
+					  //feeling add stop
+					  //dates add
+					  var datesplace = "#dates"+response['pk'];
+					  if (response['createdates'] != null || response['createdates'] != ''){
+					  	$(datesplace).append(response['createdates']);//saati güzel ayarla
+					  }
+					  //dates add stop
+					  //label add start
+					  var labelsplace = "#labeladdscript"+response['pk'];
+					  if (response['postgrouplabels'] != null || response['postgrouplabels'] != ''){
+					  	for(let i =0; i<response['postgrouplabels'].length; i++){
+					  		let mylabel = `<a href="/`+response['groupnameajax']+`/`+response['postgrouplabels'][i]+`/relatedposts">`+response['postgrouplabels'][i]+`</a>`;
+					  		$(labelsplace).append(mylabel);
+					  	}
+					  }
+					  //label add finished
+					  //add photo start
+					  if (response['multifiles'] != null || response['multifiles'] != ''){
+					  	var getarray = response['multifiles'];
+					  	for(let i = 0; i < getarray.length; i++) {
+				  			let element = getarray[i];
+				  			if (element == '' || element == null){
+				  				element = element;
+				  			}
+				  			else{
+				  				var wheres = '#wrapper'+response['pk'];
+				  				var imgid = '#slide'+response['pk'];
+				  				$(wheres).append(`<div class="swiper-slide"><img id="`+imgid+`" class="img-fluid" src=`+element+`></div>`);
+				  			}
+				  		}
+				  		if (response['multiphoto'] != null && response['multiphoto'] != false && response['multiphoto'] != undefined){
+				  			$(wheres).append(`<div class="swiper-slide"><video id="`+imgid+`" class="img-responsive myvidswidth" controls> <source src="`+response['multiphoto']+`" type="video/mp4"></video>`);
+				  		}
+					  }
+					  $(document).ready(function() {
+						  (() => {
+								const sliderEl = document.querySelector('.slider'+response['pk']);
+								  if(!sliderEl){
+								    return;
+								  }
+								  const swipper = new Swiper(sliderEl, {
+								    loop: true,
+								    /*
+								    autoplay: {
+								      delay: 5000,
+								      disableOnInteraction: false
+								    },
+								    */
+								    pagination: {
+								      el: '.swiper-pagination',
+								      clickable: true,
+								      //type: 'progressbar'
+								    },
+								    navigation: {
+								      nextEl: '.swiper-button-next',
+								      prevEl: '.swiper-button-prev',
+								    },
+								  });
+								})();
+						});
+					  //add photo stop
+					  //write contett start
+					  if (response['postsgroupwrite'] != null || response['postsgroupwrite'] != ''){
+					  	$('#postsgroupwriteid'+response['pk']).html(response['postsgroupwrite']);
+					  }
+					  //write content stop
+					  $("#editclickbtnid"+response['pk']).after(editaddbutton);
+					  $("#deleteclickbtnid"+response['pk']).after(adddeletebutton);
+					  var deleteclickids = '#deleteclick'+response["pk"];
+					  var editclickids = '#editnameclick'+response["pk"];
+					  $(deleteclickids).prop('value', '/group/posts/'+response["pk"]+'/'+response["slug"]+'/delete/'+','+response["valuepk"]+','+response["valueslug"]+','+response["pk"]);
+					  $(editclickids).prop('value', '/group/posts/'+response["pk"]+'/'+response["slug"]+'/update/'+','+response["valuepk"]+','+response["valueslug"]+','+response["pk"]);
+					  deletesecond(response["pk"]);
+					  CKEDITOR.instances["postsgroupwrite"].setData('');
+					  $("#multiphoto").val(null);
+					  $("#photoul").empty();
+					  $("#multifiles").val(null);
+					  $("#fileul").empty();
+					  $("#contentids"+response["pk"]).ScrollTo();
+					  //new ad syntax stop
+				  },
+				  error: function(xhr, status, error) {
+					  var err = eval("(" + xhr.responseText + ")");
+					  alert(err.Message);
+				  }
+		  });
+		  return false;
+		  
+	  }
+  </script>
+  <script type="text/javascript">
+	  var form = $("#myform");
+	  $(document).ready(function() {
+		  $("#buraya").click(function() {
+			  var postsgroupwrite = CKEDITOR.instances["postsgroupwrite"].getData();
+			  var feeling = $("#feeling").val();
+			  var postgrouplabels = $("#addvalueoptions").val();//selected option data getting
+			  var postesttype = $("#postesttype").val();
+			  var grouppknum = $("#grouppknum").val();
+			  var groupslugchar = $("#groupslugchar").val();
+			  var url = $("#myform").attr("action");
+			  var type = $("#myform").attr("method");
+			  var data = {
+				  postsgroupwrite:postsgroupwrite,
+				  feeling:feeling,
+				  postgrouplabels:postgrouplabels,
+				  postesttype:postesttype,
+				  grouppknum:grouppknum,
+				  groupslugchar:groupslugchar,
+				  csrfmiddlewaretoken:"{{ csrf_token }}"
+			  }
+			  var dataforminformation = {
+				 url:url,
+				 type:type
+			  }
+			  var formDatamine = new FormData($('#myform')[0]);
+			  var url = myforminformation(dataforminformation).url;
+			  var type = myforminformation(dataforminformation).type;
+			  var csrfmiddlewaretoken = mydatas(data).csrfmiddlewaretoken;
+			  var postsgroupwrite = mydatas(data).postsgroupwrite;
+			  var feeling = mydatas(data).feeling;
+			  var postgrouplabels = mydatas(data).postgrouplabels;
+			  var postesttype = mydatas(data).postesttype;
+			  var grouppknum = mydatas(data).grouppknum;
+			  var groupslugchar = mydatas(data).groupslugchar;
+			  var multiphoto = $("#multiphoto")[0].files[0];
+			  //var multifiles = $("#multifiles")[0].files[0];
+			  var multifiles = [];
+			  var multifilescontent = $("#multifiles").get(0).files;
+			  for (var blabla = 0; blabla < multifilescontent.length; blabla++) {
+			  	var getmultp = multifilescontent[blabla];
+			  	multifiles.push(getmultp)
+			  }
+			  formDatamine.append('url', url);
+			  formDatamine.append('type', type);
+			  formDatamine.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
+			  formDatamine.append('postsgroupwrite', postsgroupwrite);
+			  formDatamine.append('feeling', feeling);
+			  formDatamine.append('postgrouplabels', postgrouplabels);
+			  formDatamine.append('grouppknum', grouppknum);
+			  formDatamine.append('groupslugchar', groupslugchar);
+			  formDatamine.append('postesttype', postesttype);
+			  formDatamine.append('multiphoto', multiphoto);
+			  formDatamine.append('multifiles', multifiles);
+			  if ($('.g-recaptcha').length) {
+			  	formDatamine.append('recaptcha', grecaptcha.getResponse());
+			  }
+			  $.ajax({
+				  url:url,
+				  type:type,
+				  contentType:false,
+				  processData: false,
+				  data:formDatamine,
+				  success: function(response) {
+				  	console.log(response);
+				  	/*
+					  console.log(response);
+					  var editformplace = '<div id="editformplace'+response["pk"]+'"></div>';
+					  var adddeletebutton = '<button id="deleteclick'+response["pk"]+'" class="" type="input" >Delete</button>';
+					  var addcontent = '<div id="contentids'+response["pk"]+'"><span>'+response["postsgroupwrite"]+'</span></div>';
+					  var editaddbutton = '<button id="editnameclick'+response["pk"]+'" onclick="editAjaxFormadd('+response["pk"]+')" class="" type="input" >Edit</button>';
+					  $("#contentplace").after(editformplace);
+					  $("#contentplace").after(editaddbutton);
+					  $("#contentplace").after(adddeletebutton);
+					  $("#contentplace").after(addcontent);
+					  var deleteclickids = '#deleteclick'+response["pk"];
+					  var editclickids = '#editnameclick'+response["pk"];
+					  $(deleteclickids).prop('value', '/group/posts/'+response["pk"]+'/'+response["slug"]+'/delete/'+','+response["valuepk"]+','+response["valueslug"]+','+response["pk"]);
+					  $(editclickids).prop('value', '/group/posts/'+response["pk"]+'/'+response["slug"]+'/update/'+','+response["valuepk"]+','+response["valueslug"]+','+response["pk"]);
+					  deletesecond(response["pk"]);
+					  */
+					  //editAjaxForm(response["pk"]);
+					  //new add startx
+					  var mywidth = $(window).width();
+					  var swsliderwdth = '';
+					  var classadding = '';
+					  if (mywidth >= 1200) {
+					  	swsliderwdth = 760;
+					  	classadding = ' ml-4 pl-4';
+					  }
+					  else if (1024 <= mywidth && mywidth < 1200){
+					  	swsliderwdth = 760;
+					  	classadding = ' ml-4 pl-4';
+					  }
+					  else if (992 <= mywidth && mywidth < 1024){
+					  	swsliderwdth = 760;
+					  }
+					  else if (768 <= mywidth && mywidth < 992){
+					  	swsliderwdth = 690;
+					  }
+					  else if (576 <= mywidth && mywidth < 768){
+					  	swsliderwdth = 550;
+					  }
+					  else if (414 <= mywidth && mywidth < 576){
+					  	swsliderwdth = 384;
+					  }
+					  else if (411 <= mywidth && mywidth < 414){
+					  	swsliderwdth = 381;
+					  }
+					  else if (375 <= mywidth && mywidth < 411){
+					  	swsliderwdth = 345;
+					  }
+					  else if (360 <= mywidth && mywidth < 375){
+					  	swsliderwdth = 330;
+					  }
+					  else if (320 <= mywidth && mywidth < 360){
+					  	swsliderwdth = 290;
+					  }
+					  else {
+					  	swsliderwdth = 180;
+					  }
+					  var addingresultform = `
+					  <div id="contentids`+response['pk']+`" class="mt-4 pt-4">
+								<div class="row border-top border-primary">
+									<div id="feels`+response['pk']+`" class="col-md-4 text-center mt-1 pt-2">
+									</div>
+									<div id="dates`+response['pk']+`" class="col-md-4 text-center mt-1 pt-2 fosizes">
+									</div>
+									<div class="col-md-4 text-center mt-1 pt-2 fosizes">
+									<div id="labeladdscript`+response['pk']+`"</div>
+									</div>
+								</div>
+								<div class="row`+classadding+`">
+									<div class="col-md-12 text-center mt-1 mb-1 pt-1">
+										<div style="width:`+swsliderwdth+`px;" class="swiper-container slider`+response['pk']+`">
+											<div id="wrapper`+response['pk']+`" class="swiper-wrapper">
+											</div>
+										  <div class="swiper-pagination"></div>
+										  <div class="swiper-button-next"></div>
+										  <div class="swiper-button-prev"></div>
+										</div>
+									</div>
+									<div class="col-md-12">
+										<blockquote class="blockquote text-center mt-1">
+											<span id="postsgroupwriteid`+response['pk']+`"></span>
+										</blockquote>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-6 text-center mt-2"><div id="deleteclickbtnid`+response['pk']+`" ></div>
+								</div>
+								<div class="col-md-6 text-center mt-2"><div id="editclickbtnid`+response['pk']+`"></div></div>
+							</div>
+							<div id="editfrmdiv`+response['pk']+`"></div>
+					  `;
+					  var editformplace = '<div id="editformplace'+response["pk"]+'"></div>';
+					  var adddeletebutton = '<button id="deleteclick'+response["pk"]+'" class="btn btn-primary custombtn" type="input" >{% trans "Delete" %}</button>';
+					  var editaddbutton = '<button id="editnameclick'+response["pk"]+'" onclick="editAjaxFormadd('+response["pk"]+')" class="btn btn-primary custombtn" type="input" >{% trans "Edit" %}</button>';
+					  $("#contentplace").after(addingresultform);
+					  $("#editfrmdiv"+response['pk']).after(editformplace);
+					  //feeling add
+					  var feelingtext = response['feeling'];
+					  if (feelingtext != null || feelingtext != ''){
+						  var placefeeling = "#feels"+response['pk'];
+						  var outputfeel = emojione.toImage(feelingtext);
+						  $(placefeeling).append(outputfeel);
+					  }
+					  //feeling add stop
+					  //dates add
+					  var datesplace = "#dates"+response['pk'];
+					  if (response['createdates'] != null || response['createdates'] != ''){
+					  	$(datesplace).append(response['createdates']);//saati güzel ayarla
+					  }
+					  //dates add stop
+					  //label add start
+					  var labelsplace = "#labeladdscript"+response['pk'];
+					  if (response['postgrouplabels'] != null || response['postgrouplabels'] != ''){
+					  	for(let i =0; i<response['postgrouplabels'].length; i++){
+					  		let mylabel = `<a href="/`+response['groupnameajax']+`/`+response['postgrouplabels'][i]+`/relatedposts">`+response['postgrouplabels'][i]+`</a>`;
+					  		$(labelsplace).append(mylabel);
+					  	}
+					  }
+					  //label add finished
+					  //add photo start
+					  if (response['multifiles'] != null || response['multifiles'] != ''){
+					  	var getarray = response['multifiles'];
+					  	for(let i = 0; i < getarray.length; i++) {
+				  			let element = getarray[i];
+				  			if (element == '' || element == null){
+				  				element = element;
+				  			}
+				  			else{
+				  				var wheres = '#wrapper'+response['pk'];
+				  				var imgid = '#slide'+response['pk'];
+				  				$(wheres).append(`<div class="swiper-slide"><img id="`+imgid+`" class="img-fluid" src=`+element+`></div>`);
+				  			}
+				  		}
+				  		if (response['multiphoto'] != null && response['multiphoto'] != false && response['multiphoto'] != undefined){
+				  			$(wheres).append(`<div class="swiper-slide"><video id="`+imgid+`" class="img-responsive myvidswidth" controls> <source src="`+response['multiphoto']+`" type="video/mp4"></video>`);
+				  		}
+					  }
+					  $(document).ready(function() {
+						  (() => {
+								const sliderEl = document.querySelector('.slider'+response['pk']);
+								  if(!sliderEl){
+								    return;
+								  }
+								  const swipper = new Swiper(sliderEl, {
+								    loop: true,
+								    /*
+								    autoplay: {
+								      delay: 5000,
+								      disableOnInteraction: false
+								    },
+								    */
+								    pagination: {
+								      el: '.swiper-pagination',
+								      clickable: true,
+								      //type: 'progressbar'
+								    },
+								    navigation: {
+								      nextEl: '.swiper-button-next',
+								      prevEl: '.swiper-button-prev',
+								    },
+								  });
+								})();
+						});
+					  //add photo stop
+					  //write contett start
+					  if (response['postsgroupwrite'] != null || response['postsgroupwrite'] != ''){
+					  	$('#postsgroupwriteid'+response['pk']).html(response['postsgroupwrite']);
+					  }
+					  //write content stop
+					  $("#editclickbtnid"+response['pk']).after(editaddbutton);
+					  $("#deleteclickbtnid"+response['pk']).after(adddeletebutton);
+					  var newdivnameadd = `<div id=neweditadd`+response["pk"]+`></div>`;
+					  $('#newcontids').append(newdivnameadd);
+					  var deleteclickids = '#deleteclick'+response["pk"];
+					  var editclickids = '#editnameclick'+response["pk"];
+					  $(deleteclickids).prop('value', '/group/posts/'+response["pk"]+'/'+response["slug"]+'/delete/'+','+response["valuepk"]+','+response["valueslug"]+','+response["pk"]);
+					  $(editclickids).prop('value', '/group/posts/'+response["pk"]+'/'+response["slug"]+'/update/'+','+response["valuepk"]+','+response["valueslug"]+','+response["pk"]);
+					  deletesecond(response["pk"]);
+					  CKEDITOR.instances["postsgroupwrite"].setData('');
+					  $("#multiphoto").val(null);
+					  $("#photoul").empty();
+					  $("#multifiles").val(null);
+					  $("#fileul").empty();
+					  $("#contentids"+response["pk"]).ScrollTo();
+					  //new add stopx
+				   },
+				  error: function(xhr, status, error) {
+					  var err = eval("(" + xhr.responseText + ")");
+					  alert(err.Message);
+				   }
+			  });
+			  return false;
+		     
+		  });
+	   });
+   </script>
+   <script>
+			var postcontrol = 'postcontrol';
+
+			var chatSocket = new WebSocket(
+				'ws://' + window.location.host +
+				'/ws/postcontrol/' + postcontrol + '/');
+
+			chatSocket.onmessage = function(e) {
+				var data = JSON.parse(e.data);
+				var content = data['content'];
+				var another = data['another'];
+				var whos = $('#whoiswho').val();
+				if (content == whos && another == 'add') {
+					if (!$('.g-recaptcha').length && !$('#adddeleterecapct').length) {
+						var addhidelem = '<div id="adddeleterecapct"></div>';
+						$('#captchacontroladd').after(addhidelem);
+						if ($('#mainrecaptchacontrol').length) {
+							var onloadCallback = function() {
+								grecaptcha.render('captchaadd', {
+						          'sitekey' : '6Ler5XQUAAAAALmun6SLqIMNpqDl5RVCUUlo4EKP'
+						        });
+						    };
+						    onloadCallback();
+				      }
+					}
+					else if ($('.g-recaptcha').length && $('#captchaadd').length) {
+						grecaptcha.reset();
+					}
+					else if ($('#adddeleterecapct').length && $('#mainrecaptchacontrol').length) {
+						grecaptcha.reset();
+					}
+				}
+			};
+
+			chatSocket.onclose = function(e) {
+				console.error('Chat socket closed unexpectedly');
+			};
+	</script>
+	<!-- Initialize Swiper -->
+  <script>
+  	$(document).ready(function() {
+  		/*
+	    var swiper = new Swiper('.swiper-container', {
+	      pagination: {
+	        el: '.swiper-pagination',
+	        type: 'progressbar',
+	      },
+	      navigation: {
+	        nextEl: '.swiper-button-next',
+	        prevEl: '.swiper-button-prev',
+	      },
+	    });
+	    */
+    });
+  </script>
+  <!-- Initialize Swiper -->
+  <script>
+  	var swiperstartfun = function () {
+	    var swiper = new Swiper('.swiper-container', {
+	      pagination: {
+	        el: '.swiper-pagination',
+	        type: 'progressbar',
+	      },
+	      navigation: {
+	        nextEl: '.swiper-button-next',
+	        prevEl: '.swiper-button-prev',
+	      },
+	    });
+    }
+  </script>
+  <!-- Form Validate -->
+  <script type="text/javascript">
+  	$(document).ready(function() {
+  		$.validator.addMethod('filesize', function (value, element, arg) {
+        var minsize=50;
+        var sizecont = [];
+        var elementlenght = element.files;
+        for (let blablam = 0; blablam < elementlenght.length; blablam++) {
+			    let getmultpi = elementlenght[blablam];
+			    if(getmultpi.size > minsize && getmultpi.size <= arg){
+	        	sizecont.push('true');
+	        }
+	        else{
+	        	sizecont.push('false');
+	        }
+			  }
+			  for (let blablam = 0; blablam < sizecont.length; blablam++) {
+			    let getmultpi = sizecont[blablam];
+			    if(getmultpi == 'false'){
+	        	$.validator.messages.filesize = '{% trans "file size must be less than 1.2MB and more than 50KB" %}';
+	        	return false;
+	        	break;
+	        }
+	        else{
+	        	if (blablam+1 == sizecont.length) {
+	        		$.validator.messages.filesize = '{% trans "file receive" %}';
+	        		return true;
+	        		break;
+	        	}
+	        }
+			  }
+      });
+      $.validator.addMethod('photofilesize', function (value, element, arg) {
+        var minsize=1000;
+        if(element.files[0].size > minsize && element.files[0].size <= arg){
+        	$.validator.messages.photofilesize = '{% trans "file receive" %}';
+          return true;
+        }
+        else{
+        	$.validator.messages.photofilesize = '{% trans "file size must be less than 1.2MB." %}';
+          return false;
+        }
+      });
+  		$('#myform').validate({
+  			rules: {
+  				postsgroupwrite:{
+  					required:true,
+  					minlength:10,
+  				},
+  				multiphoto:{
+  					extension: 'mp4',
+  					accept: "video/*",
+  					photofilesize: 100000000
+  				},
+  				multifiles:{
+  					extension: 'jpg|jpeg|png',
+  					accept: "image/*",
+  					filesize: 10000000
+  				}
+  			},
+  			message : {
+  				postsgroupwrite:{
+  					required:'{% trans "Please enter Text" %}',
+  					minlength:'{% trans "Please enter 10 characters" %}'
+  				},
+  				multiphoto: {
+  					photofilesize:'{% trans "file size must be less than 50MB." %}',
+  					multiphoto:'{% trans "Please upload a valid .mp4 file type." %}',
+  					accept: '{% trans "Please upload a valid .mp4 file type." %}'
+  				},
+  				multifiles: {
+  					filesize:'{% trans "file size must be less than 1.2MB." %}',
+  					multifiles:'{% trans "Please upload a valid file type." %}',
+  					accept: '{% trans "Please upload a valid file type." %}'
+  				}
+  			}
+  		});
+  		/*
+  		CKEDITOR.instances['postsgroupwrite'].on('focus', function () {
+			   //do something
+			 });
+			 */
+
+			 //deal with copying the ckeditor text into the actual textarea
+			CKEDITOR.on('instanceReady', function () {
+				var instance = 'postsgroupwrite';
+			  $.each(CKEDITOR.instances, function (instance) {
+			    CKEDITOR.instances[instance].on("keyup", CK_jQ);
+			    CKEDITOR.instances[instance].on("paste", CK_jQ);
+			    CKEDITOR.instances[instance].on("keypress", CK_jQ);
+			    CKEDITOR.instances[instance].on("blur", CK_jQ);
+			    CKEDITOR.instances[instance].on("change", CK_jQ);
+			  });
+			});
+
+			function CK_jQ() {
+				var conlists = "";
+			  for (instance in CKEDITOR.instances) {
+			    //var sim = CKEDITOR.instances[instance].updateElement();
+			    var message =  jQuery.trim(CKEDITOR.instances[instance].getData());
+			    message = message.replace(/<[^>]*>/gi, '');
+			    message = message.replace(/&nbsp;/gi, '');
+			    message = R.replace(/<[^>]*>/g, '', R.toString(message));
+			    message = R.replace(/ /g, '', message);
+			    var messageLength = R.trim(message).length;
+			    if (messageLength < 14) {
+			    	conlists = false;
+			    }
+			    else{
+			    	conlists = true;
+			    }
+			  }
+			  if (conlists == false) {
+			  	$('#addckwarn').empty();
+			  	$('#addckwarn').append('{%trans "content must contain at least 10 characters"%}');
+			  	$('#buraya').prop("disabled", true);
+			  }
+			  else{
+			  	$('#addckwarn').empty();
+			  	var al = $('#buraya').prop("disabled");
+			  	$('#buraya').prop("disabled", false);
+			  }
+			}
+  	});
+  </script>
+  <!-- File Name Definite-->
+  <script type="text/javascript">
+  	$(document).ready(function() {
+  		$('input#multifiles').change(function(){
+  			$('#fileul').empty();
+  			if ($('#multifiles').valid()==true) {
+				  var multifilescontent = $("#multifiles").get(0).files;
+				  for (var blabla = 0; blabla < multifilescontent.length; blabla++) {
+				  	var getmultp = multifilescontent[blabla];
+				  	$('#fileul').append("<li class='list-group-item'>"+getmultp.name+"</li>");
+				  }
+				}
+				else{
+					$('#fileul').append("<li class='list-group-item'>"+"{%trans 'files must be in jpg,jpeg or png format'%}"+"</li>");
+				}
+  		});
+  		$('input#multiphoto').change(function(){
+  			$('#photoul').empty();
+  			//alert($('#multiphoto').valid());
+  			if ($('#multiphoto').valid()==true) {
+	  			var multifilescontent = $("#multiphoto").get(0).files;
+				  for (var blabla = 0; blabla < multifilescontent.length; blabla++) {
+				  	var getmultp = multifilescontent[blabla];
+				  	$('#photoul').append("<li class='list-group-item'>"+getmultp.name+"</li>");
+				  }
+			  }
+			  else{
+			  	$('#photoul').append("<li class='list-group-item'>"+"{%trans 'files must be in mp4 format and file size should be smaller than 50mb'%}"+"</li>");
+			  }
+  		});
+  	});
+  	var multifilesfunc = function(){
+	  	$('input#multifiles').change(function(){
+	  		$('#fileul').empty();
+				var multifilescontent = $("#multifiles").get(0).files;
+				for (var blabla = 0; blabla < multifilescontent.length; blabla++) {
+				  var getmultp = multifilescontent[blabla];
+				  $('#fileul').append("<li class='list-group-item'>"+getmultp.name+"</li>");
+				}
+	  	});
+  	}
+  	var multiphotofunc = function(){
+  		$('input#multiphoto').change(function(){
+  			$('#photoul').empty();
+	  		var multifilescontent = $("#multiphoto").get(0).files;
+				  for (var blabla = 0; blabla < multifilescontent.length; blabla++) {
+				  	var getmultp = multifilescontent[blabla];
+				  	$('#photoul').append("<li class='list-group-item'>"+getmultp.name+"</li>");
+				  }
+	  	});
+  	}
+  </script>
+  <script type="text/javascript">
+  	// label automatic click
+  	$(document).ready(function() {
+  		$('#labeladd').click();
+  	});
+  	var convertsmile = function convertsmile (pk) {
+  		var getid = '#feels'+pk
+  		var input = $(getid).text();
+  		var output = emojione.toImage(input);
+  		document.getElementById(getid).innerHTML = output;
+  	}
+  	var slideshows = function slideshows (getarray, pk) {
+  		for(let i = 0; i < getarray.length; i++) {
+  			let element = getarray[i];
+  			if (element == '' || element == null){
+  				element = element;
+  			}
+  			else{
+  				let wheres = '#wrapper'+pk;
+  				let imgid = '#slide'+pk;
+  				$(wheres).append(`<div class="swiper-slide"><img id="`+imgid+`" class="img-fluid" src=`+element+`></div>`);
+  			}
+  		}
+  	}
+  </script>
+{% endblock %}
+{% block head_title %}
+	{% blocktrans %}New Post Create{% endblocktrans %}
+{% endblock %}
+
+{% block extra_head %}
+{% endblock %}
+{% block body %}
+
+	{% block mynavbar %}
+	  {% include "myincludes/mynavbar.html" %}
+	{% endblock %}
+
+{% block content %}
+		<section class="userdetailsection">
+			<div class="container">
+				<div class="page-header">
+			 		<div class="row">
+			 			<div class="col-md-12 text-center mt-1 pt-2">
+									<h3>{% trans "Create Post" %}</h3>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		{% if request.user.is_authenticated %}
+			{% if request.user.is_active %}
+		<section class="postcreateuss">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-12 text-center mt-1 pt-2">
+						<input type="hidden" id= "editinputval" name="editinputval" value="">
+						<input type="hidden" id= "whoiswho" name="whoiswho" value="{{request.user.username}}">
+						<input type="hidden" id= "groupinformandlabel" name="groupinformandlabel" value="{{ whichgroup.pk }},{{ whichgroup.slug }}">
+						<select hidden id="selectidvalue" >
+						{% for tag in whichgroup.grouplabels.all %}
+							<option hidden value="{{ tag.name }}">{{ tag.name }}</option>
+						{% endfor %}
+						</select>
+
+								{% joinercontroler request.user.id as joinconroler_flag %}
+								{% if whichgroup.user == request.user or joinconroler_flag == True %}
+									<div id="newcontids"></div>
+									<div id="captchacontroladd"></div>
+									<div id="formchangerdiv"></div>
+									<div id="firstpostform" class="">
+									{% url 'creategrouppostsajax' whichgroup.pk whichgroup.slug as the_url %}
+									<form id="myform" action="{{ the_url }}" method="post" enctype="multipart/form-data">
+									    {% csrf_token %}
+											<div class="form-group">
+												<div id="addckwarn" class="row ml-1 mb-1"></div>
+										    {{ form.postsgroupwrite }}
+											</div>
+											<div class="form-group">
+												<div class="custom-file">
+													{{ form.multiphoto }}
+													<label class="multiphoto custom-file-label" for="multiphoto">{% trans "Choose Photos" %}</label>
+												</div>
+												<div class="table-responsive">
+												  <table class="table">
+														<tbody>
+															<tr>
+																<th>
+																    <div class="text-center">
+																		<div class="divmultiphoto">
+																		    <ul id="photoul" class="list-group"></ul>
+																		</div>
+																	</div>
+																</th>
+															</tr>
+														</tbody>
+													</table>
+												</div>
+											</div>
+											<div class="form-group">
+												<div class="custom-file">
+													{{ form.multifiles }}
+													<label class="multifiles custom-file-label" for="multifiles">{% trans "Choose Videos" %}</label>
+												</div>
+												<div class="table-responsive">
+												   <table class="table">
+														<tbody>
+															<tr>
+																<th>
+																    <div class="text-center">
+																		<div class="divmultifiles">
+																		    <ul id="fileul" class="list-group"></ul>
+																		</div>
+																	</div>
+																</th>
+															</tr>
+														</tbody>
+													</table>
+												</div>
+											</div>
+											<!-- feeling area-->
+											<div class="form-group row">
+											  <label class="col-2 col-form-label font-weight-bold">{% trans "Select Feeling" %}</label>
+											  <div class="col-10 text-right">
+											    {{ form.feeling }}
+											  </div>
+											</div>
+											<!-- feeling area-->
+									    {{ form.grouppknum }}
+									    {{ form.groupslugchar }}
+									    <select hidden class="custom-select" id="addvalueoptions" ></select>
+									    <input type="hidden" id= "postesttype" name="postesttype" value="application/x-www-form-urlencoded">
+									</form>
+										<button id="labeladd" class="btn btn-primary btn-block mt-1" type="input" onclick="getgroupinformation()" name="labeladd" >{% trans "Label Add" %}</button>
+										<div id="tothisaddpostbutton"></div>
+										<div id="mainrecaptchacontrol"></div>
+										<div id="captchaadd"></div>
+											{% if captchacontrol == 'True' %}
+												<div class=" col-md-12 text-center mt-2">
+												<div class="g-recaptcha" data-sitekey="6Ler5XQUAAAAALmun6SLqIMNpqDl5RVCUUlo4EKP"></div>
+															</div>
+											{% endif %}
+										<button id="buraya" class="btn btn-primary btn-block mt-2" type="input" name="createpostone" disabled="true">{% trans "Send" %}</button>
+									</div>
+								{% endif %}
+					</div>
+				</div>
+			</div>
+		</section>
+		<section class="createdsontent">
+			<div class="container">
+									{% for post in mydata %}
+										{% if post.postsgroupwrite == None %}
+											<h2>{% trans "No Post" %}</h2>
+										{% endif %}
+										{% if post.postsgroupwrite != None and post.user == request.user %}
+											<div id="contentplace"></div>
+												<div id="contentids{{ post.pk }}" class="mt-4 pt-4">
+													<div class="row border-top border-primary">
+														<div id="feels{{ post.pk }}" class="col-md-4 text-center mt-1 pt-2">
+															{{ post.feeling }}
+														</div>
+														<script type="text/javascript">
+															$(document).ready(function() {
+															  function convert() {
+															      var input = $('#feels{{ post.pk }}').text();
+															      var output = emojione.toImage(input);
+															      document.getElementById('feels{{ post.pk }}').innerHTML = output;
+															  }
+															  convert();
+															});
+														</script>
+														<div class="col-md-4 text-center mt-1 pt-2 fosizes">
+															{{ post.createdates }}
+														</div>
+														<div class="col-md-4 text-center mt-1 pt-2 fosizes">
+															{% for tag in post.postgrouplabels.all %}
+																<!--<a href="/{{ post.creategrouppost.groupname }}/{{ tag.name }}/relatedposts">{{ tag.name }}</a>-->
+																<a href="/{{ tag.name }}/relatedposts">{{ tag.name }}</a>
+															{% endfor %}
+														</div>
+													<!-- </div> -->
+													<!-- carosel photo start -->
+													<!-- <div class="row"> -->
+														<div class="col-md-12 text-center mt-1 mb-1 pt-1">
+															{% photo_show_list post.id as photolist %}
+															<input id="wsipperphotourllist{{ post.pk }}" type="hidden" name="" value="{{ photolist }}">
+															<!-- for picture design -->
+															<div class="swiper-container slider{{ post.pk }}">
+																<div id="wrapper{{ post.pk }}" class="swiper-wrapper">
+																	<!--<div class="swiper-slide"><img id="slide{{ post.pk }}" src=""></div>-->
+																	<!-- Add Pagination -->
+																</div>
+															  <div class="swiper-pagination"></div>
+															  <!-- Add Arrows -->
+															  <div class="swiper-button-next"></div>
+															  <div class="swiper-button-prev"></div>
+															</div>
+															<script type="text/javascript">
+																$(document).ready(function() {
+																	//photos add
+																	var ptlst = $('#wsipperphotourllist{{ post.pk }}').val();
+																	ptlst = ptlst.substr(1);
+																	nnptlst = ptlst.length;
+																	ptlst = ptlst.substr(0, nnptlst-1);
+																	var listptlst = ptlst.split(",");
+																	for (let i = 0; i < listptlst.length; i++) {
+																		let element = listptlst[i];
+																		if (element == "\'false\'") {
+																			element = element;
+																		}
+																		else{
+																			$('#wrapper{{ post.pk }}').append(`<div class="swiper-slide"><img id="slide{{ post.pk }}" class="img-fluid" src=`+element+`></div>`);
+																		}
+																	}
+																	{% if post.multiphoto %}
+																		$('#wrapper{{ post.pk }}').append(`<div class="swiper-slide"><video id="slide{{ post.pk }}" class="img-responsive myvidswidth" controls> <source src="{{ post.multiphoto.url }}" type="video/mp4"></video>`);
+																	{% endif %}
+																	(() => {
+																		const sliderEl = document.querySelector('.slider{{ post.pk }}');
+																		  if(!sliderEl){
+																		    return;
+																		  }
+																		  const slider = new Swiper(sliderEl, {
+																		    loop: true,
+																		    /*
+																		    autoplay: {
+																		      delay: 5000,
+																		      disableOnInteraction: false
+																		    },
+																		    */
+																		    pagination: {
+																		      el: '.swiper-pagination',
+																		      clickable: true,
+																		      //type: 'progressbar'
+																		    },
+																		    navigation: {
+																		      nextEl: '.swiper-button-next',
+																		      prevEl: '.swiper-button-prev',
+																		    },
+																		  });
+																		})();
+																});
+																//$('#slide{{ post.pk }}').prop(src, )
+															</script>
+														</div>
+													</div>
+													<!-- carosel photo stop -->
+													<!-- text start -->
+													<div class="row">
+														<div class="col-md-12">
+															<blockquote class="blockquote text-center mt-1">
+																<span>{{ post.postsgroupwrite|safe }}</span>
+															</blockquote>
+														</div>
+													</div>
+													<!-- text stop -->
+												</div>
+												<div class="row">
+													<div class="col-md-6 text-center mt-2">
+														{% url 'deletepostsgroup' post.pk post.slug as the_url %}
+														<button id="deleteclick{{ post.pk }}" onclick="deletethird({{ post.pk }})" class="btn btn-primary custombtn" value="{{ the_url }},{{ whichgroup.pk }},{{ whichgroup.slug }},{{ post.pk }}" type="input" >{% trans "Delete" %}</button>
+													</div>
+													<div class="col-md-6 text-center mt-2">
+														{% url 'updategrouppostsajax' post.pk post.slug as the_update_url %}
+														<button id="editnameclick{{ post.pk }}" onclick="editAjaxFormadd({{ post.pk }})" class="btn btn-primary custombtn" value="{{ the_update_url }},{{ whichgroup.pk }},{{ whichgroup.slug }},{{ post.pk }}" type="input" >{% trans "Edit" %}</button>
+													</div>
+												</div>
+												<div id="editformplace{{ post.pk }}"></div>
+										{% endif %}
+									{% endfor %}
+									<!-- paginate start-->
+									{% if is_paginated %}
+										<div class="row mt-3 pt-2">
+											<div class="col-md-12" >
+												<nav aria-label="Page navigation example">
+													<ul class="pagination justify-content-center">
+														{% if mydata.has_previous %}
+														    <li class="page-item">
+														        <span><a class="page-link" href="?page={{ mydata.previous_page_number }}">{% trans "Previous" %}</a></span>
+														    </li>
+														{% endif %}
+														    <li class="page-item disabled">
+														        <span class="page-link">{% trans "Page"%} {{ mydata.number }} {%trans "of" %} {{ mydata.paginator.num_pages }}</span>
+														    </li>
+														{% if mydata.has_next %}
+														    <li class="page-item">
+														        <span><a class="page-link" href="?page={{ mydata.next_page_number }}">{%trans "Next" %}</a></span>
+														    </li>
+														{% endif %}
+													</ul>
+												</nav>
+											</div>
+										</div>
+									{% else %}
+										    <p>{% trans "No more pages to display" %}</p>
+									{% endif %}
+									<!-- paginate stop-->
+			</div>
+		</section>
+								{% else %}
+								<section>
+									<div class="container">
+										<div class="row"> 
+											<div class="col-md-12 text-center mt-1 pt-2">
+												<h2>{% blocktrans %}you need to confirm your account via email{% endblocktrans %}
+											</div>
+										</div>
+									</div>
+								</section>
+								{% endif %}
+						{% endif %}
+	{% endblock %}
+
+{% endblock body %}
+
+{% block myfooter %}
+  {% include "myincludes/myfooter.html" %}
+{% endblock %}

@@ -1,0 +1,877 @@
+{% extends "account/base.html" %}
+{% load i18n %}
+{% load static %}
+{% block bodyicijs %}
+  <script type="text/javascript">
+	  var mydatas = function (data) {
+		var data = data;
+		return data;
+	  }
+	  var myforminformation = function (dataforminformation) {
+	    var dataforminformation = dataforminformation;
+		return dataforminformation;
+	  }
+  </script>
+  
+  <script type="text/javascript">
+	  //labeller formda selecte işlenecek, forma select konacak
+	  var labelselect = function labelselect () {
+		  var label = document.getElementById("selectidvalue");
+		  var selectget = document.getElementById("addvalueoptions");
+		  //var labelval = "";
+		  for (var i = 0; i < label.length; i++) {
+			  //labelval +=label[i].value + ",";
+			  var option = document.createElement("option");
+			  var strongcontrol = label[i].text;
+			  if (strongcontrol.startsWith("#")) {
+				  var regulartext = label[i].text;
+				  option.text = regulartext.replace("#", "");
+				  option.value = label[i].value;
+				  selectget.add(option);
+			  }
+			  else {
+				  var boldcont = label[i].text;
+				  option.text = boldcont;
+				  option.value = label[i].value;
+				  option.style.font = "italic bold 20px arial,serif";
+				  selectget.add(option);
+			  }
+		  }
+		  selectget.removeAttribute("hidden");
+	  }
+  </script>
+  <script type="text/javascript">
+	  var getgroupinformation = function getgroupinformation () {
+		  $("#labeladd").hide();
+		  var groupinform = $("#groupinformandlabel").val();
+		  var parseinform = groupinform.split(",");
+		  var whichpk = parseinform[0];
+		  var whichslug = parseinform[1];
+		  $("#grouppknum").val(whichpk);
+		  $("#groupslugchar").val(whichslug);
+		  labelselect();
+	  }
+  </script>
+  <script type="text/javascript">
+	  var deleteparse = function (getpk) {
+		  var getpk = getpk;
+		  var deleteclickids = '#deleteclick'+getpk;
+		  var deletedata = $(deleteclickids).attr("value");
+		  var parsedatas = deletedata.split(",");
+		  var url = parsedatas[0];
+		  var valuepk = parsedatas[1];
+		  var valueslug = parsedatas[2];
+		  var currentpk = parsedatas[3];
+		  var postesttype = "application/x-www-form-urlencoded";
+		  var retudata = {
+			  url:url,
+			  valuepk:valuepk,
+			  valueslug:valueslug,
+			  currentpk:currentpk,
+			  postesttype:postesttype
+		  }
+		  return retudata;
+	  }
+  </script>
+  <script type="text/javascript">
+	  var deletesecond = function deletesecond (getpk) {
+		  var getpk = getpk;
+		  var deleteclickbuttonids = '#deleteclick'+getpk;
+		  $(deleteclickbuttonids).click(function() {
+			  var retudata = deleteparse(getpk);
+			  var url = retudata['url'];
+			  var valuepk = retudata['valuepk'];
+			  var valueslug = retudata['valueslug'];
+			  var postesttype = retudata['postesttype'];
+			  var currentpk = retudata['currentpk'];
+			  var type = 'POST';
+			  var data = {
+				  valuepk:valuepk,
+				  valueslug:valueslug,
+				  postesttype:postesttype,
+				  csrfmiddlewaretoken:"{{ csrf_token }}"
+			  }
+			  $.ajax({
+				  url:url,
+				  type:type,
+				  data:data,
+				  contentType:"application/x-www-form-urlencoded;charset=utf-8",
+				  success: function(response) {
+					  console.log(response);
+					  var deleteclickids = '#deleteclick'+currentpk;
+					  var deleteplaceids = '#contentids'+currentpk;
+					  var editformplaceids = '#editformplace'+currentpk;
+					  var editclickidsdel = '#editnameclick'+currentpk;
+					  $(deleteplaceids).remove();
+					  $(deleteclickids).remove();
+					  $(editformplaceids).remove();
+					  $(editclickidsdel).remove();
+				  },
+				  error: function(xhr, status, error) {
+					  var err = eval("(" + xhr.responseText + ")");
+					  alert(err.Message);
+				  }
+			  });
+			  return false;
+		  });
+	  }
+  </script>
+  <script type="text/javascript">
+	  var deletethird = function deletethird (getpk) {
+		  var getpk = getpk;
+		  var deleteclickbuttonids = '#deleteclick'+getpk;
+		  var retudata = deleteparse(getpk);
+		  var url = retudata['url'];
+		  var valuepk = retudata['valuepk'];
+		  var valueslug = retudata['valueslug'];
+		  var postesttype = retudata['postesttype'];
+		  var currentpk = retudata['currentpk'];
+		  var type = 'POST';
+		  var data = {
+			  valuepk:valuepk, 
+			  valueslug:valueslug,
+			  postesttype:postesttype,
+			  csrfmiddlewaretoken:"{{ csrf_token }}"
+		  }
+		  $.ajax({
+			  url:url,
+			  type:type,
+			  data:data,
+			  contentType:"application/x-www-form-urlencoded;charset=utf-8",
+			  success: function(response) {
+				  console.log(response);
+				  var deleteclickids = '#deleteclick'+currentpk;
+				  var deleteplaceids = '#contentids'+currentpk;
+				  var editformplaceids = '#editformplace'+currentpk;
+				  var editclickidsdel = '#editnameclick'+currentpk;
+				  $(deleteplaceids).remove();
+				  $(deleteclickids).remove();
+				  $(editformplaceids).remove();
+				  $(editclickidsdel).remove();
+			  },
+			  error: function(xhr, status, error) {
+				  var err = eval("(" + xhr.responseText + ")");
+				  alert(err.Message);
+			  }
+		  });
+		  return false;
+	  }
+  </script>
+  <script type="text/javascript">
+	  var editparse = function (getpk) {
+		  var getpk = getpk;
+		  var editclickids = '#editnameclick'+getpk;
+		  var editdata = $(editclickids).attr("value");
+		  var parsedatas = editdata.split(",");
+		  var url = parsedatas[0];
+		  var valuepk = parsedatas[1];
+		  var valueslug = parsedatas[2];
+		  var currentpk = parsedatas[3];
+		  var postesttype = "application/x-www-form-urlencoded";
+		  var retudata = {
+			  url:url,
+			  valuepk:valuepk,
+			  valueslug:valueslug,
+			  currentpk:currentpk,
+			  postesttype:postesttype
+		  }
+		  return retudata;
+	  }
+  </script>
+  <script type="text/javascript">
+	  //labeller formda selecte işlenecek, forma select konacak
+	  var labelselecttwo = function labelselecttwo () {
+		  var label = document.getElementById("selectidvalue");
+		  var selectget = document.getElementById("addvalueoptionstwo");
+		  //var labelval = "";
+		  for (var i = 0; i < label.length; i++) {
+			  //labelval +=label[i].value + ",";
+			  var option = document.createElement("option");
+			  var strongcontrol = label[i].text;
+			  if (strongcontrol.startsWith("#")) {
+				  var regulartext = label[i].text;
+				  option.text = regulartext.replace("#", "");
+				  option.value = label[i].value;
+				  selectget.add(option);
+			  }
+			  else {
+				  var boldcont = label[i].text;
+				  option.text = boldcont;
+				  option.value = label[i].value;
+				  option.style.font = "italic bold 20px arial,serif";
+				  selectget.add(option);
+			  }
+		  }
+		  selectget.removeAttribute("hidden");
+	  }
+  </script>
+  <script type="text/javascript">
+	  var getgroupinformationtwo = function getgroupinformationtwo () {
+		  $("#labeladdtwo").hide();
+		  var groupinform = $("#groupinformandlabel").val();
+		  var parseinform = groupinform.split(",");
+		  var whichpk = parseinform[0];
+		  var whichslug = parseinform[1];
+		  $("#grouppknum").val(whichpk);
+		  $("#groupslugchar").val(whichslug);
+		  labelselecttwo();
+	  }
+  </script>
+  <script type="text/javascript">
+	  var editAjaxFormadd = function editAjaxFormadd (getpk) {
+		  var retudata = editparse(getpk);
+		  var updateurl = retudata['url'];
+		  var getinputvalue = $("#editinputval").val();
+		  var ajaxformeditremove = "#ajaxformedit"+getinputvalue;
+		  $("#editformcontrol").remove();
+		  $(ajaxformeditremove).remove();
+		  var getpk = getpk;
+		  $("#editinputval").val(getpk);
+		  var ajaxformedit = 'ajaxformedit'+getpk;
+		  var formeditplace = '#editformplace'+getpk;
+		  var deleteclickbtnplace = '#deleteclick'+getpk;
+		  var editclickbtnplace = '#editnameclick'+getpk;
+		  var formadd = `<div id=ajaxformedit`+getpk+` class="">
+			<form id="myformajaxedit" action="`+updateurl+`" method="post" enctype="multipart/form-data">
+				{% csrf_token %}
+				<div class="form-group">
+					<div id="addckwarn" class="row ml-1 mb-1"></div>
+					{{ form.postsgroupwrite }}
+				</div>
+				<input type="hidden" name="grouppknum" id="grouppknum" value="{{ whichgroup.pk }}">
+				<input type="hidden" name="groupslugchar" id="groupslugchar" value="{{ whichgroup.slug }}">
+				<input type="hidden" id= "postesttype" name="postesttype" value="application/x-www-form-urlencoded">
+			</form>
+			<div id="tothisaddpostbuttontwo"></div>
+			<div class="row">
+				<div class="col-md-6 center-block mt-3 pt-2">
+					<button id="burayaajax" onclick="editAjaxForm(`+getpk+`)" class="btn btn-primary custombtn" type="input" name="createpostone" disabled="true">{% trans "Edit" %}</button>
+				</div>
+				<div class="col-md-6 center-block mt-3 pt-2">
+					<button id="iptalajax" onclick="cancelAjax(`+getpk+`)" class="btn btn-primary custombtn" type="input" >{% trans "Cancel" %}</button>
+				</div>
+			</div>
+			</div>
+			`;
+			$("#firstpostform").remove();
+			$(deleteclickbtnplace).hide();
+			$(editclickbtnplace).hide();
+			$(formeditplace).after(formadd);
+			CKEDITOR.replace('postsgroupwrite');
+			$(document).ready(function() {
+		   	CKEDITOR.on('instanceReady', function () {
+					var instance = 'postsgroupwrite';
+				  $.each(CKEDITOR.instances, function (instance) {
+				    CKEDITOR.instances[instance].on("keyup", twoCK_jQ);
+				    CKEDITOR.instances[instance].on("paste", twoCK_jQ);
+				    CKEDITOR.instances[instance].on("keypress", twoCK_jQ);
+				    CKEDITOR.instances[instance].on("blur", twoCK_jQ);
+				    CKEDITOR.instances[instance].on("change", twoCK_jQ);
+				  });
+				});
+			});
+	   	function twoCK_jQ() {
+				var conlists = "";
+			  for (instance in CKEDITOR.instances) {
+			    //var sim = CKEDITOR.instances[instance].updateElement();
+			    var message =  jQuery.trim(CKEDITOR.instances[instance].getData());
+			    message = message.replace(/<[^>]*>/gi, '');
+			    message = message.replace(/&nbsp;/gi, '');
+			    message = R.replace(/<[^>]*>/g, '', R.toString(message));
+			    message = R.replace(/ /g, '', message);
+			    var messageLength = R.trim(message).length;
+			    if (messageLength < 14) {
+			    	conlists = false;
+			    }
+			    else{
+			    	conlists = true;
+			    }
+			  }
+			  if (conlists == false) {
+			  	$('#addckwarn').empty();
+			  	$('#addckwarn').append('{%trans "content must contain at least 10 characters"%}');
+			  	$('#burayaajax').prop("disabled", true);
+			  }
+			  else{
+			  	$('#addckwarn').empty();
+			  	var al = $('#burayaajax').prop("disabled");
+			  	$('#burayaajax').prop("disabled", false);
+			  }
+			}
+	  }
+  </script>
+  <script type="text/javascript">
+	  var cancelAjax = function cancelAjax (getpk) {
+		  var currentpk = getpk;
+		  //var editformplaceids = '#editformplace'+currentpk;
+		  var ajaxformedit = '#ajaxformedit'+currentpk;
+		  var editclickidsdel = '#editnameclick'+currentpk;
+		  var deleteclickshow = '#deleteclick'+currentpk;
+		  //$(editformplaceids).remove();
+		  $(ajaxformedit).remove();
+		  $(editclickidsdel).show();
+		  $(deleteclickshow).show();
+		  var mainformadd = `<div id="firstpostform" class="">
+			{% url 'updategrouppostsajaxannounce' whichgroup.pk whichgroup.slug as the_url %}
+			<form id="myform" action="{{ the_url }}" method="post" enctype="multipart/form-data">
+				{% csrf_token %}
+				<div class="form-group">
+					<div id="addckwarn" class="row ml-1 mb-1"></div>
+					{{ form.postsgroupwrite }}
+				</div>
+				<input type="hidden" name="grouppknum" id="grouppknum" value="{{ whichgroup.pk }}">
+				<input type="hidden" name="groupslugchar" id="groupslugchar" value="{{ whichgroup.slug }}">
+				<input type="hidden" id= "postesttype" name="postesttype" value="application/x-www-form-urlencoded">
+			</form>
+			<div id="tothisaddpostbutton"></div>
+			<button id="buraya" onclick="thisclickmainform()" class="btn btn-primary btn-block" type="input" name="createpostone" disabled="true">{% trans "Send" %}</button>
+			</div>
+			`;
+		   $('#formchangerdiv').after(mainformadd);
+		   CKEDITOR.replace('postsgroupwrite');
+	  }
+  </script>
+  <script type="text/javascript">
+	  var editAjaxForm = function editAjaxForm (getpk) {
+		  var mainformadd = `<div id="firstpostform" class="">
+			{% url 'updategrouppostsajaxannounce' whichgroup.pk whichgroup.slug as the_url %}
+			<form id="myform" action="{{ the_url }}" method="post" enctype="multipart/form-data">
+				{% csrf_token %}
+				<div class="form-group">
+					<div id="addckwarn" class="row ml-1 mb-1"></div>
+					{{ form.postsgroupwrite }}
+				</div>
+				<input type="hidden" name="grouppknum" id="grouppknum" value="{{ whichgroup.pk }}">
+				<input type="hidden" name="groupslugchar" id="groupslugchar" value="{{ whichgroup.slug }}">
+				<input type="hidden" id= "postesttype" name="postesttype" value="application/x-www-form-urlencoded">
+			</form>
+			<div id="tothisaddpostbutton"></div>
+			<button id="buraya" onclick="thisclickmainform()" class="btn btn-primary btn-block" type="input" name="createpostone" disabled="true">{% trans "Send" %}</button>
+			</div>
+			`;
+		  var getpk = getpk;
+		  var ajaxformeditremove = '#ajaxformedit'+getpk;
+		  var deleteclickbtnplace = '#deleteclick'+getpk;
+		  var editclickbtnplace = '#editnameclick'+getpk;
+		  var deleteclickbuttonids = '#deleteclick'+getpk;
+		  var changecontent = '#contentids'+getpk;
+		  var retudata = editparse(getpk);
+		  var url = retudata['url'];
+		  var valuepk = retudata['valuepk'];
+		  var valueslug = retudata['valueslug'];
+		  var postesttype = retudata['postesttype'];
+		  var currentpk = retudata['currentpk'];
+		  var type = 'POST';
+		  var postsgroupwrite = CKEDITOR.instances["postsgroupwrite"].getData();
+		  var postesttype = $("#postesttype").val();
+		  var grouppknum = $("#grouppknum").val();
+		  var groupslugchar = $("#groupslugchar").val();
+		  var url = url;
+		  var type = type;
+		  var valuepk = valuepk;
+		  var valueslug = valueslug;
+		  var data = {
+			  postsgroupwrite:postsgroupwrite,
+			  postesttype:postesttype,
+			  grouppknum:grouppknum,
+			  groupslugchar:groupslugchar,
+			  valuepk:valuepk,
+			  valueslug:valueslug,
+			  csrfmiddlewaretoken:"{{ csrf_token }}"
+		  }
+		  var dataforminformation = {
+			  url:url,
+			  type:type
+		  }
+		  var formDatamine = new FormData($('#myformajaxedit')[0]);
+		  var url = myforminformation(dataforminformation).url;
+		  var type = myforminformation(dataforminformation).type;
+		  var csrfmiddlewaretoken = mydatas(data).csrfmiddlewaretoken;
+		  var postsgroupwrite = mydatas(data).postsgroupwrite;
+		  var postesttype = mydatas(data).postesttype;
+		  var grouppknum = mydatas(data).grouppknum;
+		  var groupslugchar = mydatas(data).groupslugchar;
+		  var valuepk = mydatas(data).valuepk;
+		  var valueslug = mydatas(data).valueslug;
+		  formDatamine.append('url', url);
+		  formDatamine.append('type', type);
+		  formDatamine.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
+		  formDatamine.append('postsgroupwrite', postsgroupwrite);
+		  formDatamine.append('grouppknum', grouppknum);
+		  formDatamine.append('groupslugchar', groupslugchar);
+		  formDatamine.append('valuepk', valuepk);
+		  formDatamine.append('valueslug', valueslug);
+		  formDatamine.append('postesttype', postesttype);
+		  $.ajax({
+			  url:url,
+			  type:type,
+			  contentType:false,
+			  processData: false,
+			  data:formDatamine,
+			  success: function(response) {
+				  console.log(response);
+				  $(changecontent).empty();
+				  //$(changecontent).append('<span>'+response["postsgroupwrite"]+'</span>');
+				  //content add
+				  var addcontent = `
+						<div class="row border-top border-primary mt-3 pt-3">
+							<div id="writer`+response['pk']+`" class="col-md-6 text-center">
+							</div>
+							<div id="dates`+response['pk']+`" class="col-md-6 text-center">
+							</div>
+						</div>
+						<div class="col-md-12 text-center mt-3 pt-2">
+						<blockquote class="blockquote text-center mt-2"><span id="postsgroupwriteid`+response['pk']+`"></span></blockquote>
+						</div>
+				  `;
+				  $(changecontent).append(addcontent);
+				  $("#contentids"+getpk).ScrollTo();
+				  var datesplace = "#dates"+response['pk'];
+					  if (response['createdatesgt'] != null || response['createdatesgt'] != ''){
+					  	$(datesplace).append(response['createdatesgt']);
+					  }
+					  var writerplace = "#writer"+response['pk'];
+					  if (response['writers'] != null || response['writers'] != ''){
+					  	$(writerplace).append('{% trans "Writer:"%} '+response['writers']);//saati güzel ayarla
+					  }
+					  if (response['postsgroupwrite'] != null || response['postsgroupwrite'] != ''){
+					  	$('#postsgroupwriteid'+response['pk']).html(response['postsgroupwrite']);
+					  }
+				  $(ajaxformeditremove).remove();
+				  $(deleteclickbtnplace).show();
+				  $(editclickbtnplace).show();
+				  $('#formchangerdiv').after(mainformadd);
+				  CKEDITOR.replace('postsgroupwrite');
+				  $(document).ready(function() {
+						ckstartcont();
+					});
+			   },
+			  error: function(xhr, status, error) {
+				  var err = eval("(" + xhr.responseText + ")");
+				  alert(err.Message);
+			  }
+		  });
+		  return false;
+	  }
+  </script>
+  <script type="text/javascript">
+	  var thisclickmainform = function() {
+		  var postsgroupwrite = CKEDITOR.instances["postsgroupwrite"].getData();
+		  //var postgrouplabels = $("#addvalueoptions").val();selected option data getting
+		  var postesttype = $("#postesttype").val();
+		  var grouppknum = $("#grouppknum").val();
+		  var groupslugchar = $("#groupslugchar").val();
+		  var url = $("#myform").attr("action");
+		  var type = $("#myform").attr("method");
+		  var data = {
+			  postsgroupwrite:postsgroupwrite,
+			  postesttype:postesttype,
+			  grouppknum:grouppknum,
+			  groupslugchar:groupslugchar,
+			  csrfmiddlewaretoken:"{{ csrf_token }}"
+		  }
+		  var dataforminformation = {
+			  url:url,
+			  type:type
+		  }
+		  var formDatamine = new FormData($('#myform')[0]);
+		  var url = myforminformation(dataforminformation).url;
+		  var type = myforminformation(dataforminformation).type;
+		  var csrfmiddlewaretoken = mydatas(data).csrfmiddlewaretoken;
+		  var postsgroupwrite = mydatas(data).postsgroupwrite;
+		  var postesttype = mydatas(data).postesttype;
+		  var grouppknum = mydatas(data).grouppknum;
+		  var groupslugchar = mydatas(data).groupslugchar;
+		  formDatamine.append('url', url);
+		  formDatamine.append('type', type);
+		  formDatamine.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
+		  formDatamine.append('postsgroupwrite', postsgroupwrite);
+		  formDatamine.append('grouppknum', grouppknum);
+		  formDatamine.append('groupslugchar', groupslugchar);
+		  formDatamine.append('postesttype', postesttype);
+		  $.ajax({
+			  url:url,
+			  type:type,
+			  contentType:false,
+			  processData: false,
+			  data:formDatamine,
+				  success: function(response) {
+					  console.log(response);
+					  /*
+					  var editformplace = '<div id="editformplace'+response["pk"]+'"></div>';
+					  var adddeletebutton = '<button id="deleteclick'+response["pk"]+'" class="" type="input" >Delete</button>';
+					  var addcontent = '<div id="contentids'+response["pk"]+'"><span>'+response["postsgroupwrite"]+'</span></div>';
+					  var editaddbutton = '<button id="editnameclick'+response["pk"]+'" onclick="editAjaxFormadd('+response["pk"]+')" class="" type="input" >Edit</button>';
+					  $("#contentplace").after(editformplace);
+					  $("#contentplace").after(editaddbutton);
+					  $("#contentplace").after(adddeletebutton);
+					  $("#contentplace").after(addcontent);
+					  var deleteclickids = '#deleteclick'+response["pk"];
+					  var editclickids = '#editnameclick'+response["pk"];
+					  $(deleteclickids).prop('value', '/group/postsannounce/'+response["pk"]+'/'+response["slug"]+'/delete/'+','+response["valuepk"]+','+response["valueslug"]+','+response["pk"]);
+					  $(editclickids).prop('value', '/group/postsannounce/'+response["pk"]+'/'+response["slug"]+'/update/'+','+response["valuepk"]+','+response["valueslug"]+','+response["pk"]);
+					  deletesecond(response["pk"]);
+					  //editAjaxForm(response["pk"]);
+					  */
+					  //addind new start
+					  var addcontent = `
+					  <div id="contentids`+response['pk']+`">
+							<div class="row border-top border-primary mt-3 pt-3">
+								<div id="writer`+response['pk']+`" class="col-md-6 text-center">
+								</div>
+								<div id="dates`+response['pk']+`" class="col-md-6 text-center">
+								</div>
+							</div>
+							<div class="col-md-12 text-center mt-3 pt-2">
+							<blockquote class="blockquote text-center mt-2"><span id="postsgroupwriteid`+response['pk']+`"></span></blockquote>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6 mt-3 pt-2">
+								<div id="deleteclickbtnid`+response['pk']+`" ></div>
+							</div>
+							<div class="col-md-6 mt-3 pt-2">
+								<div id="editclickbtnid`+response['pk']+`"></div>
+							</div>
+						</div>
+						<div id="editformplace`+response['pk']+`"></div>
+					  `;
+					  var adddeletebutton = '<button id="deleteclick'+response["pk"]+'" class="btn btn-primary custombtn" type="input" >{% trans "Delete" %}</button>';
+					  var editaddbutton = '<button id="editnameclick'+response["pk"]+'" onclick="editAjaxFormadd('+response["pk"]+')" class="btn btn-primary custombtn" type="input" >{% trans "Edit" %}</button>';
+					  var deleteclickids = '#deleteclick'+response["pk"];
+					  var editclickids = '#editnameclick'+response["pk"];
+					  $("#contentplace").after(addcontent);
+					  var datesplace = "#dates"+response['pk'];
+					  if (response['createdatesgt'] != null || response['createdatesgt'] != ''){
+					  	$(datesplace).append(response['createdatesgt']);
+					  }
+					  var writerplace = "#writer"+response['pk'];
+					  if (response['writers'] != null || response['writers'] != ''){
+					  	$(writerplace).append('{% trans "Writer:"%} '+response['writers']);//saati güzel ayarla
+					  }
+					  if (response['postsgroupwrite'] != null || response['postsgroupwrite'] != ''){
+					  	$('#postsgroupwriteid'+response['pk']).html(response['postsgroupwrite']);
+					  }
+					  $("#deleteclickbtnid"+response["pk"]).after(adddeletebutton);
+					  $("#editclickbtnid"+response["pk"]).after(editaddbutton);
+					  $(deleteclickids).prop('value', '/group/postsannounce/'+response["pk"]+'/'+response["slug"]+'/delete/'+','+response["valuepk"]+','+response["valueslug"]+','+response["pk"]);
+					  $(editclickids).prop('value', '/group/postsannounce/'+response["pk"]+'/'+response["slug"]+'/update/'+','+response["valuepk"]+','+response["valueslug"]+','+response["pk"]);
+					  deletesecond(response["pk"]);
+					  CKEDITOR.instances["postsgroupwrite"].setData('');
+					  //maybe error
+					  $("#contentids"+response["pk"]).ScrollTo();
+					  //adding new stop
+				  },
+				  error: function(xhr, status, error) {
+					  var err = eval("(" + xhr.responseText + ")");
+					  alert(err.Message);
+				  }
+		  });
+		  return false;
+		  
+	  }
+  </script>
+  <script type="text/javascript">
+	  var form = $("#myform");
+	  $(document).ready(function() {
+		  $("#buraya").click(function() {
+			  var postsgroupwrite = CKEDITOR.instances["postsgroupwrite"].getData();
+			  //var postgrouplabels = $("#addvalueoptions").val();selected option data getting
+			  var postesttype = $("#postesttype").val();
+			  var grouppknum = $("#grouppknum").val();
+			  var groupslugchar = $("#groupslugchar").val();
+			  var url = $("#myform").attr("action");
+			  var type = $("#myform").attr("method");
+			  var data = {
+				  postsgroupwrite:postsgroupwrite,
+				  postesttype:postesttype,
+				  grouppknum:grouppknum,
+				  groupslugchar:groupslugchar,
+				  csrfmiddlewaretoken:"{{ csrf_token }}"
+			  }
+			  var dataforminformation = {
+				 url:url,
+				 type:type
+			  }
+			  var formDatamine = new FormData($('#myform')[0]);
+			  var url = myforminformation(dataforminformation).url;
+			  var type = myforminformation(dataforminformation).type;
+			  var csrfmiddlewaretoken = mydatas(data).csrfmiddlewaretoken;
+			  var postsgroupwrite = mydatas(data).postsgroupwrite;
+			  var postesttype = mydatas(data).postesttype;
+			  var grouppknum = mydatas(data).grouppknum;
+			  var groupslugchar = mydatas(data).groupslugchar;
+			  formDatamine.append('url', url);
+			  formDatamine.append('type', type);
+			  formDatamine.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
+			  formDatamine.append('postsgroupwrite', postsgroupwrite);
+			  formDatamine.append('grouppknum', grouppknum);
+			  formDatamine.append('groupslugchar', groupslugchar);
+			  formDatamine.append('postesttype', postesttype);
+			  $.ajax({
+				  url:url,
+				  type:type,
+				  contentType:false,
+				  processData: false,
+				  data:formDatamine,
+				  success: function(response) {
+					  console.log(response);
+					  /*
+					  var editformplace = '<div id="editformplace'+response["pk"]+'"></div>';
+					  var adddeletebutton = '<button id="deleteclick'+response["pk"]+'" class="" type="input" >Delete</button>';
+					  var addcontent = '<div id="contentids'+response["pk"]+'"><span>'+response["postsgroupwrite"]+'</span></div>';
+					  var editaddbutton = '<button id="editnameclick'+response["pk"]+'" onclick="editAjaxFormadd('+response["pk"]+')" class="" type="input" >Edit</button>';
+					  $("#contentplace").after(editformplace);
+					  $("#contentplace").after(editaddbutton);
+					  $("#contentplace").after(adddeletebutton);
+					  $("#contentplace").after(addcontent);
+					  var deleteclickids = '#deleteclick'+response["pk"];
+					  var editclickids = '#editnameclick'+response["pk"];
+					  $(deleteclickids).prop('value', '/group/postsannounce/'+response["pk"]+'/'+response["slug"]+'/delete/'+','+response["valuepk"]+','+response["valueslug"]+','+response["pk"]);
+					  $(editclickids).prop('value', '/group/postsannounce/'+response["pk"]+'/'+response["slug"]+'/update/'+','+response["valuepk"]+','+response["valueslug"]+','+response["pk"]);
+					  deletesecond(response["pk"]);
+					  */
+					  //editAjaxForm(response["pk"]);
+					  //adding new start
+					  var addcontent = `
+					  <div id="contentids`+response['pk']+`">
+							<div class="row border-top border-primary mt-3 pt-3">
+								<div id="writer`+response['pk']+`" class="col-md-6 text-center">
+								</div>
+								<div id="dates`+response['pk']+`" class="col-md-6 text-center">
+								</div>
+							</div>
+							<div class="col-md-12 text-center mt-3 pt-2">
+							<blockquote class="blockquote text-center mt-2"><span id="postsgroupwriteid`+response['pk']+`"></span></blockquote>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6 mt-3 pt-2">
+								<div id="deleteclickbtnid`+response['pk']+`" ></div>
+							</div>
+							<div class="col-md-6 mt-3 pt-2">
+								<div id="editclickbtnid`+response['pk']+`"></div>
+							</div>
+						</div>
+						<div id="editformplace`+response['pk']+`"></div>
+					  `;
+					  var adddeletebutton = '<button id="deleteclick'+response["pk"]+'" class="btn btn-primary custombtn" type="input" >{% trans "Delete" %}</button>';
+					  var editaddbutton = '<button id="editnameclick'+response["pk"]+'" onclick="editAjaxFormadd('+response["pk"]+')" class="btn btn-primary custombtn" type="input" >{% trans "Edit" %}</button>';
+					  var deleteclickids = '#deleteclick'+response["pk"];
+					  var editclickids = '#editnameclick'+response["pk"];
+					  $("#contentplace").after(addcontent);
+					  var datesplace = "#dates"+response['pk'];
+					  if (response['createdatesgt'] != null || response['createdatesgt'] != ''){
+					  	$(datesplace).append(response['createdatesgt']);
+					  }
+					  var writerplace = "#writer"+response['pk'];
+					  if (response['writers'] != null || response['writers'] != ''){
+					  	$(writerplace).append('{% trans "Writer:"%} '+response['writers']);//saati güzel ayarla
+					  }
+					  if (response['postsgroupwrite'] != null || response['postsgroupwrite'] != ''){
+					  	$('#postsgroupwriteid'+response['pk']).html(response['postsgroupwrite']);
+					  }
+					  $("#deleteclickbtnid"+response["pk"]).after(adddeletebutton);
+					  $("#editclickbtnid"+response["pk"]).after(editaddbutton);
+					  $(deleteclickids).prop('value', '/group/postsannounce/'+response["pk"]+'/'+response["slug"]+'/delete/'+','+response["valuepk"]+','+response["valueslug"]+','+response["pk"]);
+					  $(editclickids).prop('value', '/group/postsannounce/'+response["pk"]+'/'+response["slug"]+'/update/'+','+response["valuepk"]+','+response["valueslug"]+','+response["pk"]);
+					  deletesecond(response["pk"]);
+					  CKEDITOR.instances["postsgroupwrite"].setData('');
+					  $("#contentids"+response["pk"]).ScrollTo();
+					  //adding new stop
+				   },
+				  error: function(xhr, status, error) {
+					  var err = eval("(" + xhr.responseText + ")");
+					  alert(err.Message);
+				   }
+			  });
+			  return false;
+		     
+		  });
+	   });
+   </script>
+   <script type="text/javascript">
+   	var ckstartcont = function ckstartcont () {
+   		CKEDITOR.on('instanceReady', function () {
+				var instance = 'postsgroupwrite';
+			  $.each(CKEDITOR.instances, function (instance) {
+			    CKEDITOR.instances[instance].on("keyup", CK_jQ);
+			    CKEDITOR.instances[instance].on("paste", CK_jQ);
+			    CKEDITOR.instances[instance].on("keypress", CK_jQ);
+			    CKEDITOR.instances[instance].on("blur", CK_jQ);
+			    CKEDITOR.instances[instance].on("change", CK_jQ);
+			  });
+			});
+   	}
+   	function CK_jQ() {
+				var conlists = "";
+			  for (instance in CKEDITOR.instances) {
+			    //var sim = CKEDITOR.instances[instance].updateElement();
+			    var message =  jQuery.trim(CKEDITOR.instances[instance].getData());
+			    message = message.replace(/<[^>]*>/gi, '');
+			    message = message.replace(/&nbsp;/gi, '');
+			    message = R.replace(/<[^>]*>/g, '', R.toString(message));
+			    message = R.replace(/ /g, '', message);
+			    var messageLength = R.trim(message).length;
+			    if (messageLength < 14) {
+			    	conlists = false;
+			    }
+			    else{
+			    	conlists = true;
+			    }
+			  }
+			  if (conlists == false) {
+			  	$('#addckwarn').empty();
+			  	$('#addckwarn').append('{%trans "content must contain at least 10 characters"%}');
+			  	$('#buraya').prop("disabled", true);
+			  }
+			  else{
+			  	$('#addckwarn').empty();
+			  	var al = $('#buraya').prop("disabled");
+			  	$('#buraya').prop("disabled", false);
+			  }
+			}
+			$(document).ready(function() {
+				ckstartcont();
+			});
+   </script>
+{% endblock %}
+{% block head_title %}
+	{% blocktrans %}Announce Create{% endblocktrans %}
+{% endblock %}
+
+{% block extra_head %}
+{% endblock %}
+
+{% block mynavbar %}
+  {% include "myincludes/mynavbar.html" %}
+{% endblock %}
+
+{% block content %}
+  {% if request.user.is_authenticated %}
+  	{% if reqshowcont == 'True' %}
+  		<section class="edituserform">
+  			<div class="container">
+  				<div class="row">
+  					<div class="col-md-12 text-center mt-4 pt-2">
+  						<h4>{% trans "Announce Create" %}</h4>
+						  <input type="hidden" id= "editinputval" name="editinputval" value="">
+						  <input type="hidden" id= "groupinformandlabel" name="groupinformandlabel" value="{{ whichgroup.pk }},{{ whichgroup.slug }}">
+						  <!--<select hidden id="selectidvalue" >
+						  {% for tag in whichgroup.grouplabels.all %}
+							<option hidden value="{{ tag.name }}">{{ tag.name }}</option>
+						  {% endfor %}
+						  </select>-->
+							<div id="formchangerdiv"></div>
+							<div id="firstpostform" class="">
+							{% url 'creategrouppostsajaxannounce' whichgroup.pk whichgroup.slug as the_url %}
+							<form id="myform" action="{{ the_url }}" method="post" enctype="multipart/form-data">
+							    {% csrf_token %}
+							    <div class="form-group">
+							    	<div id="addckwarn" class="row ml-1 mb-1"></div>
+							    	{{ form.postsgroupwrite }}
+							    </div>
+							    <input type="hidden" name="grouppknum" id="grouppknum" value="{{ whichgroup.pk }}">
+							    <input type="hidden" name="groupslugchar" id="groupslugchar" value="{{ whichgroup.slug }}">
+							    <select hidden id="addvalueoptions" ></select>
+							    <input type="hidden" id= "postesttype" name="postesttype" value="application/x-www-form-urlencoded">
+							</form>
+								<!-- <button id="labeladd" class="" type="input" onclick="getgroupinformation()" name="labeladd" >Label Add</button> -->
+								<div id="tothisaddpostbutton"></div>
+								<button id="buraya" class="btn btn-primary btn-block" type="input" name="createpostone" disabled="true">{% trans "Send" %}</button>
+							</div>
+	  				</div>
+					</div>
+			</div>
+		</section>
+	  <section class="edituserform">
+  			<div class="container">
+  				<div class="row">
+  					<div class="col-md-12 text-center mt-4 pt-2">
+  						{% for post in mydata %}
+								{% if post.postsgroupwrite == None %}
+									<h2>{% trans "No posts" %}</h2>
+								{% endif %}
+								{% if post.postsgroupwrite != None %}
+									<div id="contentplace"></div>
+										<div id="contentids{{ post.pk }}">
+											<div class="row border-top border-primary mt-3 pt-3">
+												<div class="col-md-6 text-center">
+													{% trans "Writer:"%} {{post.user.username}}
+												</div>
+												<div class="col-md-6 text-center">
+													{{post.createdates}}
+												</div>
+											</div>
+											<div class="col-md-12 text-center mt-3 pt-2">
+											<span><blockquote class="blockquote text-center mt-2">{{ post.postsgroupwrite|safe }}</blockquote></span>
+											</div>
+										</div>
+									{% url 'deletepostsgroupannounce' post.pk post.slug as the_url %}
+									<div class="row">
+										<div class="col-md-6 mt-3 pt-2">
+											<button id="deleteclick{{ post.pk }}" onclick="deletethird({{ post.pk }})" class="btn btn-primary custombtn" value="{{ the_url }},{{ whichgroup.pk }},{{ whichgroup.slug }},{{ post.pk }}" type="input" >{% trans "Delete" %}</button>
+										</div>
+									{% url 'updategrouppostsajaxannounce' post.pk post.slug as the_update_url %}
+										<div class="col-md-6 mt-3 pt-2">
+											<button id="editnameclick{{ post.pk }}" onclick="editAjaxFormadd({{ post.pk }})" class="btn btn-primary custombtn" value="{{ the_update_url }},{{ whichgroup.pk }},{{ whichgroup.slug }},{{ post.pk }}" type="input" >{% trans "Edit" %}</button>
+										</div>
+									</div>
+									<div id="editformplace{{ post.pk }}"></div>
+								{% endif %}
+							{% endfor %}
+  					</div>
+				</div>
+				<!-- paginate start-->
+									{% if is_paginated %}
+										<div class="row">
+											<div class="col-md-12 text-center mt-3 pt-2" >
+												<nav aria-label="Page navigation example">
+													<ul class="pagination justify-content-center">
+														{% if mydata.has_previous %}
+														    <li class="page-item">
+														        <span><a class="page-link" href="?page={{ mydata.previous_page_number }}">{% trans "Previous" %}</a></span>
+														    </li>
+														{% endif %}
+														    <li class="page-item disabled">
+														        <span class="page-link">{% trans "Page"%} {{ mydata.number }} {%trans "of" %} {{ mydata.paginator.num_pages }}</span>
+														    </li>
+														{% if mydata.has_next %}
+														    <li class="page-item">
+														        <span><a class="page-link" href="?page={{ mydata.next_page_number }}">{%trans "Next" %}</a></span>
+														    </li>
+														{% endif %}
+													</ul>
+												</nav>
+											</div>
+										</div>
+									{% else %}
+										<div class="row">
+											<div class="col-md-12 text-center mt-3 pt-2">
+										    <p>{% trans "No more pages to display" %}</p>
+										  </div>
+										</div>
+									{% endif %}
+									<!-- paginate stop-->
+			</div>
+		</section>
+
+	{% else %}
+  	<section id="authorizederror">
+  		<div class="container">
+  			<div class="row">
+  				<div class="col-md-12 text-center mt-1 pt-1">
+  					<h4>{% trans "You are not authorized to view this page" %}</h4>
+  				</div>
+  			</div>
+  		</div>
+  	</section>
+  {% endif %}
+
+  {% endif %}
+
+{% endblock %}
+
+{% block myfooter %}
+  {% include "myincludes/mypagefooter.html" %}
+{% endblock %}

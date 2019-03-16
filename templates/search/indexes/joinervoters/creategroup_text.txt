@@ -1,0 +1,14 @@
+{{ object.groupname }}
+{{ object.aboutgroup }}
+{% for tag in object.grouplabels.all %} 
+	{{ tag.name }} 
+{% endfor %}
+{{ object.createdate }}
+
+{% for post in object.postsgroupcreate.all %}
+    {{ post.postsgroupwrite }}
+{% endfor %}
+
+{% for announce in object.postsgroupcreateannounce.all %}
+    {{ announce.postsgroupwrite }}
+{% endfor %}

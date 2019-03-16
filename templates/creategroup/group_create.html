@@ -1,0 +1,1713 @@
+{% extends "account/base.html" %}
+{% load i18n %}
+{% load static %}
+{% block bodyicijs %}
+  <script type="text/javascript">
+	  var readURL = function readURL(input) {
+		  if (input[0].files && input[0].files[0]) {
+			  var reader = new FileReader();
+			  reader.onload = function(e) {
+				  $('#bigphotoid').attr('src', e.target.result);
+			  }
+			  reader.readAsDataURL(input[0].files[0]);
+		  }
+		  else {$('#bigphotoid').attr('src', '/assets/no_preview.png');}
+	  }
+  </script>
+  <script type="text/javascript">
+	  var readURLtwo = function readURLtwo(input) {
+		  if (input[0].files && input[0].files[0]) {
+			  var reader = new FileReader();
+			  reader.onload = function(e) {
+				  $('#miniphotoid').attr('src', e.target.result);
+			  }
+			  reader.readAsDataURL(input[0].files[0]);
+		  }
+		  else {$('#miniphotoid').attr('src', '/assets/no_preview.png');}
+	  }
+  </script>
+  <script type="text/javascript">
+	  function imageonefunc() {
+		  var $mypictureskim = $("#bigphoto");
+		  /* SCRIPT TO OPEN THE MODAL WITH THE PREVIEW */
+		  $mypictureskim.change(function () {
+			if (this.files && this.files[0]) {
+			  var reader = new FileReader();
+              reader.onload = function (e) {
+                $("#image").attr("src", e.target.result);
+                $("#modalCrop").modal("show");
+              }
+              reader.readAsDataURL(this.files[0]);
+            }
+           });
+           /* SCRIPTS TO HANDLE THE CROPPER BOX */
+	       var $image = $("#image");
+           var cropBoxData;
+           var canvasData;
+           $("#modalCrop").on("shown.bs.modal", function () {
+             $image.cropper({
+             viewMode: 1,
+             aspectRatio: 1/1,
+             minCropBoxWidth: 200,
+             minCropBoxHeight: 200,
+             ready: function () {
+               $image.cropper("setCanvasData", canvasData);
+               $image.cropper("setCropBoxData", cropBoxData);
+             }
+           });
+          }).on("hidden.bs.modal", function () {
+            cropBoxData = $image.cropper("getCropBoxData");
+            canvasData = $image.cropper("getCanvasData");
+            $image.cropper("destroy");
+          });
+
+          $(".js-zoom-in").click(function () {
+            $image.cropper("zoom", 0.1);
+          });
+
+          $(".js-zoom-out").click(function () {
+            $image.cropper("zoom", -0.1);
+          });
+      
+          /* page reload */
+          $(".page-reload-path").click(function() {
+		    location.reload();
+	      });
+
+          /* SCRIPT TO COLLECT THE DATA AND POST TO THE SERVER */
+          $(".js-crop-and-upload").click(function () {
+            var cropData = $image.cropper("getData");
+            $("#bigphotox").val(cropData["x"]);
+            $("#bigphotoy").val(cropData["y"]);
+            $("#bigphotoheight").val(cropData["height"]);
+            $("#bigphotowidth").val(cropData["width"]);
+            $(".close").click();
+            //var imgadd = "<img style='width: 90px;' id='bigphotoid' src='#' alt='' />";
+            //$(".divbigphoto").after(imgadd);
+            var biggerphoto = $("#bigphoto");
+            readURL(biggerphoto);
+          });
+	  }
+  </script>
+  <script type="text/javascript">
+	  function imagetwofunc() {
+		  var $mypictureskim = $("#miniphoto");
+		  /* SCRIPT TO OPEN THE MODAL WITH THE PREVIEW */
+		  $mypictureskim.change(function () {
+			if (this.files && this.files[0]) {
+			  var reader = new FileReader();
+              reader.onload = function (e) {
+                $("#image").attr("src", e.target.result);
+                $("#modalCrop").modal("show");
+              }
+              reader.readAsDataURL(this.files[0]);
+            }
+           });
+           /* SCRIPTS TO HANDLE THE CROPPER BOX */
+	       var $image = $("#image");
+           var cropBoxData;
+           var canvasData;
+           $("#modalCrop").on("shown.bs.modal", function () {
+             $image.cropper({
+             viewMode: 1,
+             aspectRatio: 1/1,
+             minCropBoxWidth: 200,
+             minCropBoxHeight: 200,
+             ready: function () {
+               $image.cropper("setCanvasData", canvasData);
+               $image.cropper("setCropBoxData", cropBoxData);
+             }
+           });
+          }).on("hidden.bs.modal", function () {
+            cropBoxData = $image.cropper("getCropBoxData");
+            canvasData = $image.cropper("getCanvasData");
+            $image.cropper("destroy");
+          });
+
+          $(".js-zoom-in").click(function () {
+            $image.cropper("zoom", 0.1);
+          });
+
+          $(".js-zoom-out").click(function () {
+            $image.cropper("zoom", -0.1);
+          });
+      
+          /* page reload */
+          $(".page-reload-path").click(function() {
+		    location.reload();
+	      });
+
+          /* SCRIPT TO COLLECT THE DATA AND POST TO THE SERVER */
+          $(".js-crop-and-upload").click(function () {
+            var cropData = $image.cropper("getData");
+            $("#miniphotox").val(cropData["x"]);
+            $("#miniphotoy").val(cropData["y"]);
+            $("#miniphotoheight").val(cropData["height"]);
+            $("#miniphotowidth").val(cropData["width"]);
+            $(".close").click();
+            //var imgadd = "<img style='width: 90px;' id='miniphotoid' src='#' alt='' />";
+            //$(".divminiphoto").after(imgadd);
+            var minnererphoto = $("#miniphoto");
+            readURLtwo(minnererphoto);
+          });
+	  }
+  </script>
+  <script type="text/javascript">
+	  var mydatas = function (data) {
+		var data = data;
+		return data;
+	  }
+	  var myforminformation = function (dataforminformation) {
+	    var dataforminformation = dataforminformation;
+		return dataforminformation;
+	  }
+  </script>
+  <script type="text/javascript">
+	  var editparse = function () {
+		  var editdata = $("#editnameclick").attr("value");
+		  var parsedatas = editdata.split(",");
+		  var url = parsedatas[0];
+		  var retudata = {
+			  url:url
+		  }
+		  return retudata;
+	  }
+  </script>
+  <script type="text/javascript">
+	  var changerunner = function changerunner () {
+		  $("#bigphotox").change(function(){
+			  var bigphotox = $("#bigphotox").val();
+			  var bigphotoy = $("#bigphotoy").val();
+			  var bigphotoheight = $("#bigphotoheight").val();
+			  var bigphotowidth = $("#bigphotowidth").val();
+			  var bigphotodatagets = $("#bigphotodatagetsedit").val();
+			  if (bigphotodatagets == "" ) {
+				  var databig = bigphotox+','+bigphotoy+','+bigphotoheight+','+bigphotowidth;
+				  $("#bigphotodatagetsedit").val(databig);
+			  }
+		  });
+		  $("#miniphotox").change(function(){
+			  var miniphotox = $("#miniphotox").val();
+			  var miniphotoy = $("#miniphotoy").val();
+			  var miniphotoheight = $("#miniphotoheight").val();
+			  var miniphotowidth = $("#miniphotowidth").val();
+			  var miniphotodatagets = $("#miniphotodatagetsedit").val();
+			  if (miniphotodatagets == "" ) {
+				  var datamini = miniphotox+','+miniphotoy+','+miniphotoheight+','+miniphotowidth;
+				  $("#miniphotodatagetsedit").val(datamini);
+			  }
+			  if (miniphotodatagets != "" ) {
+				  $("#miniphotodatagetsedit").val("");
+				  var datamini = miniphotox+','+miniphotoy+','+miniphotoheight+','+miniphotowidth;
+				  $("#miniphotodatagetsedit").val(datamini);
+			  }
+		  });
+		  $("#bigphoto").change(function(){
+			  $(".btn-primary").click(function(){
+				  $("#bigphotox").trigger("change");
+			  });
+		  });
+		  $("#miniphoto").change(function(){
+			  $(".btn-primary").click(function(){
+				  $("#miniphotox").trigger("change");
+			  });
+		  });
+	  }
+  </script>
+  <script type="text/javascript">
+	  var editfuncrun = function editfuncrun () {
+		  $(document).ready(function() {
+			  $("#burayaajax").click(function() {
+				   var bigphotodatagets = $("#bigphotodatagetsedit").val();
+				   var miniphotodatagets = $("#miniphotodatagetsedit").val();
+				   var parsedatabig = bigphotodatagets.split(",");
+				   var parsedatamini = miniphotodatagets.split(",");
+				   //CKEDITOR.replace('aboutgroup');
+				   var groupname = $("#groupname").val();
+				   var followacceptcontrol = $("#followacceptcontrol").val();
+				   var grouplabels = $("#grouplabels").val();
+				   var postesttype = $("#postesttype").val();
+				   var aboutgroup = CKEDITOR.instances["aboutgroup"].getData();
+				   //var url = $("#myformajax").attr("action");
+				   var type = $("#myformajax").attr("method"); //$("#myform").attr("method");
+				   var bigphotox = parsedatabig[0];
+				   var bigphotoy = parsedatabig[1];
+				   var bigphotoheight = parsedatabig[2];
+				   var bigphotowidth = parsedatabig[3];
+				   var miniphotox = parsedatamini[0];
+				   var miniphotoy = parsedatamini[1];
+				   var miniphotoheight = parsedatamini[2];
+				   var miniphotowidth = parsedatamini[3];
+				   var retudata = editparse();
+				   var url = retudata['url'];
+				   var data = {
+				       aboutgroup:aboutgroup,
+					   groupname:groupname,
+					   followacceptcontrol:followacceptcontrol,
+					   grouplabels:grouplabels,
+					   postesttype:postesttype,
+					   bigphotox:bigphotox,
+					   bigphotoy:bigphotoy,
+					   bigphotoheight:bigphotoheight,
+					   bigphotowidth:bigphotowidth,
+					   miniphotox:miniphotox,
+					   miniphotoy:miniphotoy,
+					   miniphotoheight:miniphotoheight,
+					   miniphotowidth:miniphotowidth,
+					   csrfmiddlewaretoken:"{{ csrf_token }}"
+				   }
+				   var dataforminformation = {
+				       url:url,
+					   type:type
+				   }
+				   var url = myforminformation(dataforminformation).url;
+				   var type = myforminformation(dataforminformation).type;
+				   var csrfmiddlewaretoken = mydatas(data).csrfmiddlewaretoken;
+				   var aboutgroup = mydatas(data).aboutgroup;
+				   var groupname = mydatas(data).groupname;
+				   var followacceptcontrol = mydatas(data).followacceptcontrol;
+				   var grouplabels = mydatas(data).grouplabels;
+				   var postesttype = mydatas(data).postesttype;
+				   var miniphotox = mydatas(data).miniphotox;
+				   var miniphotoy = mydatas(data).miniphotoy;
+				   var miniphotoheight = mydatas(data).miniphotoheight;
+				   var miniphotowidth = mydatas(data).miniphotowidth;
+				   var bigphotox = mydatas(data).bigphotox;
+				   var bigphotoy = mydatas(data).bigphotoy;
+				   var bigphotoheight = mydatas(data).bigphotoheight;
+				   var bigphotowidth = mydatas(data).bigphotowidth;
+				   var bigphoto = $("#bigphoto")[0].files[0];
+				   var miniphoto = $("#miniphoto")[0].files[0];
+				   var formDatamine = new FormData($('#myformajax')[0]);
+				   formDatamine.append('url', url);
+				   formDatamine.append('type', type);
+				   formDatamine.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
+				   formDatamine.append('aboutgroup', aboutgroup);
+				   formDatamine.append('groupname', groupname);
+				   formDatamine.append('followacceptcontrol', followacceptcontrol);
+				   formDatamine.append('grouplabels', grouplabels);
+				   formDatamine.append('postesttype', postesttype);
+				   formDatamine.append('bigphoto', bigphoto);
+				   formDatamine.append('miniphoto', miniphoto);
+				   formDatamine.append('miniphotox', miniphotox);
+				   formDatamine.append('miniphotoy', miniphotoy);
+				   formDatamine.append('miniphotoheight', miniphotoheight);
+				   formDatamine.append('miniphotowidth', miniphotowidth);
+				   formDatamine.append('bigphotox', bigphotox);
+				   formDatamine.append('bigphotoy', bigphotoy);
+				   formDatamine.append('bigphotoheight', bigphotoheight);
+				   formDatamine.append('bigphotowidth', bigphotowidth);
+				   $.ajax({
+					    url:url,
+					    type:type,
+					    contentType:false,
+					    processData: false,
+					    data:formDatamine,
+					    success: function(response) {
+							if (response["pk"] != undefined) {
+								console.log(response);
+								$("#deleteclick").remove();
+								$("#ajaxformedit").remove();
+								$("#editnameclick").remove();
+								$("#deletetodelete").remove();
+								$("#bigphotodatagetsedit").val("");
+								$("#miniphotodatagetsedit").val("");
+								var adddeletebutton = `<button id="deleteclick" class="btn btn-primary btn-block" type="input" >{% trans "Delete"%}</button>`;
+								var editaddbutton = `<button id="editnameclick" class="btn btn-primary btn-block" type="input" >{% trans "Edit"%}</button>`;
+								//mychange block start
+								//$("#deletebuttonplace").after(adddeletebutton);
+								//$("#addeditformbutton").after(editaddbutton);
+								//$("#deleteclick").prop('value', '/group/'+response["pk"]+'/'+response["slug"]+'/delete/'+','+response["groupname"]+','+response["aboutgroup"]+','+response["grouplabels"]);
+								//$("#editnameclick").prop('value', '/group/'+response["pk"]+'/'+response["slug"]+'/update/'+',');
+								//deletesecond();
+								//editAjaxForm();
+								//mychange block stop
+								//new modernized add start
+								  if (response["groupname"] == '' || response["groupname"] == 'undefined') {
+								  	var gggroupname = '{% trans "Group Name Undefined"%}';
+								  }
+								  else {
+								  	var gggroupname = response["groupname"];
+								  }
+								  if (response["bigphoto"] != '' || response["bigphoto"] == 'undefined') {
+								  	var availbigphoto = `/media/`+response["bigphoto"];
+								  	var availminiphoto = `/media/`+response["miniphoto"];
+								  	var contentaddajax = `
+								  		<div id="deletetodelete">
+								      	<div class="table-responsive">
+								        <table class="table">
+										    <tbody>
+											    <tr>
+												    <th>
+													    <div class="text-center">
+														    <div class="contentbigphoto">
+														        <img class="img-fluid rounded-circle" style='max-width: 30%;' id='bigphotocontent' src='`+availbigphoto+`' alt='' />
+														    </div>
+													    </div>
+												    </th>
+											    </tr>
+											    <tr>
+											        <th>
+													    <div class="text-center">
+														    <p class="lead text-primary font-weight">
+													            `+gggroupname+`
+														    </p>
+													    </div>
+												    </th>
+											    </tr>
+											    <tr>
+												    <td>
+													    <blockquote class="blockquote text-center mt-3">
+													        <div id="responseaboutgroup"></div>
+														    <p>
+													            <span id="addlabeldivplace"></span>
+														    </p>
+													    </blockquote>
+												    </td>
+										        </tr>
+										    </tbody>
+									    </table>
+								    </div>
+								    <div class="row">
+									    <div class="col-md-6 mt-1">
+										    <a href="/group/`+response['pk']+`/`+response['slug']+`/list/">{% trans "Group List" %}</a>
+									    </div>
+									    <div class="col-md-6 mt-1">
+									        <a href="/groupostannounce/`+response['pk']+`/`+response['slug']+`/create/post">{% trans "Post Create" %}</a>
+								        </div>
+								    </div>
+								    <div class="row">
+									    <div class="col-md-6 mt-3">
+										    `+adddeletebutton+`
+									    </div>
+									    <div class="col-md-6 mt-3">
+									        `+editaddbutton+`
+								        </div>
+								    </div>
+								    </div>
+								      `;
+								  }
+								  else {
+								  	var availbigphoto = `<img class="img-fluid rounded-circle" style='max-width: 30%;' id='bigphotocontent' src='/media/defaultimages/1asuk2018-05-15-203455.jpg' alt='' />`;
+								  	var availminiphoto = `<img class="img-fluid rounded-circle" style='max-width: 30%;' id='miniphotocontent' src='/media/defaultimages/1asuk2018-05-15-203455.jpg' alt='' />`;
+								  	var contentaddajax = `
+								  		<div id="deletetodelete" class="">
+								      	<div class="table-responsive">
+								        <table class="table">
+										    <tbody>
+											    <tr>
+												    <th>
+													    <div class="text-center">
+														    <div class="contentbigphoto">
+														        `+availbigphoto+`
+														    </div>
+													    </div>
+												    </th>
+											    </tr>
+											    <tr>
+											        <th>
+													    <div class="text-center">
+														    <p class="lead text-primary font-weight">
+													            `+gggroupname+`
+														    </p>
+													    </div>
+												    </th>
+											    </tr>
+											    <tr>
+												    <td>
+													    <blockquote class="blockquote text-center mt-3">
+													        <div id="responseaboutgroup"></div>
+														    <p>
+													            <span id="addlabeldivplace"></span>
+														    </p>
+													    </blockquote>
+												    </td>
+										        </tr>
+										    </tbody>
+									    </table>
+								    </div>
+								    <div class="row">
+									    <div class="col-md-6 mt-1">
+										    <a href="/group/`+response['pk']+`/`+response['slug']+`/list/">{% trans "Group List" %}</a>
+									    </div>
+									    <div class="col-md-6 mt-1">
+									        <a href="/groupostannounce/`+response['pk']+`/`+response['slug']+`/create/post">{% trans "Post Create" %}</a>
+								        </div>
+								    </div>
+								    <div class="row">
+									    <div class="col-md-6 mt-3">
+										    `+adddeletebutton+`
+									    </div>
+									    <div class="col-md-6 mt-3">
+									        `+editaddbutton+`
+								        </div>
+								    </div>
+								    </div>
+								      `;
+								  	
+								  }
+								  $("#deletebuttonplace").after(contentaddajax);
+								  if (response["aboutgroup"] != '') {
+								  	$('#responseaboutgroup').html(response["aboutgroup"]);
+								  }
+								  $("#deleteclick").prop('value', '/group/'+response["pk"]+'/'+response["slug"]+'/delete/'+','+response["groupname"]+','+response["aboutgroup"]+','+response["grouplabels"]);
+								  $("#editnameclick").prop('value', '/group/'+response["pk"]+'/'+response["slug"]+'/update/'+',');
+								  deletesecond();
+								  editAjaxForm();
+								  var mytext = "";
+								  var myloop;
+								  if (response['grouplabels'] != '' || response['grouplabels'] != 'undefined') {
+									  var mygrouplabels = response['grouplabels'];
+									  for (myloop in mygrouplabels) {
+									  	mytext += `<a href="/`+response['groupname']+`/`+mygrouplabels[myloop]+`">`+mygrouplabels[myloop]+`</a>`+` `
+									   }
+									   $("#addlabeldivplace").after(mytext);
+								   }
+								  //new modernized add finish
+								}
+							else {
+								console.log(response);
+								$("#deleteclick").show();
+								//$("#ajaxformedit").show();
+								var erroradd = response['error']
+								$("#adderror").after(erroradd);
+						 }
+						},
+						error: function(xhr, status, error) {
+							var err = eval("(" + xhr.responseText + ")");
+							alert(err.Message);
+						}
+				   });
+				   return false;
+		   });
+		 });
+	  }
+  </script>
+  <script type="text/javascript">
+	  var form = $("#myform");
+	  $(document).ready(function() {
+		  $("#editnameclick").click(function() {
+			  var addeditform = `<div id="ajaxformedit" class="">
+				{% url 'updategroupajax' post.pk post.slug as the_url %}
+				<form id="myformajax" action="{{ the_url }}" method="post" enctype="multipart/form-data">
+				    {% csrf_token %}
+					<div class="form-group">
+					    {{ form.groupname }}
+					</div>
+					<div class="adderror"></div>
+					    <div class="form-group">
+							<div class="custom-file">
+								{{ form.bigphoto }}
+								<label class="bigphoto custom-file-label" for="bigphoto">{% trans "Choose Group Photo" %}</label>
+							</div>
+							<div class="table-responsive">
+							    <table class="table">
+									<tbody>
+										<tr>
+											<th>
+											    <div class="text-center">
+													<div class="divbigphoto">
+													    <img class="img-fluid rounded-circle" style='max-width: 30%;' id='bigphotoid' src='#' alt='' />
+													</div>
+												</div>
+											</th>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="custom-file">
+								{{ form.miniphoto }}
+								<label class="miniphoto custom-file-label" for="miniphoto">{% trans "Choose Back Photo" %}</label>
+							</div>
+							<div class="table-responsive">
+								<table class="table">
+									<tbody>
+									    <tr>
+										    <th>
+												<div class="text-center">
+													<div class="divminiphoto">
+														<img class="img-fluid rounded-circle" style='max-width: 30%;' id='miniphotoid' src='#' alt='' />
+													</div>
+												</div>
+											</th>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="form-group">
+							{{ form.aboutgroup }}
+						</div>
+						<!-- checkbox-->
+						<div class="col-md-12 center-block">
+							<div class="custom-control custom-checkbox">
+								{{ form.followacceptcontrol }}
+								<label class="custom-control-label" for="followacceptcontrol">{% trans "Group Show" %}</label>
+							</div>
+						</div>
+						<!-- checkbox-->
+						<div class="form-group">
+							{{ form.grouplabels }}
+						</div>
+						{{ form.bigphotox }}
+						{{ form.bigphotoy }}
+						{{ form.bigphotowidth }}
+						{{ form.bigphotoheight }}
+						{{ form.miniphotox }}
+						{{ form.miniphotoy }}
+						{{ form.miniphotowidth }}
+						{{ form.miniphotoheight }}
+						<input type="hidden" id= "postesttype" name="postesttype" value="application/x-www-form-urlencoded">
+				    </form>
+				    <div class="row">
+					    <div class="col-md-6 mt-2">
+							<button id="burayaajax" class="btn btn-primary btn-block" type="input">{% trans "Community Edit" %}</button>
+						</div>
+						<div class="col-md-6 mt-2">
+							<button id="editcancelid" class="btn btn-primary btn-block" onclick="editcancel()">{% trans "Edit Cancel" %}</button>
+						</div>
+					</div>
+				</div>`;
+			   $("#editnameclick").hide();
+			   $("#deleteclick").hide();
+			   $("#addnamesurnameajax").after(addeditform);
+			   CKEDITOR.replace('aboutgroup');
+			   changerunner();
+			   editfuncrun();
+		  });
+		  });
+  </script>
+  <script type="text/javascript">
+	  var editAjaxForm = function editAjaxForm () {
+		  $("#editnameclick").click(function() {
+			  var addeditform = `<div id="ajaxformedit" class="">
+				{% url 'updategroupajax' post.pk post.slug as the_url %}
+				<form id="myformajax" action="{{ the_url }}" method="post" enctype="multipart/form-data">
+				    {% csrf_token %}
+					<div class="form-group">
+					    {{ form.groupname }}
+					</div>
+					<div class="adderror"></div>
+					    <div class="form-group">
+							<div class="custom-file">
+								{{ form.bigphoto }}
+								<label class="bigphoto custom-file-label" for="bigphoto">{% trans "Choose Group Photo" %}</label>
+							</div>
+							<div class="table-responsive">
+							    <table class="table">
+									<tbody>
+										<tr>
+											<th>
+											    <div class="text-center">
+													<div class="divbigphoto">
+													    <img class="img-fluid rounded-circle" style='max-width: 30%;' id='bigphotoid' src='#' alt='' />
+													</div>
+												</div>
+											</th>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="custom-file">
+								{{ form.miniphoto }}
+								<label class="miniphoto custom-file-label" for="miniphoto">{% trans "Choose Back Photo" %}</label>
+							</div>
+							<div class="table-responsive">
+								<table class="table">
+									<tbody>
+									    <tr>
+										    <th>
+												<div class="text-center">
+													<div class="divminiphoto">
+														<img class="img-fluid rounded-circle" style='max-width: 30%;' id='miniphotoid' src='#' alt='' />
+													</div>
+												</div>
+											</th>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="form-group">
+							{{ form.aboutgroup }}
+						</div>
+						<!-- checkbox-->
+						<div class="col-md-12 center-block">
+							<div class="custom-control custom-checkbox">
+								{{ form.followacceptcontrol }}
+								<label class="custom-control-label" for="followacceptcontrol">{% trans "Group Show" %}</label>
+							</div>
+						</div>
+						<!-- checkbox-->
+						<div class="form-group">
+							{{ form.grouplabels }}
+						</div>
+						{{ form.bigphotox }}
+						{{ form.bigphotoy }}
+						{{ form.bigphotowidth }}
+						{{ form.bigphotoheight }}
+						{{ form.miniphotox }}
+						{{ form.miniphotoy }}
+						{{ form.miniphotowidth }}
+						{{ form.miniphotoheight }}
+						<input type="hidden" id= "postesttype" name="postesttype" value="application/x-www-form-urlencoded">
+				    </form>
+				    <div class="row">
+					    <div class="col-md-6 mt-2">
+							<button id="burayaajax" class="btn btn-primary btn-block" type="input">{% trans "Community Edit" %}</button>
+						</div>
+						<div class="col-md-6 mt-2">
+							<button id="editcancelid" class="btn btn-primary btn-block" onclick="editcancel()">{% trans "Edit Cancel" %}</button>
+						</div>
+					</div> 
+				</div>`;
+			   $("#editnameclick").hide();
+			   $("#deleteclick").hide();
+			   $("#addnamesurnameajax").after(addeditform);
+			   CKEDITOR.replace('aboutgroup');
+			   addmodalfunc();
+			   changerunner();
+			   editfuncrun();
+	      });
+	  }
+  </script>
+  <script type="text/javascript">
+  	var editcancel = function editcancel(){
+  		$("#editnameclick").show();
+  		$("#deleteclick").show();
+  		$('#ajaxformedit').remove();
+  	}
+  </script>
+  <script type="text/javascript">
+	  var deleteparse = function () {
+		  var deletedata = $("#deleteclick").attr("value");
+		  var parsedatas = deletedata.split(",");
+		  var url = parsedatas[0];
+		  var groupname = parsedatas[1];
+		  var postesttype = "application/x-www-form-urlencoded";
+		  var retudata = {
+			  url:url,
+			  groupname:groupname,
+			  postesttype:postesttype
+		  }
+		  return retudata;
+	  }
+  </script>
+  
+  <script type="text/javascript">
+	  $(document).ready(function() {
+		  $("#deleteclick").click(function() {
+		  	  $('#editnameclick').remove();//ek yaptım
+			  $("#deleteclick").hide();
+			  var retudata = deleteparse();
+			  var url = retudata['url'];
+			  var groupname = retudata['groupname'];
+			  var postesttype = retudata['postesttype'];
+			  var type = 'POST';
+			  var data = {
+			      groupname:groupname,
+				  postesttype:postesttype,
+				  csrfmiddlewaretoken:"{{ csrf_token }}"
+			  }
+			  $.ajax({
+				  url:url,
+				  type:type,
+				  data:data,
+				  contentType:"application/x-www-form-urlencoded;charset=utf-8",
+				  success: function(response) {
+					  $("#deletetodelete").remove();
+					  console.log(response);
+					  addformmainx();
+				  },
+				  error: function(xhr, status, error) {
+					  var err = eval("(" + xhr.responseText + ")");
+					  alert(err.Message);
+				  }
+			  });
+			  return false;
+		  });
+	  
+	  });
+  </script>
+  <script type="text/javascript">
+	  var deletesecond = function deletesecond () {
+		  $("#deleteclick").click(function() {
+			  var retudata = deleteparse();
+			  $('#deletetodelete').remove();//ek yaptım
+			  var url = retudata['url'];
+			  var groupname = retudata['groupname'];
+			  var postesttype = retudata['postesttype'];
+			  var type = 'POST';
+			  var data = {
+			      groupname:groupname,
+				  postesttype:postesttype,
+				  csrfmiddlewaretoken:"{{ csrf_token }}"
+			  }
+			  $("#firstaddmyform").remove();
+			  $.ajax({
+				  url:url,
+				  type:type,
+				  data:data,
+				  contentType:"application/x-www-form-urlencoded;charset=utf-8",
+				  success: function(response) {
+					  console.log(response);
+					  $("#deleteclick").remove();
+					  $("#editnameclick").remove();
+					  addformmainx();
+				  },
+				  error: function(xhr, status, error) {
+					  var err = eval("(" + xhr.responseText + ")");
+					  alert(err.Message);
+				  }
+			  });
+			  return false;
+		  });
+	  }
+  </script>
+  <script type="text/javascript">
+	  var changerunnermain = function changerunnermain () {
+		  $(document).ready(function() {
+			  $("#bigphotox").change(function(){
+				  var bigphotox = $("#bigphotox").val();
+				  var bigphotoy = $("#bigphotoy").val();
+				  var bigphotoheight = $("#bigphotoheight").val();
+				  var bigphotowidth = $("#bigphotowidth").val();
+				  var bigphotodatagets = $("#bigphotodatagetsmain").val();
+				  if (bigphotodatagets == "" ) {
+					  var databig = bigphotox+','+bigphotoy+','+bigphotoheight+','+bigphotowidth;
+					  $("#bigphotodatagetsmain").val(databig);
+				  }
+			   });
+			   $("#miniphotox").change(function(){
+				   var miniphotox = $("#miniphotox").val();
+				   var miniphotoy = $("#miniphotoy").val();
+				   var miniphotoheight = $("#miniphotoheight").val();
+				   var miniphotowidth = $("#miniphotowidth").val();
+				   var miniphotodatagets = $("#miniphotodatagetsmain").val();
+				   if (miniphotodatagets == "" ) {
+					   var datamini = miniphotox+','+miniphotoy+','+miniphotoheight+','+miniphotowidth;
+					   $("#miniphotodatagetsmain").val(datamini);
+				   }
+				   if (miniphotodatagets != "" ) {
+					   $("#miniphotodatagetsmain").val("");
+					   var datamini = miniphotox+','+miniphotoy+','+miniphotoheight+','+miniphotowidth;
+					   $("#miniphotodatagetsmain").val(datamini);
+				   }
+			   });
+			   $("#bigphoto").change(function(){
+				  $(".btn-primary").click(function(){
+					  $("#bigphotox").trigger("change");
+			   });
+			   });
+			   $("#miniphoto").change(function(){
+				  $(".btn-primary").click(function(){
+					  $("#miniphotox").trigger("change");
+			   });
+			  });
+			});
+		}
+  </script>
+  <script type="text/javascript">
+	  var mainformclick = function () {
+		  $(document).ready(function() {
+			$("#buraya").click(function() {
+				var bigphotodatagets = $("#bigphotodatagetsmain").val();
+				var miniphotodatagets = $("#miniphotodatagetsmain").val();
+				var parsedatabig = bigphotodatagets.split(",");
+				var parsedatamini = miniphotodatagets.split(",");
+				var url = $("#myform").attr("action");
+				var groupname = $("#groupname").val();
+				var grouplabels = $("#grouplabels").val();
+				var aboutgroup = CKEDITOR.instances["aboutgroup"].getData();
+				var postesttype = $("#postesttype").val();
+				var followacceptcontrol = $("#followacceptcontrol").val();
+				var type = $("#myform").attr("method");
+				var bigphotox = parsedatabig[0];
+				var bigphotoy = parsedatabig[1];
+				var bigphotoheight = parsedatabig[2];
+				var bigphotowidth = parsedatabig[3];
+				var miniphotox = parsedatamini[0];
+				var miniphotoy = parsedatamini[1];
+				var miniphotoheight = parsedatamini[2];
+				var miniphotowidth = parsedatamini[3];
+				var data = {
+					aboutgroup:aboutgroup,
+					groupname:groupname,
+					grouplabels:grouplabels,
+					followacceptcontrol:followacceptcontrol,
+					postesttype:postesttype,
+					bigphotox:bigphotox,
+					bigphotoy:bigphotoy,
+					bigphotoheight:bigphotoheight,
+					bigphotowidth:bigphotowidth,
+					miniphotox:miniphotox,
+					miniphotoy:miniphotoy,
+					miniphotoheight:miniphotoheight,
+					miniphotowidth:miniphotowidth,
+					csrfmiddlewaretoken:"{{ csrf_token }}"
+				}
+				var dataforminformation = {
+					url:url,
+					type:type
+				}
+				var formDatamine = new FormData($('#myform')[0]);
+				var url = myforminformation(dataforminformation).url;
+				var type = myforminformation(dataforminformation).type;
+				var csrfmiddlewaretoken = mydatas(data).csrfmiddlewaretoken;
+				var aboutgroup = mydatas(data).aboutgroup;
+				var groupname = mydatas(data).groupname;
+				var followacceptcontrol = mydatas(data).followacceptcontrol;
+				var grouplabels = mydatas(data).grouplabels;
+				var postesttype = mydatas(data).postesttype;
+				var miniphotox = mydatas(data).miniphotox;
+				var miniphotoy = mydatas(data).miniphotoy;
+				var miniphotoheight = mydatas(data).miniphotoheight;
+				var miniphotowidth = mydatas(data).miniphotowidth;
+				var bigphotox = mydatas(data).bigphotox;
+				var bigphotoy = mydatas(data).bigphotoy;
+				var bigphotoheight = mydatas(data).bigphotoheight;
+				var bigphotowidth = mydatas(data).bigphotowidth;
+				var bigphoto = $("#bigphoto")[0].files[0];
+				var miniphoto = $("#miniphoto")[0].files[0];
+				formDatamine.append('url', url);
+				formDatamine.append('type', type);
+				formDatamine.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
+				formDatamine.append('aboutgroup', aboutgroup);
+				formDatamine.append('groupname', groupname);
+				formDatamine.append('followacceptcontrol', followacceptcontrol);
+				formDatamine.append('grouplabels', grouplabels);
+				formDatamine.append('postesttype', postesttype);
+				formDatamine.append('bigphoto', bigphoto);
+				formDatamine.append('miniphoto', miniphoto);
+				formDatamine.append('miniphotox', miniphotox);
+				formDatamine.append('miniphotoy', miniphotoy);
+				formDatamine.append('miniphotoheight', miniphotoheight);
+				formDatamine.append('miniphotowidth', miniphotowidth);
+				formDatamine.append('bigphotox', bigphotox);
+				formDatamine.append('bigphotoy', bigphotoy);
+				formDatamine.append('bigphotoheight', bigphotoheight);
+				formDatamine.append('bigphotowidth', bigphotowidth);
+				$.ajax({
+					 url:url,
+					 type:type,
+					 contentType:false,
+					 processData: false,
+					 data:formDatamine,
+					 success: function(response) {
+						 console.log(response);
+						 $("#firstaddmyform").remove();
+						 $("#bigphotodatagetsmain").val("");
+						 $("#miniphotodatagetsmain").val("");
+						 var adddeletebutton = `<button id="deleteclick" class="btn btn-primary btn-block" type="input" >{% trans "Delete"%}</button>`;
+						 var editaddbutton = `<button id="editnameclick" class="btn btn-primary btn-block" type="input" >{% trans "Edit"%}</button>`;
+						 //change block start
+						 //$("#deletebuttonplace").after(adddeletebutton);
+						 //$("#addeditformbutton").after(editaddbutton);
+						 //$("#deleteclick").prop('value', '/group/'+response["pk"]+'/'+response["slug"]+'/delete/'+','+response["groupname"]+','+response["aboutgroup"]+','+response["grouplabels"]);
+						 //$("#editnameclick").prop('value', '/group/'+response["pk"]+'/'+response["slug"]+'/update/'+',');
+						 //deletesecond();
+						 //editAjaxForm();
+						 //change block stop
+						 //new modernized add start
+					  if (response["groupname"] == '' || response["groupname"] == 'undefined') {
+					  	var gggroupname = '{% trans "Group Name Undefined"%}';
+					  }
+					  else {
+					  	var gggroupname = response["groupname"];
+					  }
+					  if (response["bigphoto"] != '' || response["bigphoto"] == 'undefined') {
+					  	var availbigphoto = `/media/`+response["bigphoto"];
+					  	var availminiphoto = `/media/`+response["miniphoto"];
+					  	var contentaddajax = `
+					  		<div id="deletetodelete">
+					      	<div class="table-responsive">
+					        <table class="table">
+							    <tbody>
+								    <tr>
+									    <th>
+										    <div class="text-center">
+											    <div class="contentbigphoto">
+											        <img class="img-fluid rounded-circle" style='max-width: 30%;' id='bigphotocontent' src='`+availbigphoto+`' alt='' />
+											    </div>
+										    </div>
+									    </th>
+								    </tr>
+								    <tr>
+								        <th>
+										    <div class="text-center">
+											    <p class="lead text-primary font-weight">
+										            `+gggroupname+`
+											    </p>
+										    </div>
+									    </th>
+								    </tr>
+								    <tr>
+									    <td>
+										    <blockquote class="blockquote text-center mt-3">
+										        <div id="responseaboutgroup"></div>
+											    <p>
+										            <span id="addlabeldivplace"></span>
+											    </p>
+										    </blockquote>
+									    </td>
+							        </tr>
+							    </tbody>
+						    </table>
+					    </div>
+					    <div class="row">
+						    <div class="col-md-6 mt-1">
+							    <a href="/group/`+response['pk']+`/`+response['slug']+`/list/">{% trans "Group List" %}</a>
+						    </div>
+						    <div class="col-md-6 mt-1">
+						        <a href="/groupostannounce/`+response['pk']+`/`+response['slug']+`/create/post">{% trans "Post Create" %}</a>
+					        </div>
+					    </div>
+					    <div class="row">
+						    <div class="col-md-6 mt-3">
+							    `+adddeletebutton+`
+						    </div>
+						    <div class="col-md-6 mt-3">
+						        `+editaddbutton+`
+					        </div>
+					    </div>
+					    </div>
+					      `;
+					  }
+					  else {
+					  	var availbigphoto = `<img class="img-fluid rounded-circle" style='max-width: 30%;' id='bigphotocontent' src='/media/defaultimages/1asuk2018-05-15-203455.jpg' alt='' />`;
+					  	var availminiphoto = `<img class="img-fluid rounded-circle" style='max-width: 30%;' id='miniphotocontent' src='/media/defaultimages/1asuk2018-05-15-203455.jpg' alt='' />`;
+					  	var contentaddajax = `
+					  		<div id="deletetodelete" class="">
+					      	<div class="table-responsive">
+					        <table class="table">
+							    <tbody>
+								    <tr>
+									    <th>
+										    <div class="text-center">
+											    <div class="contentbigphoto">
+											        `+availbigphoto+`
+											    </div>
+										    </div>
+									    </th>
+								    </tr>
+								    <tr>
+								        <th>
+										    <div class="text-center">
+											    <p class="lead text-primary font-weight">
+										            `+gggroupname+`
+											    </p>
+										    </div>
+									    </th>
+								    </tr>
+								    <tr>
+									    <td>
+										    <blockquote class="blockquote text-center mt-3">
+										        <div id="responseaboutgroup"></div>
+											    <p>
+										            <span id="addlabeldivplace"></span>
+											    </p>
+										    </blockquote>
+									    </td>
+							        </tr>
+							    </tbody>
+						    </table>
+					    </div>
+					    <div class="row">
+						    <div class="col-md-6 mt-1">
+							    <a href="/group/`+response['pk']+`/`+response['slug']+`/list/">{% trans "Group List" %}</a>
+						    </div>
+						    <div class="col-md-6 mt-1">
+						        <a href="/groupostannounce/`+response['pk']+`/`+response['slug']+`/create/post">{% trans "Post Create" %}</a>
+					        </div>
+					    </div>
+					    <div class="row">
+						    <div class="col-md-6 mt-3">
+							    `+adddeletebutton+`
+						    </div>
+						    <div class="col-md-6 mt-3">
+						        `+editaddbutton+`
+					        </div>
+					    </div>
+					    </div>
+					      `;
+					  	
+					  }
+					  $("#deletebuttonplace").after(contentaddajax);
+					  if (response["aboutgroup"] != '') {
+					  	$('#responseaboutgroup').html(response["aboutgroup"]);
+					  }
+					  $("#deleteclick").prop('value', '/group/'+response["pk"]+'/'+response["slug"]+'/delete/'+','+response["groupname"]+','+response["aboutgroup"]+','+response["grouplabels"]);
+					  $("#editnameclick").prop('value', '/group/'+response["pk"]+'/'+response["slug"]+'/update/'+',');
+					  deletesecond();
+					  editAjaxForm();
+					  var mytext = "";
+					  var myloop;
+					  if (response['grouplabels'] != '' || response['grouplabels'] != 'undefined') {
+						  var mygrouplabels = response['grouplabels'];
+						  for (myloop in mygrouplabels) {
+						  	mytext += `<a href="/`+response['groupname']+`/`+mygrouplabels[myloop]+`">`+mygrouplabels[myloop]+`</a>`+` `
+						   }
+						   $("#addlabeldivplace").after(mytext);
+					   }
+					  //new modernized add finish
+					 },
+					 error: function(xhr, status, error) {
+						 var err = eval("(" + xhr.responseText + ")");
+						 alert(err.Message);
+					 }
+				});
+				return false;
+		  });
+		  });
+	  }
+  </script>
+  <script type="text/javascript">
+	  var ckstart = function () {
+		  CKEDITOR.replace('aboutgroup');
+		  }
+  </script>
+  <script type="text/javascript">
+	  var addformmainx = function () {
+		  var mainform = `<div id="firstaddmyform" class="">
+			<form id="myform" action="{% url 'creategroupajax' %}" method="post" enctype="multipart/form-data">
+			    {% csrf_token %}
+				<div class="form-group">
+				    {{ form.groupname }}
+				</div>
+				<div class="adderror"></div>
+				    <div class="form-group">
+						<div class="custom-file">
+							{{ form.bigphoto }}
+							<label class="bigphoto custom-file-label" for="bigphoto">{% trans "Choose Group Photo" %}</label>
+						</div>
+						<div class="table-responsive">
+						    <table class="table">
+								<tbody>
+									<tr>
+										<th>
+										    <div class="text-center">
+												<div class="divbigphoto">
+												    <img class="img-fluid rounded-circle" style='max-width: 30%;' id='bigphotoid' src='#' alt='' />
+												</div>
+											</div>
+										</th>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="custom-file">
+							{{ form.miniphoto }}
+							<label class="miniphoto custom-file-label" for="miniphoto">{% trans "Choose Back Photo" %}</label>
+						</div>
+						<div class="table-responsive">
+							<table class="table">
+								<tbody>
+								    <tr>
+									    <th>
+											<div class="text-center">
+												<div class="divminiphoto">
+													<img class="img-fluid rounded-circle" style='max-width: 30%;' id='miniphotoid' src='#' alt='' />
+												</div>
+											</div>
+										</th>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<div class="form-group">
+						{{ form.aboutgroup }}
+					</div>
+					<!-- checkbox-->
+					<div class="col-md-12 center-block">
+						<div class="custom-control custom-checkbox">
+							{{ form.followacceptcontrol }}
+							<label class="custom-control-label" for="followacceptcontrol">{% trans "Group Show" %}</label>
+						</div>
+					</div>
+					<!-- checkbox-->
+					<div class="form-group">
+						{{ form.grouplabels }}
+					</div>
+					{{ form.bigphotox }}
+					{{ form.bigphotoy }}
+					{{ form.bigphotowidth }}
+					{{ form.bigphotoheight }}
+					{{ form.miniphotox }}
+					{{ form.miniphotoy }}
+					{{ form.miniphotowidth }}
+					{{ form.miniphotoheight }}
+					<input type="hidden" id= "postesttype" name="postesttype" value="application/x-www-form-urlencoded">
+			    </form>
+				<button id="buraya" class="btn btn-primary btn-block" type="input" name="createpostone">{% trans "Send" %}</button> 
+				</div>`;
+		  $("#addmainform").after(mainform);
+		  ckstart();
+		  addmodalfunc();
+		  changerunnermain();
+		  mainformclick();
+	  }
+   </script>
+   <script type="text/javascript">
+	   var addmodalfunc = function addmodalfunc () {
+		   var addmodal = `<!-- MODAL TO CROP THE IMAGE -->
+  <div class="modal fade" id="modalCrop">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title">Crop the photo</h4>
+        </div>
+        <div class="modal-body">
+          <img src="" id="image" style="max-width: 100%;">
+        </div>
+        <div class="modal-footer">
+          <div class="btn-group pull-left" role="group">
+            <button type="button" class="btn btn-default js-zoom-in">
+              <span class="glyphicon glyphicon-zoom-in"></span>
+            </button>
+            <button type="button" class="btn btn-default js-zoom-out">
+              <span class="glyphicon glyphicon-zoom-out"></span>
+            </button>
+          </div>
+          <button type="button" class="btn btn-default page-reload-path" data-dismiss="modal">Nevermind</button>
+          <button type="button" class="btn btn-primary js-crop-and-upload">Crop and upload</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+		   if(document.getElementById("modalCrop")) {
+			   var modal = addmodal;
+		   }
+		   else {
+			   $("#addmodalform").after(addmodal);
+		   }
+   }
+   </script>
+  <script type="text/javascript">
+	  var form = $("#myform");
+	  $(document).ready(function() {
+		  $("#bigphotox").change(function(){
+			  var bigphotox = $("#bigphotox").val();
+			  var bigphotoy = $("#bigphotoy").val();
+			  var bigphotoheight = $("#bigphotoheight").val();
+			  var bigphotowidth = $("#bigphotowidth").val();
+			  var bigphotodatagets = $("#bigphotodatagets").val();
+			  if (bigphotodatagets == "" ) {
+				  var databig = bigphotox+','+bigphotoy+','+bigphotoheight+','+bigphotowidth;
+				  $("#bigphotodatagets").val(databig);
+			  }
+		   });
+		   $("#miniphotox").change(function(){
+			  var miniphotox = $("#miniphotox").val();
+              var miniphotoy = $("#miniphotoy").val();
+              var miniphotoheight = $("#miniphotoheight").val();
+              var miniphotowidth = $("#miniphotowidth").val();
+              var miniphotodatagets = $("#miniphotodatagets").val();
+			  if (miniphotodatagets == "" ) {
+				  var datamini = miniphotox+','+miniphotoy+','+miniphotoheight+','+miniphotowidth;
+				  $("#miniphotodatagets").val(datamini);
+			  }
+		  });
+		  $("#bigphoto").change(function(){
+			  $(".btn-primary").click(function(){
+				  $("#bigphotox").trigger("change");
+           });
+           });
+          $("#miniphoto").change(function(){
+			  $(".btn-primary").click(function(){
+				  $("#miniphotox").trigger("change");
+           });
+		  });
+		  
+		  $("#buraya").click(function() {
+			  var bigphotodatagets = $("#bigphotodatagets").val();
+			  var miniphotodatagets = $("#miniphotodatagets").val();
+			  var parsedatabig = bigphotodatagets.split(",");
+			  var parsedatamini = miniphotodatagets.split(",");
+			  var aboutgroup = CKEDITOR.instances["aboutgroup"].getData();
+			  var groupname = $("#groupname").val();
+			  var grouplabels = $("#grouplabels").val();
+			  var postesttype = $("#postesttype").val();
+			  var followacceptcontrol = $("#followacceptcontrol").val();
+			  var url = $("#myform").attr("action");
+			  var type = $("#myform").attr("method"); //$("#myform").attr("method");
+			  var bigphotox = parsedatabig[0];
+              var bigphotoy = parsedatabig[1];
+              var bigphotoheight = parsedatabig[2];
+              var bigphotowidth = parsedatabig[3];
+              var miniphotox = parsedatamini[0];
+              var miniphotoy = parsedatamini[1];
+              var miniphotoheight = parsedatamini[2];
+              var miniphotowidth = parsedatamini[3];
+			  var data = {
+				  aboutgroup:aboutgroup,
+				  groupname:groupname,
+				  followacceptcontrol:followacceptcontrol,
+				  grouplabels:grouplabels,
+				  postesttype:postesttype,
+				  bigphotox:bigphotox,
+				  bigphotoy:bigphotoy,
+				  bigphotoheight:bigphotoheight,
+				  bigphotowidth:bigphotowidth,
+				  miniphotox:miniphotox,
+				  miniphotoy:miniphotoy,
+				  miniphotoheight:miniphotoheight,
+				  miniphotowidth:miniphotowidth,
+				  csrfmiddlewaretoken:"{{ csrf_token }}"
+			  }
+			  var dataforminformation = {
+				 url:url,
+				 type:type
+			  }
+			  var formDatamine = new FormData($('#myform')[0]);
+			  var url = myforminformation(dataforminformation).url;
+			  var type = myforminformation(dataforminformation).type;
+			  var csrfmiddlewaretoken = mydatas(data).csrfmiddlewaretoken;
+			  var aboutgroup = mydatas(data).aboutgroup;
+			  var groupname = mydatas(data).groupname;
+			  var followacceptcontrol = mydatas(data).followacceptcontrol;
+			  var grouplabels = mydatas(data).grouplabels;
+			  var postesttype = mydatas(data).postesttype;
+			  var miniphotox = mydatas(data).miniphotox;
+			  var miniphotoy = mydatas(data).miniphotoy;
+			  var miniphotoheight = mydatas(data).miniphotoheight;
+			  var miniphotowidth = mydatas(data).miniphotowidth;
+			  var bigphotox = mydatas(data).bigphotox;
+			  var bigphotoy = mydatas(data).bigphotoy;
+			  var bigphotoheight = mydatas(data).bigphotoheight;
+			  var bigphotowidth = mydatas(data).bigphotowidth;
+			  var bigphoto = $("#bigphoto")[0].files[0];
+			  var miniphoto = $("#miniphoto")[0].files[0];
+			  formDatamine.append('url', url);
+			  formDatamine.append('type', type);
+			  formDatamine.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
+			  formDatamine.append('aboutgroup', aboutgroup);
+			  formDatamine.append('groupname', groupname);
+			  formDatamine.append('followacceptcontrol', followacceptcontrol);
+			  formDatamine.append('grouplabels', grouplabels);
+			  formDatamine.append('postesttype', postesttype);
+			  formDatamine.append('bigphoto', bigphoto);
+			  formDatamine.append('miniphoto', miniphoto);
+			  formDatamine.append('miniphotox', miniphotox);
+			  formDatamine.append('miniphotoy', miniphotoy);
+			  formDatamine.append('miniphotoheight', miniphotoheight);
+			  formDatamine.append('miniphotowidth', miniphotowidth);
+			  formDatamine.append('bigphotox', bigphotox);
+			  formDatamine.append('bigphotoy', bigphotoy);
+			  formDatamine.append('bigphotoheight', bigphotoheight);
+			  formDatamine.append('bigphotowidth', bigphotowidth);
+			  $.ajax({
+				  url:url,
+				  type:type,
+				  contentType:false,
+				  processData: false,
+				  data:formDatamine,
+				  success: function(response) {
+					  console.log(response);
+					  $("#firstaddmyform").remove();
+					  $("#bigphotodatagets").val("");
+					  $("#miniphotodatagets").val("");
+					  var adddeletebutton = '<button id="deleteclick" class="btn btn-primary btn-block" type="input" >{% trans "Delete" %}</button>';
+					  var editaddbutton = '<button id="editnameclick" class="btn btn-primary btn-block" type="input" >{% trans "Edit" %}</button>';
+					  //$("#deletebuttonplace").after(adddeletebutton);
+					  //$("#deleteclick").prop('value', '/group/'+response["pk"]+'/'+response["slug"]+'/delete/'+','+response["groupname"]+','+response["aboutgroup"]+','+response["grouplabels"]);
+					  //deletesecond();
+					  //$("#addeditformbutton").after(editaddbutton);
+					  //editAjaxForm();
+					  //new modernized add start
+					  if (response["groupname"] == '' || response["groupname"] == 'undefined') {
+					  	var gggroupname = '{% trans "Group Name Undefined"%}';
+					  }
+					  else {
+					  	var gggroupname = response["groupname"];
+					  }
+					  if (response["bigphoto"] != '' || response["bigphoto"] == 'undefined') {
+					  	var availbigphoto = `/media/`+response["bigphoto"];
+					  	var availminiphoto = `/media/`+response["miniphoto"];
+					  	var contentaddajax = `
+					  		<div id="deletetodelete">
+					      	<div class="table-responsive">
+					        <table class="table">
+							    <tbody>
+								    <tr>
+									    <th>
+										    <div class="text-center">
+											    <div class="contentbigphoto">
+											        <img class="img-fluid rounded-circle" style='max-width: 30%;' id='bigphotocontent' src='`+availbigphoto+`' alt='' />
+											    </div>
+										    </div>
+									    </th>
+								    </tr>
+								    <tr>
+								        <th>
+										    <div class="text-center">
+											    <p class="lead text-primary font-weight">
+										            `+gggroupname+`
+											    </p>
+										    </div>
+									    </th>
+								    </tr>
+								    <tr>
+									    <td>
+										    <blockquote class="blockquote text-center mt-3">
+										        <div id="responseaboutgroup"></div>
+											    <p>
+										            <span id="addlabeldivplace"></span>
+											    </p>
+										    </blockquote>
+									    </td>
+							        </tr>
+							    </tbody>
+						    </table>
+					    </div>
+					    <div class="row">
+						    <div class="col-md-6 mt-1">
+							    <a href="/group/`+response['pk']+`/`+response['slug']+`/list/">{% trans "Group List" %}</a>
+						    </div>
+						    <div class="col-md-6 mt-1">
+						        <a href="/groupostannounce/`+response['pk']+`/`+response['slug']+`/create/post">{% trans "Post Create" %}</a>
+					        </div>
+					    </div>
+					    <div class="row">
+						    <div class="col-md-6 mt-3">
+							    `+adddeletebutton+`
+						    </div>
+						    <div class="col-md-6 mt-3">
+						        `+editaddbutton+`
+					        </div>
+					    </div>
+					    </div>
+					      `;
+					  }
+					  else {
+					  	var availbigphoto = `<img class="img-fluid rounded-circle" style='max-width: 30%;' id='bigphotocontent' src='/media/defaultimages/1asuk2018-05-15-203455.jpg' alt='' />`;
+					  	var availminiphoto = `<img class="img-fluid rounded-circle" style='max-width: 30%;' id='miniphotocontent' src='/media/defaultimages/1asuk2018-05-15-203455.jpg' alt='' />`;
+					  	var contentaddajax = `
+					  		<div id="deletetodelete" class="">
+					      	<div class="table-responsive">
+					        <table class="table">
+							    <tbody>
+								    <tr>
+									    <th>
+										    <div class="text-center">
+											    <div class="contentbigphoto">
+											        `+availbigphoto+`
+											    </div>
+										    </div>
+									    </th>
+								    </tr>
+								    <tr>
+								        <th>
+										    <div class="text-center">
+											    <p class="lead text-primary font-weight">
+										            `+gggroupname+`
+											    </p>
+										    </div>
+									    </th>
+								    </tr>
+								    <tr>
+									    <td>
+										    <blockquote class="blockquote text-center mt-3">
+										        <div id="responseaboutgroup"></div>
+											    <p>
+										            <span id="addlabeldivplace"></span>
+											    </p>
+										    </blockquote>
+									    </td>
+							        </tr>
+							    </tbody>
+						    </table>
+					    </div>
+					    <div class="row">
+						    <div class="col-md-6 mt-1">
+							    <a href="/group/`+response['pk']+`/`+response['slug']+`/list/">{% trans "Group List" %}</a>
+						    </div>
+						    <div class="col-md-6 mt-1">
+						        <a href="/groupostannounce/`+response['pk']+`/`+response['slug']+`/create/post">{% trans "Post Create" %}</a>
+					        </div>
+					    </div>
+					    <div class="row">
+						    <div class="col-md-6 mt-3">
+							    `+adddeletebutton+`
+						    </div>
+						    <div class="col-md-6 mt-3">
+						        `+editaddbutton+`
+					        </div>
+					    </div>
+					    </div>
+					      `;
+					  	
+					  }
+					  $("#deletebuttonplace").after(contentaddajax);
+					  if (response["aboutgroup"] != '') {
+					  	$('#responseaboutgroup').html(response["aboutgroup"]);
+					  }
+					  $("#deleteclick").prop('value', '/group/'+response["pk"]+'/'+response["slug"]+'/delete/'+','+response["groupname"]+','+response["aboutgroup"]+','+response["grouplabels"]);
+					  deletesecond();
+					  editAjaxForm();
+					  var mytext = "";
+					  var myloop;
+					  if (response['grouplabels'] != '' || response['grouplabels'] != 'undefined') {
+						  var mygrouplabels = response['grouplabels'];
+						  for (myloop in mygrouplabels) {
+						  	mytext += `<a href="/`+response['groupname']+`/`+mygrouplabels[myloop]+`">`+mygrouplabels[myloop]+`</a>`+` `
+						   }
+						   $("#addlabeldivplace").after(mytext);
+					   }
+					  //new modernized add finish
+				   },
+				  error: function(xhr, status, error) {
+					  var err = eval("(" + xhr.responseText + ")");
+					  alert(err.Message);
+				   }
+			  });
+			  return false;
+		     
+		  });
+	   });
+   </script>
+{% endblock %}
+{% block head_title %}
+	{% blocktrans %}Group Create{% endblocktrans %}
+{% endblock %}
+
+{% block extra_head %}
+{% endblock %}
+
+{% block mynavbar %}
+  {% include "myincludes/mynavbar.html" %}
+{% endblock %}
+
+{% block content %}
+  {% if request.user.is_authenticated %}
+  	<section class="groupcreatesection">
+  			<div class="container">
+  				<div class="row">
+  					<div class="col-md-12 text-center mt-4 pt-2">
+						<h4>{% trans "Group Create" %}</h4>
+						<input type="hidden" id= "bigphotodatagets" name="bigphotodatagets" value="">
+					    <input type="hidden" id= "miniphotodatagets" name="miniphotodatagets" value="">
+					    <input type="hidden" id= "bigphotodatagetsmain" name="bigphotodatagetsmain" value="">
+					    <input type="hidden" id= "miniphotodatagetsmain" name="miniphotodatagetsmain" value="">
+					    <input type="hidden" id= "bigphotodatagetsedit" name="bigphotodatagetsedit" value="">
+					    <input type="hidden" id= "miniphotodatagetsedit" name="miniphotodatagetsedit" value="">
+					    <div id="addnamesurnameajax" class=""></div>
+						<div id="deletebuttonplace" class=""></div>
+						<div id="addeditformbutton" class=""></div>
+						<!--<div id="addnamesurnameajax" class=""></div>-->
+					    <div id="addmainform" class=""></div>
+					    <div id="addmodalform" class=""></div>
+					    
+					      {% for post in mydata %}
+							{% if post.groupname == None %}
+								<div id="firstaddmyform" class="">
+									<form id="myform" action="{% url 'creategroupajax' %}" method="post" enctype="multipart/form-data">
+									    {% csrf_token %}
+									     <div class="form-group">
+									     	{{ form.groupname }}
+									     </div>
+									     <div class="adderror"></div>
+									     <div class="form-group">
+									     	<div class="custom-file">
+									     		{{ form.bigphoto }}
+									     		<label class="bigphoto custom-file-label" for="bigphoto">{% trans "Choose Group Photo" %}</label>
+									     	</div>
+										    <div class="table-responsive">
+											    <table class="table">
+												    <tbody>
+													    <tr>
+															<th>
+																<div class="text-center">
+																	<div class="divbigphoto">
+																	    <img class="img-fluid rounded-circle" style='max-width: 30%;' id='bigphotoid' src='#' alt='' />
+																	</div>
+																</div>
+															</th>
+														</tr>
+													</tbody>
+												</table>
+											</div>
+									     </div>
+									     <div class="form-group">
+									     	<div class="custom-file">
+										     	{{ form.miniphoto }}
+										     	<label class="miniphoto custom-file-label" for="miniphoto">{% trans "Choose Back Photo" %}</label>
+									     	</div>
+									    	<div class="table-responsive">
+											    <table class="table">
+												    <tbody>
+													    <tr>
+															<th>
+																<div class="text-center">
+																	<div class="divminiphoto">
+																	    <img class="img-fluid rounded-circle" style='max-width: 30%;' id='miniphotoid' src='#' alt='' />
+																	</div>
+																</div>
+															</th>
+														</tr>
+													</tbody>
+												</table>
+											</div>
+									     </div>
+									     <div class="form-group">
+									     	{{ form.aboutgroup }}
+									     </div>
+									     <!-- checkbox-->
+									     <div class="col-md-12 center-block">
+										    <div class="custom-control custom-checkbox">
+										        {{ form.followacceptcontrol }}
+										        <label class="custom-control-label" for="followacceptcontrol">{% trans "Group Show" %}</label>
+										    </div>
+										</div>
+									     <!-- checkbox-->
+									     <div class="form-group">
+									     	{{ form.grouplabels }}
+									     </div>
+									    {{ form.bigphotox }}
+									    {{ form.bigphotoy }}
+									    {{ form.bigphotowidth }}
+									    {{ form.bigphotoheight }}
+									    {{ form.miniphotox }}
+									    {{ form.miniphotoy }}
+									    {{ form.miniphotowidth }}
+									    {{ form.miniphotoheight }}
+									    <input type="hidden" id= "postesttype" name="postesttype" value="application/x-www-form-urlencoded">
+									</form>
+									<button id="buraya" class="btn btn-primary btn-block" type="input" name="createpostone">{% trans "Send" %}</button> 
+								</div>
+					    {% endif %}
+					    {% if post.groupname != None %}
+							<div id="deletetodelete" class="">
+								<div class="table-responsive">
+								    <table class="table">
+									    <tbody>
+										    <tr>
+												<th>
+													<div class="text-center">
+														<div class="contentbigphoto">
+															{% if post.bigphoto %}
+														    	<img class="img-fluid rounded-circle" style='max-width: 30%;' id='bigphotocontent' src='{{ post.bigphoto.url }}' alt='' />
+															{% else %}
+																<img class="img-fluid rounded-circle" style='max-width: 30%;' id='bigphotocontent' src='/media/defaultimages/1asuk2018-05-15-203455.jpg' alt='' />
+															{% endif %}
+														</div>
+													</div>
+												</th>
+											</tr>
+											<tr>
+												<th>
+													<div class="text-center">
+														<p class="lead text-primary font-weight">
+											        		{{ post.groupname }}
+											        	</p>
+										        	</div>
+												</th>
+											</tr>
+											<tr>
+												<td>
+													<blockquote class="blockquote text-center mt-3">
+											        	{{ post.aboutgroup|safe }}
+											        	<p>
+											        		<span id="addlabeldivplace"></span>
+												        	{% for tag in post.grouplabels.all %}
+																<a href="/{{ post.groupname }}/{{ tag.name }}">{{ tag.name }}</a>
+													        {% endfor %}
+												    	</p>
+											    	</blockquote>
+										    	</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+						    	<div class="row">
+						    		<div class="col-md-6 mt-1">
+								        {% url 'groupshowlist' post.pk post.slug as groupshowlist_url %}
+								        <a href="{{ groupshowlist_url }}">{% trans "Group List" %}</a>
+								    </div>
+								    <div class="col-md-6 mt-1">
+								        {% url 'creategrouppostsajax' post.pk post.slug as the_post_create_url %}
+								        <a href="{{ the_post_create_url }}">{% trans "Post Create" %}</a>
+							        </div>
+						        </div>
+						        <!--{% url 'deletegroup' post.pk post.slug as delete_url %}
+						        <a href="{{ delete_url }}">{% trans "Delete Post" %}</a>-->
+						        <div class="row">
+						        	<div class="col-md-6 mt-3">
+							        	<button id="deleteclick" class="btn btn-primary btn-block" value= "{{ delete_url }}, {{ post.groupname }},{{ post.aboutgroup }}" type="input" >{% trans "Delete" %}</button>
+							        </div>
+							        <div class="col-md-6 mt-3">
+								        {% url 'updategroupajax' post.pk post.slug as the_url %}
+								        <button id="editnameclick" class="btn btn-primary btn-block" value="{{ the_url }}," type="input" >{% trans "Edit" %}</button>
+							        </div>
+						        </div>
+					        </div>
+					    {% endif %}
+					    {% endfor %}
+					</div>
+				</div>
+			</div>
+		</section>
+    <!-- MODAL TO CROP THE IMAGE -->
+  <div class="modal fade" id="modalCrop">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title">Crop the photo</h4>
+        </div>
+        <div class="modal-body">
+          <img src="" id="image" style="max-width: 100%;">
+        </div>
+        <div class="modal-footer">
+          <div class="btn-group pull-left" role="group">
+            <button type="button" class="btn btn-default js-zoom-in">
+              <span class="glyphicon glyphicon-zoom-in"></span>
+            </button>
+            <button type="button" class="btn btn-default js-zoom-out">
+              <span class="glyphicon glyphicon-zoom-out"></span>
+            </button>
+          </div>
+          <button type="button" class="btn btn-default page-reload-path" data-dismiss="modal">Nevermind</button>
+          <button type="button" class="btn btn-primary js-crop-and-upload">Crop and upload</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTAINER TO DISPLAY THE CROPPED IMAGES 
+  <div class="row" style="margin-top: 20px">
+    {% for photo in photos %}
+      <div class="col-sm-4 col-md-3">
+        <img src="{{ photo.file.url }}" class="thumbnail">
+      </div>
+    {% endfor %}
+  </div>-->
+
+{% else %}
+  	<section id="loginerror">
+  		<div class="container">
+  			<div class="row">
+  				<div class="col-md-12 text-center mt-1 pt-1">
+  					<h4>{% trans "Please Login" %}</h4>
+  				</div>
+  			</div>
+  		</div>
+  	</section>
+{% endif %}
+
+{% endblock %}
+
+{% block myfooter %}
+  {% include "myincludes/mypagefooter.html" %}
+{% endblock %}

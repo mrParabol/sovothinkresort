@@ -1,0 +1,1211 @@
+{% extends "account/base.html" %}
+{% load poll_extras %}
+{% block bodyicijs %}
+  <script type="text/javascript">
+	  $(document).ready(function(){
+		  var processstars = function processstars (ids, ups, downs) {
+			  var ids = ids;
+			  var exportup = ups;
+			  var exportdown = downs;
+			  var exporttype = '#exporttypepost'+ids;
+			  var exporttypeget = exporttype.val();
+			  var exporttypegetsplt = exporttypeget.split(",");
+			  var exporttypepk = exporttypegetsplt[0];
+			  var postgrouppkget = exporttypegetsplt[1];
+			  var getform = '#myform'+ids;
+			  var url = $(getform).attr("action");
+			  var type = 'POST';
+			  var data = {
+				  exporttypepost:exporttypepk,
+				  exportgrouppkpost:postgrouppkget,
+				  exportuppost:exportup,
+				  exportdownpost:exportdown,
+				  csrfmiddlewaretoken:"{{ csrf_token }}"
+			  }
+			  $.ajax({
+				  url:url,
+				  type:type,
+				  data:data,
+				  contentType:"application/x-www-form-urlencoded;charset=utf-8",
+				  success: function(response) {
+					  geterrordata = response['error'];
+					  getcountdata = response['count'];
+					  var place = '#vote'+ids;
+					  if (geterrordata != undefined){
+						  $('#addbtnblck'+ids).empty();
+						  $('#addbtnblck'+ids).append(geterrordata);
+					  }
+					  else {
+						  $(deletejoiner).remove();
+						  $(place+'span.count').empty();
+						  $(place+'span.count').append(getcountdata);
+					  }
+				  },
+				  error: function(xhr, status, error) {
+					  var err = eval("(" + xhr.responseText + ")");
+					  alert(err.Message);
+				  }
+			  });
+			  return false;
+		  }
+	  });
+  </script>
+   <script type="text/javascript">
+	  $(document).ready(function(){
+		  var postdelpositivefunc = function postdelpositivefunc (ids, ups, downs) {
+			  var ids = ids;
+			  var exportup = ups;
+			  var exportdown = downs;
+			  var exporttype = '#exporttypefordel'+ids;
+			  var exporttypeget = exporttype.val();
+			  var exporttypegetsplt = exporttypeget.split(",");
+			  var deltypepk = exporttypegetsplt[0];
+			  var delgrouppk = exporttypegetsplt[1];
+			  var delpostid = exporttypegetsplt[2];
+			  var getform = '#myformfordel'+ids;
+			  var url = $(getform).attr("action");
+			  var type = 'POST';
+			  var data = {
+				  deltypepk:deltypepk,
+				  delgrouppk:delgrouppk,
+				  delpostid:delpostid,
+				  exportuppost:exportup,
+				  exportdownpost:exportdown,
+				  csrfmiddlewaretoken:"{{ csrf_token }}"
+			  }
+			  $.ajax({
+				  url:url,
+				  type:type,
+				  data:data,
+				  contentType:"application/x-www-form-urlencoded;charset=utf-8",
+				  success: function(response) {
+					  geterrordata = response['error'];
+					  getcountdata = response['count'];
+					  var place = '#postfordelpositive'+ids;
+					  if (geterrordata != undefined){
+						  $('#addbtnblckfordel'+ids).empty();
+						  $('#addbtnblckfordel'+ids).append(geterrordata);
+					  }
+					  else {
+						  $(place).text(getcountdata);
+					  }
+				  },
+				  error: function(xhr, status, error) {
+					  var err = eval("(" + xhr.responseText + ")");
+					  alert(err.Message);
+				  }
+			  });
+			  return false;
+		  }
+		  var postdelfuncnegative = function postdelfuncnegative (ids, ups, downs) {
+			  var ids = ids;
+			  var exportup = ups;
+			  var exportdown = downs;
+			  var exporttype = '#exporttypefordel'+ids;
+			  var exporttypeget = exporttype.val();
+			  var exporttypegetsplt = exporttypeget.split(",");
+			  var deltypepk = exporttypegetsplt[0];
+			  var delgrouppk = exporttypegetsplt[1];
+			  var delpostid = exporttypegetsplt[2];
+			  var getform = '#myformfordel'+ids;
+			  var url = $(getform).attr("action");
+			  var type = 'POST';
+			  var data = {
+				  deltypepk:deltypepk,
+				  delgrouppk:delgrouppk,
+				  delpostid:delpostid,
+				  exportuppost:exportup,
+				  exportdownpost:exportdown,
+				  csrfmiddlewaretoken:"{{ csrf_token }}"
+			  }
+			  $.ajax({
+				  url:url,
+				  type:type,
+				  data:data,
+				  contentType:"application/x-www-form-urlencoded;charset=utf-8",
+				  success: function(response) {
+					  geterrordata = response['error'];
+					  getcountdata = response['count'];
+					  var place = '#postfordelnegative'+ids;
+					  if (geterrordata != undefined){
+						  $('#addbtnblckfordel'+ids).empty();
+						  $('#addbtnblckfordel'+ids).append(geterrordata);
+					  }
+					  else {
+						  $(place).text(getcountdata);
+					  }
+				  },
+				  error: function(xhr, status, error) {
+					  var err = eval("(" + xhr.responseText + ")");
+					  alert(err.Message);
+				  }
+			  });
+			  return false;
+		  }
+
+		  //user voting process
+
+		  var usrvpositivefunc = function usrvpositivefunc (ids, ups, downs) {
+			  var ids = ids;
+			  var exportup = ups;
+			  var exportdown = downs;
+			  var exporttype = '#exporttypeforusr'+ids;
+			  var exporttypeget = exporttype.val();
+			  var exporttypegetsplt = exporttypeget.split(",");
+			  var exporttypepk = exporttypegetsplt[0];
+			  var delgrouppkget = exporttypegetsplt[1];
+			  var getform = '#myformforusr'+ids;
+			  var url = $(getform).attr("action");
+			  var type = 'POST';
+			  var data = {
+				  exporttype:exporttypepk,
+				  exportgrouppk:delgrouppkget,
+				  exportup:exportup,
+				  exportdown:exportdown,
+				  csrfmiddlewaretoken:"{{ csrf_token }}"
+			  }
+			  $.ajax({
+				  url:url,
+				  type:type,
+				  data:data,
+				  contentType:"application/x-www-form-urlencoded;charset=utf-8",
+				  success: function(response) {
+					  geterrordata = response['error'];
+					  getwarndata = response['warn'];
+					  getcountdata = response['count'];
+					  var place = '#forusrpositive'+ids;
+					  if (geterrordata != undefined){
+						  $('#addbtnblckforusr'+ids).empty();
+						  $('#addbtnblckforusr'+ids).append(geterrordata);
+					  }
+					  else if (getwarndata != undefined) {
+						  $('#addbtnblckforusr'+ids).empty();
+						  $('#addbtnblckforusr'+ids).append(getwarndata);
+					  }
+					  else {
+						  $(place).text(getcountdata);
+					  }
+				  },
+				  error: function(xhr, status, error) {
+					  var err = eval("(" + xhr.responseText + ")");
+					  alert(err.Message);
+				  }
+			  });
+			  return false;
+		  }
+		  var usrvfuncnegative = function usrvfuncnegative (ids, ups, downs) {
+			  var ids = ids;
+			  var exportup = ups;
+			  var exportdown = downs;
+			  var exporttype = '#exporttypeforusr'+ids;
+			  var exporttypeget = exporttype.val();
+			  var exporttypegetsplt = exporttypeget.split(",");
+			  var exporttypepk = exporttypegetsplt[0];
+			  var delgrouppkget = exporttypegetsplt[1];
+			  var getform = '#myformforusr'+ids;
+			  var url = $(getform).attr("action");
+			  var type = 'POST';
+			  var data = {
+				  exporttype:exporttypepk,
+				  exportgrouppk:delgrouppkget,
+				  exportup:exportup,
+				  exportdown:exportdown,
+				  csrfmiddlewaretoken:"{{ csrf_token }}"
+			  }
+			  $.ajax({
+				  url:url,
+				  type:type,
+				  data:data,
+				  contentType:"application/x-www-form-urlencoded;charset=utf-8",
+				  success: function(response) {
+					  geterrordata = response['error'];
+					  getwarndata = response['warn'];
+					  getcountdata = response['count'];
+					  var place = '#forusrnegative'+ids;
+					  if (geterrordata != undefined){
+						  $('#addbtnblckforusr'+ids).empty();
+						  $('#addbtnblckforusr'+ids).append(geterrordata);
+					  }
+					  else if (getwarndata != undefined) {
+						  $('#addbtnblckforusr'+ids).empty();
+						  $('#addbtnblckforusr'+ids).append(getwarndata);
+					  }
+					  else {
+						  $(place).text(getcountdata);
+					  }
+				  },
+				  error: function(xhr, status, error) {
+					  var err = eval("(" + xhr.responseText + ")");
+					  alert(err.Message);
+				  }
+			  });
+			  return false;
+		  }
+		  //user delete request start codes
+
+		  var usrdelreqfunc = function usrdelreqfunc (ids) {
+			  var ids = ids;
+			  var exporttype = '#exporttypeusrreq'+ids;
+			  var exporttypeget = exporttype.val();
+			  var exporttypegetsplt = exporttypeget.split(",");
+			  var exporttypestr = exporttypegetsplt[0];
+			  var groupwhichpkget = exporttypegetsplt[1];
+			  var exportuserpk = exporttypegetsplt[2];
+			  var requestoruserpk = exporttypegetsplt[3];
+			  var getform = '#myformusrreq'+ids;
+			  var url = $(getform).attr("action");
+			  var type = 'POST';
+			  var data = {
+				  exporttype:exporttypestr,
+				  exportgrouppk:groupwhichpkget,
+				  exportuserpk:exportuserpk,
+				  requestoruserpk:requestoruserpk,
+				  csrfmiddlewaretoken:"{{ csrf_token }}"
+			  }
+			  $.ajax({
+				  url:url,
+				  type:type,
+				  data:data,
+				  contentType:"application/x-www-form-urlencoded;charset=utf-8",
+				  success: function(response) {
+					  getalreadydata = response['already'];
+					  getshowdatadata = response['showdata'];
+					  getshowdataerror = response['showdataerror'];
+					  geterror = response['error'];
+					  var place = '#usrreqstatus'+ids;
+					  var deleteformelem = '#listerusrreqstatus'+ids;
+					  if (getalreadydata != undefined){
+					  	  $(deleteformelem).remove();
+						  $(place).empty();
+						  $(place).append(getalreadydata);
+					  }
+					  else if (getshowdatadata != undefined) {
+					  	  $(deleteformelem).remove();
+						  $(place).empty();
+						  $(place).append('Requested deletion of user '+getshowdatadata);
+					  }
+					  else if (getshowdataerror != undefined) {
+					  	  $(deleteformelem).remove();
+						  $(place).empty();
+						  $(place).append(getshowdataerror);
+					  }
+					  else {
+						  $(place).text('this operation is in error');
+					  }
+				  },
+				  error: function(xhr, status, error) {
+					  var err = eval("(" + xhr.responseText + ")");
+					  alert(err.Message);
+				  }
+			  });
+			  return false;
+		  }
+
+		  //post delete process start
+
+		  var pstdelreqfunc = function pstdelreqfunc (ids) {
+			  var ids = ids;
+			  var exporttype = '#exporttypepstreq'+ids;
+			  var exporttypeget = exporttype.val();
+			  var exporttypegetsplt = exporttypeget.split(",");
+			  var exporttypestr = exporttypegetsplt[0];
+			  var groupwhichpkget = exporttypegetsplt[1];
+			  var delpostpk = exporttypegetsplt[2];
+			  var exportuserpk = exporttypegetsplt[3];
+			  var requestoruserpk = exporttypegetsplt[4];
+			  var getform = '#myformusrreq'+ids;
+			  var url = $(getform).attr("action");
+			  var type = 'POST';
+			  var data = {
+				  deltype:exporttypestr,
+				  delgrouppk:groupwhichpkget,
+				  delpostpk:delpostpk,
+				  deluserpk:exportuserpk,
+				  delrequestoruserpk:requestoruserpk,
+				  csrfmiddlewaretoken:"{{ csrf_token }}"
+			  }
+			  $.ajax({
+				  url:url,
+				  type:type,
+				  data:data,
+				  contentType:"application/x-www-form-urlencoded;charset=utf-8",
+				  success: function(response) {
+					  getalreadydata = response['showdatadel'];
+					  getshowdatadata = response['showdatausername'];
+					  getshowdataerror = response['showdataerror'];
+					  geterror = response['error'];
+					  var place = '#pstreqstatus'+ids;
+					  var deleteformelem = '#listerpstreqstatus'+ids;
+					  if (getalreadydata != undefined){
+					  	  $(deleteformelem).remove();
+						  $(place).empty();
+						  $(place).append(getalreadydata);
+					  }
+					  else if (getshowdatadata != undefined) {
+					  	  $(deleteformelem).remove();
+						  $(place).empty();
+						  $(place).append('Requested deletion of post id '+getshowdatadata);
+					  }
+					  else if (getshowdataerror != undefined) {
+					  	  $(deleteformelem).remove();
+						  $(place).empty();
+						  $(place).append(getshowdataerror);
+					  }
+					  else {
+						  $(place).text('this operation is in error');
+					  }
+				  },
+				  error: function(xhr, status, error) {
+					  var err = eval("(" + xhr.responseText + ")");
+					  alert(err.Message);
+				  }
+			  });
+			  return false;
+		  }
+	  });
+  </script>
+{% endblock %}
+
+{% block head_title %}
+	{% blocktrans %}Posts Lists{% endblocktrans %}
+{% endblock %}
+
+{% block extra_head %}
+{% endblock %}
+ 
+{% block body %}
+	{% block mynavbar %}
+	  {% include "myincludes/mynavbar.html" %}
+	{% endblock %}
+{% block content %}
+ 
+{% if request.user.is_authenticated %}
+
+    {% if request.user.account_verified %}
+    	<section class="userdetailsection">
+		<div class="container">
+			<div class="page-header">
+		 		<div class="row">
+		 			<div class="col-md-12 text-center mt-1 pt-2">
+								<h3>{{ selectgroup.groupname }} {% trans "Posts List" %}</h3>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	{% if list_exams %}
+        <section class="joinerscls">
+        <div class="container">
+        <div class="row">
+        	<div class="col-md-12 text-center mt-4 pt-2">
+	    <div id="lastcase"></div>
+	    <div id="fullist"> 
+		{% for usershow in list_exams %}
+			{% url 'postscontent' usershow.user.username usershow.pk usershow.slug as the_detailw %}
+			{% postexported usershow.pk as postscnt %}
+			{% userexported usershow.user.pk as usrdelcnt %}
+			{% postexportedgetid usershow.user.pk as pstexprtid %}
+			{% userexportedgetid usershow.user.pk as usrexprtid %}
+			{% delegatecnt request.user.id usershow.creategrouppost.pk as cntdelegate %}
+			<a href = "{{ the_detailw }}" class=""><h1>{{ usershow.id }}</h1></a>
+			{% if postscnt == True and usrdelcnt == True %}
+				<!-- post vote start -->
+				<div id="lister{{ usershow.pk }}">
+					<div class="row border-top border-primary">
+						<div id="feelsmain{{ usershow.pk }}" class="col-md-3 text-center mt-1 pt-2">
+							{{ usershow.feeling }}
+						</div>
+						<script type="text/javascript">
+							$(document).ready(function() {
+							  function convert() {
+							      var input = $('#feelsmain{{ usershow.pk }}').text();
+							      var output = emojione.toImage(input);
+							      document.getElementById('feelsmain{{ usershow.pk }}').innerHTML = output;
+							  }
+							  convert();
+							});
+						</script>
+						<div class="col-md-3 text-center mt-1 pt-2 fosizes">
+							{{ usershow.user.username }}
+						</div>
+						<div class="col-md-3 text-center mt-1 pt-2 fosizes">
+							{{ usershow.createdates }}
+						</div>
+						<div class="col-md-3 text-center mt-1 pt-2 fosizes">
+							{% for tag in usershow.postgrouplabels.all %}
+								<a href="/{{ usershow.creategrouppost.groupname }}/{{ tag.name }}/relatedposts">{{ tag.name }}</a>
+							{% endfor %}
+						</div>
+					<!-- </div> -->
+					<!-- carosel photo start -->
+					<!-- <div class="row"> -->
+						<div class="col-md-12 text-center mt-1 mb-1 pt-1">
+							{% photo_show_list usershow.id as photolist %}
+							<input id="wsipperphotourllist{{ usershow.pk }}" type="hidden" name="" value="{{ photolist }}">
+							<!-- for picture design -->
+							<div class="swiper-container slider{{ usershow.pk }}">
+								<div id="wrapper{{ usershow.pk }}" class="swiper-wrapper">
+									<!--<div class="swiper-slide"><img id="slide{{ usershow.pk }}" src=""></div>-->
+									<!-- Add Pagination -->
+								</div>
+							  <div class="swiper-pagination"></div>
+							  <!-- Add Arrows -->
+							  <div class="swiper-button-next"></div>
+							  <div class="swiper-button-prev"></div>
+							</div>
+							<script type="text/javascript">
+								$(document).ready(function() {
+									//photos add
+									var ptlst = $('#wsipperphotourllist{{ usershow.pk }}').val();
+									ptlst = ptlst.substr(1);
+									nnptlst = ptlst.length;
+									ptlst = ptlst.substr(0, nnptlst-1);
+									var listptlst = ptlst.split(",");
+									for (let i = 0; i < listptlst.length; i++) {
+										let element = listptlst[i];
+										if (element == "\'false\'") {
+											element = element;
+										}
+										else{
+											$('#wrapper{{ usershow.pk }}').append(`<div class="swiper-slide"><img id="slide{{ usershow.pk }}" class="img-fluid" src=`+element+`></div>`);
+										}
+									}
+									{% if usershow.multiphoto %}
+										$('#wrapper{{ usershow.pk }}').append(`<div class="swiper-slide"><video id="slide{{ usershow.pk }}" class="img-responsive myvidswidth" controls> <source src="{{ usershow.multiphoto.url }}" type="video/mp4"></video>`);
+									{% endif %}
+									(() => {
+										const sliderEl = document.querySelector('.slider{{ usershow.pk }}');
+										  if(!sliderEl){
+										    return;
+										  }
+										  const slider = new Swiper(sliderEl, {
+										    loop: true,
+										    /*
+										    autoplay: {
+										      delay: 5000,
+										      disableOnInteraction: false
+										    },
+										    */
+										    pagination: {
+										      el: '.swiper-pagination',
+										      clickable: true,
+										      //type: 'progressbar'
+										    },
+										    navigation: {
+										      nextEl: '.swiper-button-next',
+										      prevEl: '.swiper-button-prev',
+										    },
+										  });
+										})();
+								});
+								//$('#slide{{ usershow.pk }}').prop(src, )
+							</script>
+						</div>
+					</div>
+					<!-- carosel photo stop -->
+					<!-- text start -->
+					<div class="row">
+						<div class="col-md-12">
+							<blockquote class="blockquote text-center mt-1">
+								<span>{{ usershow.postsgroupwrite|safe }}</span>
+							</blockquote>
+						</div>
+					</div>
+
+
+					<div class="row">
+						{% getphotolink usershow.user.username as photolinkget %}
+						<div class="col-md-4 text-center mt-2">
+							<img src="{{ photolinkget }}" alt="{{ usershow.user.username }}" class="img-fluid rounded-circle imgwidth">
+						</div>
+						<div class="col-md-4 text-center mt-2 pt-4">
+							{% url 'postvoterproc' selectgroup.pk selectgroup.slug as membership_url %}
+							<form id="myform{{ usershow.pk }}" action="{{ membership_url }}" method="post" enctype="multipart/form-data">
+								{% csrf_token %}
+								<input type="hidden" id= "exporttypepost{{ usershow.pk }}" name="exporttypepost{{ usershow.pk }}" value="{{ usershow.pk }},{{ usershow.creategrouppost.pk }}">
+							</form>
+							<div id="addbtnblck{{ usershow.pk }}"></div>
+						</div>
+						<div class="col-md-4 text-center mt-2 pt-4">
+							<div id="vote{{ usershow.pk }}" class="upvote">
+								<a class="upvote"></a>
+								<span class="count">{% my_tag usershow.pk %}</span>
+								<a class="downvote"></a>
+							</div>
+							<script type="text/javascript">
+								$(document).ready(function(){
+									var callback = function(data) {
+										processstars(data.id, data.upvoted, data.downvoted);
+									};
+									$('#vote{{ usershow.pk }}').upvote({id: {{ usershow.pk }}, callback: callback});
+								});
+							</script>
+						</div>
+					</div>
+				</div>
+				<!-- post vote stop -->
+				<!-- postdeletevote vote start -->
+				<div id="listerfordel{{ usershow.pk }}">
+				<!--{{ usershow.fromuser.username }}-->
+				<!--{{ usershow.joinstatus }}-->
+					<div class="row">
+						<div class="col-md-6 text-center mt-2 pt-4">
+							{% joinstatusshow usershow.user.username usershow.creategrouppost.pk as jnrstshow %}
+							{{ jnrstshow }}
+						</div>
+						<div class="col-md-6 text-center mt-2 pt-4">
+							{% url 'deletevoteprocess' selectgroup.pk selectgroup.slug as membership_url %}
+							<form id="myformfordel{{ usershow.pk }}" action="{{ membership_url }}" method="post" enctype="multipart/form-data">
+								{% csrf_token %}
+								<input type="hidden" id= "exporttypefordel{{ usershow.pk }}" name="exporttypefordel{{ usershow.pk }}" value="{{ pstexprtid }},{{ usershow.creategrouppost.pk }},{{ usershow.pk }}">
+							</form>
+							<div id="addbtnblckfordel{{ usershow.pk }}"></div>
+						</div>
+						<div class="col-md-6 text-center mt-2">
+							<button id="postfordelpositive{{ usershow.pk }}" onclick="postdelpositivefunc({{ usershow.pk }},true,false)" class="btn btn-primary custombtn" type="input" name="postfordelpositive{{ usershow.pk }}" value="{{ usershow.pk }},true,false">{% my_post_tag usershow.pk %}</button>
+						</div>
+						<div class="col-md-6 text-center mt-2">
+							<button id="postfordelnegative{{ usershow.pk }}" onclick="postdelfuncnegative({{ usershow.pk }},false,true)" class="btn btn-primary custombtn" type="input" name="postfordelnegative{{ usershow.pk }}" value="{{ usershow.pk }},false,true">{% my_post_tag usershow.pk %}</button>
+						</div>
+					</div>
+				</div>
+				<!-- postdeletevote vote stop -->
+				<!-- userdel vote start -->
+				<div id="listerforusr{{ usershow.pk }}">
+				<!--{{ usershow.fromuser.username }}-->
+				<!--{{ usershow.joinstatus }}-->
+					<div class="row">
+						<div class="col-md-6 text-center mt-2 pt-4">
+							{% joinstatusshow usershow.user.username usershow.creategrouppost.pk as jnrstshow %}
+										{{ jnrstshow }}
+						</div>
+						<div class="col-md-6 text-center mt-2 pt-4">
+							{% url 'relatevoterprocess' selectgroup.pk selectgroup.slug as membership_url %}
+									<form id="myformforusr{{ usershow.pk }}" action="{{ membership_url }}" method="post" enctype="multipart/form-data">
+										{% csrf_token %}
+										<input type="hidden" id= "exporttypeforusr{{ usershow.pk }}" name="exporttypeforusr{{ usershow.pk }}" value="{{ usrexprtid }},{{ usershow.creategrouppost.pk }}">
+									</form>
+									<div id="addbtnblckforusr{{ usershow.pk }}"></div>
+						</div>
+						<div class="col-md-6 text-center mt-2">
+							<button id="forusrpositive{{ usershow.pk }}" onclick="usrvpositivefunc({{ usershow.pk }},true,false)" class="btn btn-primary custombtn" type="input" name="postforusrpositive{{ usershow.pk }}" value="{{ usershow.pk }},true,false">{% my_tag usershow.pk %}</button>
+						</div>
+						<div class="col-md-6 text-center mt-2">
+							<button id="forusrnegative{{ usershow.pk }}" onclick="usrvfuncnegative({{ usershow.pk }},false,true)" class="btn btn-primary custombtn" type="input" name="postforusrnegative{{ usershow.pk }}" value="{{ usershow.pk }},false,true">{% my_tag usershow.pk %}</button>
+						</div>
+					</div>
+				</div>
+				<!-- userdel vote stop -->
+			{% elif postscnt != True and usrdelcnt == True %}
+				<!-- post vote start -->
+				<div id="lister{{ usershow.pk }}">
+					<div class="row border-top border-primary">
+						<div id="feelsmain{{ usershow.pk }}" class="col-md-3 text-center mt-1 pt-2">
+							{{ usershow.feeling }}
+						</div>
+						<script type="text/javascript">
+							$(document).ready(function() {
+							  function convert() {
+							      var input = $('#feelsmain{{ usershow.pk }}').text();
+							      var output = emojione.toImage(input);
+							      document.getElementById('feelsmain{{ usershow.pk }}').innerHTML = output;
+							  }
+							  convert();
+							});
+						</script>
+						<div class="col-md-3 text-center mt-1 pt-2 fosizes">
+							{{ usershow.user.username }}
+						</div>
+						<div class="col-md-3 text-center mt-1 pt-2 fosizes">
+							{{ usershow.createdates }}
+						</div>
+						<div class="col-md-3 text-center mt-1 pt-2 fosizes">
+							{% for tag in usershow.postgrouplabels.all %}
+								<a href="/{{ usershow.creategrouppost.groupname }}/{{ tag.name }}/relatedposts">{{ tag.name }}</a>
+							{% endfor %}
+						</div>
+					<!-- </div> -->
+					<!-- carosel photo start -->
+					<!-- <div class="row"> -->
+						<div class="col-md-12 text-center mt-1 mb-1 pt-1">
+							{% photo_show_list usershow.id as photolist %}
+							<input id="wsipperphotourllist{{ usershow.pk }}" type="hidden" name="" value="{{ photolist }}">
+							<!-- for picture design -->
+							<div class="swiper-container slider{{ usershow.pk }}">
+								<div id="wrapper{{ usershow.pk }}" class="swiper-wrapper">
+									<!--<div class="swiper-slide"><img id="slide{{ usershow.pk }}" src=""></div>-->
+									<!-- Add Pagination -->
+								</div>
+							  <div class="swiper-pagination"></div>
+							  <!-- Add Arrows -->
+							  <div class="swiper-button-next"></div>
+							  <div class="swiper-button-prev"></div>
+							</div>
+							<script type="text/javascript">
+								$(document).ready(function() {
+									//photos add
+									var ptlst = $('#wsipperphotourllist{{ usershow.pk }}').val();
+									ptlst = ptlst.substr(1);
+									nnptlst = ptlst.length;
+									ptlst = ptlst.substr(0, nnptlst-1);
+									var listptlst = ptlst.split(",");
+									for (let i = 0; i < listptlst.length; i++) {
+										let element = listptlst[i];
+										if (element == "\'false\'") {
+											element = element;
+										}
+										else{
+											$('#wrapper{{ usershow.pk }}').append(`<div class="swiper-slide"><img id="slide{{ usershow.pk }}" class="img-fluid" src=`+element+`></div>`);
+										}
+									}
+									{% if usershow.multiphoto %}
+										$('#wrapper{{ usershow.pk }}').append(`<div class="swiper-slide"><video id="slide{{ usershow.pk }}" class="img-responsive myvidswidth" controls> <source src="{{ usershow.multiphoto.url }}" type="video/mp4"></video>`);
+									{% endif %}
+									(() => {
+										const sliderEl = document.querySelector('.slider{{ usershow.pk }}');
+										  if(!sliderEl){
+										    return;
+										  }
+										  const slider = new Swiper(sliderEl, {
+										    loop: true,
+										    /*
+										    autoplay: {
+										      delay: 5000,
+										      disableOnInteraction: false
+										    },
+										    */
+										    pagination: {
+										      el: '.swiper-pagination',
+										      clickable: true,
+										      //type: 'progressbar'
+										    },
+										    navigation: {
+										      nextEl: '.swiper-button-next',
+										      prevEl: '.swiper-button-prev',
+										    },
+										  });
+										})();
+								});
+								//$('#slide{{ usershow.pk }}').prop(src, )
+							</script>
+						</div>
+					</div>
+					<!-- carosel photo stop -->
+					<!-- text start -->
+					<div class="row">
+						<div class="col-md-12">
+							<blockquote class="blockquote text-center mt-1">
+								<span>{{ usershow.postsgroupwrite|safe }}</span>
+							</blockquote>
+						</div>
+					</div>
+
+
+					<div class="row">
+						{% getphotolink usershow.user.username as photolinkget %}
+						<div class="col-md-4 text-center mt-2">
+							<img src="{{ photolinkget }}" alt="{{ usershow.user.username }}" class="img-fluid rounded-circle imgwidth">
+						</div>
+						<div class="col-md-4 text-center mt-2 pt-4">
+							{% url 'postvoterproc' selectgroup.pk selectgroup.slug as membership_url %}
+									<form id="myform{{ usershow.pk }}" action="{{ membership_url }}" method="post" enctype="multipart/form-data">
+										{% csrf_token %}
+										<input type="hidden" id= "exporttypepost{{ usershow.pk }}" name="exporttypepost{{ usershow.pk }}" value="{{ usershow.pk }},{{ usershow.creategrouppost.pk }}">
+									</form>
+									<div id="addbtnblck{{ usershow.pk }}"></div>
+						</div>
+						<div class="col-md-4 text-center mt-2 pt-4">
+							<div id="vote{{ usershow.pk }}" class="upvote">
+										<a class="upvote"></a>
+										<span class="count">{% my_tag usershow.pk %}</span>
+										<a class="downvote"></a>
+									</div>
+									<script type="text/javascript">
+										$(document).ready(function(){
+											var callback = function(data) {
+												processstars(data.id, data.upvoted, data.downvoted);
+											};
+											$('#vote{{ usershow.pk }}').upvote({id: {{ usershow.pk }}, callback: callback});
+										});
+									</script>
+						</div>
+					</div>
+				</div>
+				<!-- post vote stop -->
+				<!-- postdelete request start -->
+				{% if cntdelegate == True %}
+					<div id="pstreqstatus{{ usershow.pk }}"></div>
+					<div id="listerpstreqstatus{{ usershow.pk }}">
+					<!--{{ usershow.fromuser.username }}-->
+					<!--{{ usershow.joinstatus }}-->
+						<div class="row">
+							<div class="col-md-12 text-center mt-2 pt-4">
+								{% url 'deletecreateposter' selectgroup.pk selectgroup.slug as membership_url_post %}
+											<form id="myformpstreq{{ usershow.pk }}" action="{{ membership_url_post }}" method="post" enctype="multipart/form-data">
+												{% csrf_token %}
+												<input type="hidden" id= "exporttypepstreq{{ usershow.pk }}" name="exporttypepstreq{{ usershow.pk }}" value="POSTUSERDELETEREQUEST,{{ usershow.creategrouppost.pk }},{{usershow.pk}},{{ usershow.user.pk }},{{ request.user.id }}">
+											</form>
+							</div>
+							<div class="col-md-12 text-center mt-2">
+								<button id="pstdeletreq{{ usershow.pk }}" onclick="pstdelreqfunc({{ usershow.pk }})" class="btn btn-primary btn-block" type="input" name="postforpstpositive{{ usershow.pk }}" value="{{ usershow.pk }}">This post's delete</button>
+							</div>
+						</div>
+					</div>
+				{% endif %}
+				<!-- postdelete request stop -->
+				<!-- userdel vote start -->
+				<div id="listerforusr{{ usershow.pk }}">
+				<!--{{ usershow.fromuser.username }}-->
+				<!--{{ usershow.joinstatus }}-->
+					<div class="row">
+						<div class="col-md-6 text-center mt-2 pt-4">
+							{% joinstatusshow usershow.user.username usershow.creategrouppost.pk as jnrstshow %}
+										{{ jnrstshow }}
+						</div>
+						<div class="col-md-6 text-center mt-2 pt-4">
+							{% url 'relatevoterprocess' selectgroup.pk selectgroup.slug as membership_url %}
+									<form id="myformforusr{{ usershow.pk }}" action="{{ membership_url }}" method="post" enctype="multipart/form-data">
+										{% csrf_token %}
+										<input type="hidden" id= "exporttypeforusr{{ usershow.pk }}" name="exporttypeforusr{{ usershow.pk }}" value="{{ usrexprtid }},{{ usershow.creategrouppost.pk }}">
+									</form>
+									<div id="addbtnblckforusr{{ usershow.pk }}"></div>
+						</div>
+						<div class="col-md-6 text-center mt-2">
+							<button id="forusrpositive{{ usershow.pk }}" onclick="usrvpositivefunc({{ usershow.pk }},true,false)" class="btn btn-primary custombtn" type="input" name="postforusrpositive{{ usershow.pk }}" value="{{ usershow.pk }},true,false">{% my_tag usershow.pk %}</button>
+						</div>
+						<div class="col-md-6 text-center mt-2">
+							<button id="forusrnegative{{ usershow.pk }}" onclick="usrvfuncnegative({{ usershow.pk }},false,true)" class="btn btn-primary custombtn" type="input" name="postforusrnegative{{ usershow.pk }}" value="{{ usershow.pk }},false,true">{% my_tag usershow.pk %}</button>
+						</div>
+					</div>
+				</div>
+				<!-- userdel vote stop -->
+			{% elif postscnt == True and usrdelcnt != True %}
+				<!-- post vote start -->
+				<div id="lister{{ usershow.pk }}">
+					<div class="row border-top border-primary">
+						<div id="feelsmain{{ usershow.pk }}" class="col-md-3 text-center mt-1 pt-2">
+							{{ usershow.feeling }}
+						</div>
+						<script type="text/javascript">
+							$(document).ready(function() {
+							  function convert() {
+							      var input = $('#feelsmain{{ usershow.pk }}').text();
+							      var output = emojione.toImage(input);
+							      document.getElementById('feelsmain{{ usershow.pk }}').innerHTML = output;
+							  }
+							  convert();
+							});
+						</script>
+						<div class="col-md-3 text-center mt-1 pt-2 fosizes">
+							{{ usershow.user.username }}
+						</div>
+						<div class="col-md-3 text-center mt-1 pt-2 fosizes">
+							{{ usershow.createdates }}
+						</div>
+						<div class="col-md-3 text-center mt-1 pt-2 fosizes">
+							{% for tag in usershow.postgrouplabels.all %}
+								<a href="/{{ usershow.creategrouppost.groupname }}/{{ tag.name }}/relatedposts">{{ tag.name }}</a>
+							{% endfor %}
+						</div>
+					<!-- </div> -->
+					<!-- carosel photo start -->
+					<!-- <div class="row"> -->
+						<div class="col-md-12 text-center mt-1 mb-1 pt-1">
+							{% photo_show_list usershow.id as photolist %}
+							<input id="wsipperphotourllist{{ usershow.pk }}" type="hidden" name="" value="{{ photolist }}">
+							<!-- for picture design -->
+							<div class="swiper-container slider{{ usershow.pk }}">
+								<div id="wrapper{{ usershow.pk }}" class="swiper-wrapper">
+									<!--<div class="swiper-slide"><img id="slide{{ usershow.pk }}" src=""></div>-->
+									<!-- Add Pagination -->
+								</div>
+							  <div class="swiper-pagination"></div>
+							  <!-- Add Arrows -->
+							  <div class="swiper-button-next"></div>
+							  <div class="swiper-button-prev"></div>
+							</div>
+							<script type="text/javascript">
+								$(document).ready(function() {
+									//photos add
+									var ptlst = $('#wsipperphotourllist{{ usershow.pk }}').val();
+									ptlst = ptlst.substr(1);
+									nnptlst = ptlst.length;
+									ptlst = ptlst.substr(0, nnptlst-1);
+									var listptlst = ptlst.split(",");
+									for (let i = 0; i < listptlst.length; i++) {
+										let element = listptlst[i];
+										if (element == "\'false\'") {
+											element = element;
+										}
+										else{
+											$('#wrapper{{ usershow.pk }}').append(`<div class="swiper-slide"><img id="slide{{ usershow.pk }}" class="img-fluid" src=`+element+`></div>`);
+										}
+									}
+									{% if usershow.multiphoto %}
+										$('#wrapper{{ usershow.pk }}').append(`<div class="swiper-slide"><video id="slide{{ usershow.pk }}" class="img-responsive myvidswidth" controls> <source src="{{ usershow.multiphoto.url }}" type="video/mp4"></video>`);
+									{% endif %}
+									(() => {
+										const sliderEl = document.querySelector('.slider{{ usershow.pk }}');
+										  if(!sliderEl){
+										    return;
+										  }
+										  const slider = new Swiper(sliderEl, {
+										    loop: true,
+										    /*
+										    autoplay: {
+										      delay: 5000,
+										      disableOnInteraction: false
+										    },
+										    */
+										    pagination: {
+										      el: '.swiper-pagination',
+										      clickable: true,
+										      //type: 'progressbar'
+										    },
+										    navigation: {
+										      nextEl: '.swiper-button-next',
+										      prevEl: '.swiper-button-prev',
+										    },
+										  });
+										})();
+								});
+								//$('#slide{{ usershow.pk }}').prop(src, )
+							</script>
+						</div>
+					</div>
+					<!-- carosel photo stop -->
+					<!-- text start -->
+					<div class="row">
+						<div class="col-md-12">
+							<blockquote class="blockquote text-center mt-1">
+								<span>{{ usershow.postsgroupwrite|safe }}</span>
+							</blockquote>
+						</div>
+					</div>
+
+
+					<div class="row">
+						{% getphotolink usershow.user.username as photolinkget %}
+						<div class="col-md-4 text-center mt-2">
+							<img src="{{ photolinkget }}" alt="{{ usershow.user.username }}" class="img-fluid rounded-circle imgwidth">
+						</div>
+						<div class="col-md-4 text-center mt-2 pt-4">
+							{% url 'postvoterproc' selectgroup.pk selectgroup.slug as membership_url %}
+							<form id="myform{{ usershow.pk }}" action="{{ membership_url }}" method="post" enctype="multipart/form-data">
+										{% csrf_token %}
+										<input type="hidden" id= "exporttypepost{{ usershow.pk }}" name="exporttypepost{{ usershow.pk }}" value="{{ usershow.pk }},{{ usershow.creategrouppost.pk }}">
+									</form>
+									<div id="addbtnblck{{ usershow.pk }}"></div>
+						</div>
+						<div class="col-md-4 text-center mt-2 pt-4">
+							<div id="vote{{ usershow.pk }}" class="upvote">
+										<a class="upvote"></a>
+										<span class="count">{% my_tag usershow.pk %}</span>
+										<a class="downvote"></a>
+									</div>
+									<script type="text/javascript">
+										$(document).ready(function(){
+											var callback = function(data) {
+												processstars(data.id, data.upvoted, data.downvoted);
+											};
+											$('#vote{{ usershow.pk }}').upvote({id: {{ usershow.pk }}, callback: callback});
+										});
+									</script>
+						</div>
+					</div>
+				</div>
+				<!-- post vote stop -->
+				<!-- postdeletevote vote start -->
+				<div id="listerfordel{{ usershow.pk }}">
+				<!--{{ usershow.fromuser.username }}-->
+				<!--{{ usershow.joinstatus }}-->
+					<div class="row">
+						<div class="col-md-6 text-center mt-2 pt-4">
+							{% joinstatusshow usershow.user.username usershow.creategrouppost.pk as jnrstshow %}
+										{{ jnrstshow }}
+						</div>
+						<div class="col-md-6 text-center mt-2 pt-4">
+							{% url 'deletevoteprocess' selectgroup.pk selectgroup.slug as membership_url %}
+									<form id="myformfordel{{ usershow.pk }}" action="{{ membership_url }}" method="post" enctype="multipart/form-data">
+										{% csrf_token %}
+										<input type="hidden" id= "exporttypefordel{{ usershow.pk }}" name="exporttypefordel{{ usershow.pk }}" value="{{ pstexprtid }},{{ usershow.creategrouppost.pk }},{{ usershow.pk }}">
+									</form>
+									<div id="addbtnblckfordel{{ usershow.pk }}"></div>
+						</div>
+						<div class="col-md-6 text-center mt-2">
+							<button id="postfordelpositive{{ usershow.pk }}" onclick="postdelpositivefunc({{ usershow.pk }},true,false)" class="btn btn-primary custombtn" type="input" name="postfordelpositive{{ usershow.pk }}" value="{{ usershow.pk }},true,false">{% my_post_tag usershow.pk %}</button>
+						</div>
+						<div class="col-md-6 text-center mt-2">
+							<button id="postfordelnegative{{ usershow.pk }}" onclick="postdelfuncnegative({{ usershow.pk }},false,true)" class="btn btn-primary custombtn" type="input" name="postfordelnegative{{ usershow.pk }}" value="{{ usershow.pk }},false,true">{% my_post_tag usershow.pk %}</button>
+						</div>
+					</div>
+				</div>
+				<!-- postdeletevote vote stop -->
+				<!-- userdel request start -->
+				{% if cntdelegate == True %}
+					<div id="usrreqstatus{{ usershow.pk }}"></div>
+					<div id="listerusrreqstatus{{ usershow.pk }}">
+					<!--{{ usershow.fromuser.username }}-->
+					<!--{{ usershow.joinstatus }}-->
+						<div class="row">
+							<!--<div class="col-md-6 text-center mt-2 pt-4">
+								{% joinstatusshow usershow.user.username usershow.creategrouppost.pk as jnrstshow %}
+											{{ jnrstshow }}
+							</div>-->
+							<div class="col-md-12 text-center mt-2 pt-4">
+								{% url 'requestdeleteviadelegate' selectgroup.pk selectgroup.slug as membership_url_usrdel %}
+											<form id="myformusrreq{{ usershow.pk }}" action="{{ membership_url_usrdel }}" method="post" enctype="multipart/form-data">
+												{% csrf_token %}
+												<input type="hidden" id= "exporttypeusrreq{{ usershow.pk }}" name="exporttypeusrreq{{ usershow.pk }}" value="USERDELETEREQUEST,{{ usershow.creategrouppost.pk }},{{ usershow.user.pk }},{{ request.user.id }}">
+											</form>
+							</div>
+							<div class="col-md-12 text-center mt-2">
+								<button id="usrdeletreq{{ usershow.pk }}" onclick="usrdelreqfunc({{ usershow.pk }})" class="btn btn-primary btn-block" type="input" name="postforusrpositive{{ usershow.pk }}" value="{{ usershow.pk }}">{% trans "This post's user delete"" %}</button>
+							</div>
+						</div>
+					</div>
+				{% endif %}
+				<!-- userdel request stop -->
+			{% else %}
+				<!-- post vote start -->
+				<div id="lister{{ usershow.pk }}">
+					<div class="row border-top border-primary">
+						<div id="feelsmain{{ usershow.pk }}" class="col-md-3 text-center mt-1 pt-2">
+							{{ usershow.feeling }}
+						</div>
+						<script type="text/javascript">
+							$(document).ready(function() {
+							  function convert() {
+							      var input = $('#feelsmain{{ usershow.pk }}').text();
+							      var output = emojione.toImage(input);
+							      document.getElementById('feelsmain{{ usershow.pk }}').innerHTML = output;
+							  }
+							  convert();
+							});
+						</script>
+						<div class="col-md-3 text-center mt-1 pt-2 fosizes">
+							{{ usershow.user.username }}
+						</div>
+						<div class="col-md-3 text-center mt-1 pt-2 fosizes">
+							{{ usershow.createdates }}
+						</div>
+						<div class="col-md-3 text-center mt-1 pt-2 fosizes">
+							{% for tag in usershow.postgrouplabels.all %}
+								<a href="/{{ usershow.creategrouppost.groupname }}/{{ tag.name }}/relatedposts">{{ tag.name }}</a>
+							{% endfor %}
+						</div>
+					<!-- </div> -->
+					<!-- carosel photo start -->
+					<!-- <div class="row"> -->
+						<div class="col-md-12 text-center mt-1 mb-1 pt-1">
+							{% photo_show_list usershow.id as photolist %}
+							<input id="wsipperphotourllist{{ usershow.pk }}" type="hidden" name="" value="{{ photolist }}">
+							<!-- for picture design -->
+							<div class="swiper-container slider{{ usershow.pk }}">
+								<div id="wrapper{{ usershow.pk }}" class="swiper-wrapper">
+									<!--<div class="swiper-slide"><img id="slide{{ usershow.pk }}" src=""></div>-->
+									<!-- Add Pagination -->
+								</div>
+							  <div class="swiper-pagination"></div>
+							  <!-- Add Arrows -->
+							  <div class="swiper-button-next"></div>
+							  <div class="swiper-button-prev"></div>
+							</div>
+							<script type="text/javascript">
+								$(document).ready(function() {
+									//photos add
+									var ptlst = $('#wsipperphotourllist{{ usershow.pk }}').val();
+									ptlst = ptlst.substr(1);
+									nnptlst = ptlst.length;
+									ptlst = ptlst.substr(0, nnptlst-1);
+									var listptlst = ptlst.split(",");
+									for (let i = 0; i < listptlst.length; i++) {
+										let element = listptlst[i];
+										if (element == "\'false\'") {
+											element = element;
+										}
+										else{
+											$('#wrapper{{ usershow.pk }}').append(`<div class="swiper-slide"><img id="slide{{ usershow.pk }}" class="img-fluid" src=`+element+`></div>`);
+										}
+									}
+									{% if usershow.multiphoto %}
+										$('#wrapper{{ usershow.pk }}').append(`<div class="swiper-slide"><video id="slide{{ usershow.pk }}" class="img-responsive myvidswidth" controls> <source src="{{ usershow.multiphoto.url }}" type="video/mp4"></video>`);
+									{% endif %}
+									(() => {
+										const sliderEl = document.querySelector('.slider{{ usershow.pk }}');
+										  if(!sliderEl){
+										    return;
+										  }
+										  const slider = new Swiper(sliderEl, {
+										    loop: true,
+										    /*
+										    autoplay: {
+										      delay: 5000,
+										      disableOnInteraction: false
+										    },
+										    */
+										    pagination: {
+										      el: '.swiper-pagination',
+										      clickable: true,
+										      //type: 'progressbar'
+										    },
+										    navigation: {
+										      nextEl: '.swiper-button-next',
+										      prevEl: '.swiper-button-prev',
+										    },
+										  });
+										})();
+								});
+								//$('#slide{{ usershow.pk }}').prop(src, )
+							</script>
+						</div>
+					</div>
+					<!-- carosel photo stop -->
+					<!-- text start -->
+					<div class="row">
+						<div class="col-md-12">
+							<blockquote class="blockquote text-center mt-1">
+								<span>{{ usershow.postsgroupwrite|safe }}</span>
+							</blockquote>
+						</div>
+					</div>
+
+
+					<div class="row">
+						{% getphotolink usershow.user.username as photolinkget %}
+						<div class="col-md-4 text-center mt-2">
+							<img src="{{ photolinkget }}" alt="{{ usershow.user.username }}" class="img-fluid rounded-circle imgwidth">
+						</div>
+						<div class="col-md-4 text-center mt-2 pt-4">
+							{% url 'postvoterproc' selectgroup.pk selectgroup.slug as membership_url %}
+									<form id="myform{{ usershow.pk }}" action="{{ membership_url }}" method="post" enctype="multipart/form-data">
+										{% csrf_token %}
+										<input type="hidden" id= "exporttypepost{{ usershow.pk }}" name="exporttypepost{{ usershow.pk }}" value="{{ usershow.pk }},{{ usershow.creategrouppost.pk }}">
+									</form>
+									<div id="addbtnblck{{ usershow.pk }}"></div>
+						</div>
+						<div class="col-md-4 text-center mt-2 pt-4">
+							<div id="vote{{ usershow.pk }}" class="upvote">
+										<a class="upvote"></a>
+										<span class="count">{% my_tag usershow.pk %}</span>
+										<a class="downvote"></a>
+									</div>
+									<script type="text/javascript">
+										$(document).ready(function(){
+											var callback = function(data) {
+												processstars(data.id, data.upvoted, data.downvoted);
+											};
+											$('#vote{{ usershow.pk }}').upvote({id: {{ usershow.pk }}, callback: callback});
+										});
+									</script>
+						</div>
+					</div>
+				</div>
+				<!-- post vote stop -->
+				{% if cntdelegate == True %}
+					<!-- postdeletevote request start -->
+					<div id="pstreqstatus{{ usershow.pk }}"></div>
+					<div id="listerpstreqstatus{{ usershow.pk }}">
+					<!--{{ usershow.fromuser.username }}-->
+					<!--{{ usershow.joinstatus }}-->
+						<div class="row">
+							<div class="col-md-6 text-center mt-2 pt-4">
+								{% joinstatusshow usershow.user.username usershow.creategrouppost.pk as jnrstshow %}
+											{{ jnrstshow }}
+							</div>
+							<div class="col-md-6 text-center mt-2 pt-4">
+								{% url 'deletecreateposter' selectgroup.pk selectgroup.slug as membership_url_post %}
+											<form id="myformpstreq{{ usershow.pk }}" action="{{ membership_url_post }}" method="post" enctype="multipart/form-data">
+												{% csrf_token %}
+												<input type="hidden" id= "exporttypepstreq{{ usershow.pk }}" name="exporttypepstreq{{ usershow.pk }}" value="POSTUSERDELETEREQUEST,{{ usershow.creategrouppost.pk }},{{usershow.pk}},{{ usershow.user.pk }},{{ request.user.id }}">
+											</form>
+							</div>
+							<div class="col-md-6 text-center mt-2">
+								<button id="pstdeletreq{{ usershow.pk }}" onclick="pstdelreqfunc({{ usershow.pk }})" class="btn btn-primary btn-block" type="input" name="postforpstpositive{{ usershow.pk }}" value="{{ usershow.pk }}">{% trans "This post's delete" %}</button>
+							</div>
+						</div>
+					</div>
+					<!-- postdeletevote request stop -->
+					<!-- userdel request start -->
+					<div id="usrreqstatus{{ usershow.pk }}"></div>
+					<div id="listerusrreqstatus{{ usershow.pk }}">
+					<!--{{ usershow.fromuser.username }}-->
+					<!--{{ usershow.joinstatus }}-->
+					<!--{% joinstatusshow usershow.user.username usershow.creategrouppost.pk as jnrstshow %}
+						{{ jnrstshow }}-->
+					<div class="row">
+							<div class="col-md-12 text-center mt-2 pt-4">
+								{% url 'requestdeleteviadelegate' selectgroup.pk selectgroup.slug as membership_url_usrdel %}
+											<form id="myformusrreq{{ usershow.pk }}" action="{{ membership_url_usrdel }}" method="post" enctype="multipart/form-data">
+												{% csrf_token %}
+												<input type="hidden" id= "exporttypeusrreq{{ usershow.pk }}" name="exporttypeusrreq{{ usershow.pk }}" value="USERDELETEREQUEST,{{ usershow.creategrouppost.pk }},{{ usershow.user.pk }},{{ request.user.id }}">
+											</form>
+							</div>
+							<div class="col-md-12 text-center mt-2">
+								<button id="usrdeletreq{{ usershow.pk }}" onclick="usrdelreqfunc({{ usershow.pk }})" class="btn btn-primary btn-block" type="input" name="postforusrpositive{{ usershow.pk }}" value="{{ usershow.pk }}">{% trans "This post's user delete" %}</button>
+							</div>
+						</div>
+					</div>
+				{% endif %}
+				<!-- userdel request stop -->
+			{% endif %}
+		{% endfor %}
+	{% else %}
+		<p>{{ list_exams_nothing }}</p>
+    {% endif %}
+    	<!-- paginate start-->
+		{% if is_paginated %}
+			<div class="row">
+				<div class="col-md-12 text-center mt-3 pt-2" >
+					<nav aria-label="Page navigation example">
+						<ul class="pagination justify-content-center">
+							{% if list_exams.has_previous %}
+							    <li class="page-item">
+							        <span><a class="page-link" href="?page={{ list_exams.previous_page_number }}">{% trans "Previous" %}</a></span>
+							    </li>
+							{% endif %}
+							    <li class="page-item disabled">
+							        <span class="page-link">{% trans "Page"%} {{ list_exams.number }} {%trans "of" %} {{ list_exams.paginator.num_pages }}</span>
+							    </li>
+							{% if list_exams.has_next %}
+							    <li class="page-item">
+							        <span><a class="page-link" href="?page={{ list_exams.next_page_number }}">{%trans "Next" %}</a></span>
+							    </li>
+							{% endif %}
+						</ul>
+					</nav>
+				</div>
+			</div>
+		{% else %}
+			<div class="row">
+				<div class="col-md-12 text-center mt-4 pt-4">
+			    <p>{% trans "No more pages to display" %}</p>
+			  </div>
+			</div>
+		{% endif %}
+		<!-- paginate stop-->
+    </div>
+    </div>
+    </div>
+    </div>
+    </section>
+    {% else %}
+    	<section>
+				<div class="container">
+					<div class="row"> 
+						<div class="col-md-12 text-center mt-1 pt-2">
+							<h2>{% blocktrans %}you need to confirm your account via email{% endblocktrans %}
+					</div>
+				</div>
+			</div>
+		</section>
+    {% endif %}
+
+{% endif %}
+ 
+{% endblock content %}
+{% endblock body %}
+
+{% block myfooter %}
+  {% include "myincludes/myfooter.html" %}
+{% endblock %}

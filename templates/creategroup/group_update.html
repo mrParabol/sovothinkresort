@@ -1,0 +1,29 @@
+{% extends "account/base.html" %}
+{% load static %}
+{% block bodyicijs %}
+
+{% endblock %}
+{% block head_title %}
+Götlerr
+{% endblock %}
+
+{% block extra_head %}
+berksan taşağı
+{% endblock %}
+
+{% block content %}
+  {% if request.user.is_authenticated %}
+ 
+<h1>Edit Profilim ajax</h1>
+<div id="id_publishposts"></div>
+{% url 'updategroupajax' get_object.pk get_object.slug as the_url %}
+<form id="myform" action="{{ the_url }}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ profile_form }}
+    <input type="hidden" id= "postesttype" name="postesttype" value="application/x-www-form-urlencoded">
+    <button id="buraya" class="" type="input" >İşlem Yap</button>  
+</form>
+
+{% endif %}
+
+{% endblock %}

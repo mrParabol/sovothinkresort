@@ -1,0 +1,151 @@
+{% extends "account/base.html" %}
+{% load i18n %}
+{% block bodyicijs %}
+	<!--<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>-->
+	<script type="text/javascript">
+		/*
+		var closegroupshow = function closegroupshow (getpk){
+			var dropdow = $('#dropdowncontent');
+			$(dropdow).val("");
+			var loaddata = "#loadclick"+getpk;
+			var groupinform = "#groupdetaildiv"+getpk;
+			var clsbtn = "#closedbutton"+getpk;
+			$(groupinform).empty();
+			$(clsbtn).remove();
+			$(loaddata).show();
+		}
+		var groupshowload = function groupshowload (getpk) {
+			var dropdow = $('#dropdowncontent').val();
+			var beforeopenloaddata = "#loadclick"+dropdow;
+			var beforegroupinform = "#groupdetaildiv"+dropdow;
+			var beforeclsbtn = "#closedbutton"+dropdow;
+			$(beforeopenloaddata).show();
+			$(beforegroupinform).empty();
+			$(beforeclsbtn).remove();
+			$('#dropdowncontent').val(getpk);
+			var loaddata = "#loadclick"+getpk;
+			var urlget = $(loaddata).val();
+			var contentaddplace = "#groupdetaildiv"+getpk;
+			//$(contentaddplace).load(urlget);
+			$(contentaddplace).load(urlget, function(response, status, xhr) {
+				if ( status == "error" ) {
+					var msg = "Sorry but there was an error: ";
+					$( "#error" ).html( msg + xhr.status + " " + xhr.statusText );
+				}
+				$(loaddata).hide();
+				$(this).find("a").append("Profilim");
+				var closedbutton = '<button id="closedbutton'+getpk+'" onclick="closegroupshow('+getpk+')" class="" type="input" >Closed Group</button>';
+				var closebtnplace = "#closedplace"+getpk;
+				$(closebtnplace).after(closedbutton);
+			});
+			//$.get(urlget, function(data) {
+				//var data = $(data);
+				//$(contentaddplace).html(data);
+			//});
+			
+		}
+		*/
+	</script>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			function convert() {
+			    var input = $('#mucuk').text();
+			    var output = emojione.toImage(input);
+			    document.getElementById('mucuk').innerHTML = output;
+			}
+			convert();
+		});
+
+	</script>
+{% endblock %}
+{% block head_title %}
+	{% blocktrans %}Account Detail{% endblocktrans %}
+{% endblock %}
+
+{% block extra_head %}
+	<!--{% trans "Look and Edit or Delete" %}-->
+{% endblock %}
+ 
+{% block body %}
+	{% block mynavbar %}
+	  {% include "myincludes/mynavbar.html" %}
+	{% endblock %}
+	{% block content %}
+		<section class="userdetailsection">
+			<div class="container">
+				<div class="page-header">
+					<!--<img class="img-fluid" src="{{ profile_photo.bigphoto.url }}" alt="{{request.user.username}}">-->
+			 		<div class="row">
+			 			<div class="col-md-12 text-center mt-1 pt-2">
+							{% if request.user.is_authenticated %}
+							 
+								<h3>{% trans "Welcome" %} {{request.user.username}}</h3>
+						</div>
+					</div>
+				</div>
+								{% if user_detail %}
+									<div class="table-responsive">          
+									  <table class="table">
+									    <tbody>
+									    	{%if profile_photo %}
+										    	<tr>
+										        <th class="text-center pt-sm-5">{% trans "Photo" %}</th>
+										        <td class="text-center">
+										        	{% if profile_photo.bigphoto %}
+										        		<img src="{{ profile_photo.bigphoto.url }}" alt="{{request.user.username}}" class="img-fluid" style="max-width:30%">
+										        	{% else %}
+										        		<img src="{{ profile_photo.bigphoto.url }}" alt="{{request.user.username}}" class="img-fluid" style="max-width:30%">
+										        	{% endif %}
+										        </th>
+										        </tr>
+									        {% endif %}
+									        <tr>
+									        <th class="text-center">{% trans "Gender" %}</th>
+									        <td class="text-center">{{ user_detail.gender }}</th>
+									        </tr>
+									        <tr>
+									        <th class="text-center">{% trans "Feeling" %}</th>
+									        <td class="text-center" id="mucuk">{{ user_detail.feeling }}</th>
+									        </tr>
+									        <tr>
+									        <th class="text-center">{% trans "Birthday" %}</th>
+									        <td class="text-center">{{ user_detail.birthday }}</th>
+									        </tr>
+									        <tr>
+									        <th class="text-center">{% trans "About" %}</th>
+									        <td class="text-center">{{ user_detail.aboutyourself }}</th>
+									        </tr>
+									    </tbody>
+									    
+									  </table>
+									  </div>
+									<!-- {% url 'updateuserajax' user_detail.pk user_detail.slug as the_url_detail %}
+									<button id="loadclick{{ user_detail.pk }}" onclick="groupshowload({{ user_detail.pk }})" class="" value="{{ the_url_detail }}" type="input" >Group Show</button>
+									<div id="groupdetaildiv{{ user_detail.pk }}"></div>
+									<div id="closedplace{{ user_detail.pk }}"></div>
+									<div id="error"></div> -->
+									<div class="row">
+										<div class="col-md-6 mt-1 pt-2">
+											<!--<h2>{% trans "Edit" %}</h2>-->
+											<a href="/userdetail/{{ user_detail.pk }}/{{ user_detail.slug }}/update" class="btn btn-info btn-block" role="button">{% trans "Edit Account" %}</a>
+										</div>
+										<div class="col-md-6 mt-1 pt-2">
+											<!--<h2>{% trans "Delete" %}</h2>-->
+											<a href="/userdetail/{{ user_detail.pk }}/{{ user_detail.slug }}/delete" class="btn btn-info btn-block" role="button">{% trans "Delete Account" %}</a>
+										</div>
+									</div>
+								{% else %}
+									<h2>{% blocktrans %}No Content{% endblocktrans %}</h2>
+								{% endif %}
+
+						{% endif %}
+			</div>
+		</section>
+	 
+	{% endblock content %}
+{% endblock body %}
+{% block myfooter %}
+  {% include "myincludes/myfooter.html" %}
+{% endblock %}

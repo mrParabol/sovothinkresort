@@ -1,0 +1,63 @@
+{% extends "account/base.html" %}
+{% load i18n %}
+{% load static %}
+{% block bodyicijs %}
+  
+{% endblock %}
+{% block head_title %}
+	{% blocktrans %}Announce Detail Show{% endblocktrans %}
+{% endblock %}
+
+{% block extra_head %}
+{% endblock %}
+ 
+{% block body %}
+{% block mynavbar %}
+	{% include "myincludes/mynavbar.html" %}
+{% endblock %}
+{% block content %}
+	<section class="userdetailsection">
+		<div class="container">
+			<div class="page-header">
+		 		<div class="row">
+		 			<div class="col-md-12 text-center mt-1 pt-2">
+						<h3>{% trans "Announce Detail" %}</h3>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+ 
+{% if request.user.is_authenticated %}
+	{% if request.user.is_active %}
+		<section class="createdsontent">
+			<div class="container">
+				<div class="row">
+	  				<div class="col-md-12 text-center mt-4 pt-2">
+						{% if followcnt == True or delegecntg == True or detail_posts.user == request.user %}
+			    			<div class="row border-top border-primary mt-3 pt-3">
+								<div class="col-md-6 text-center">
+									{% trans "Writer:"%} {{detail_posts.user.username}}
+								</div>
+								<div class="col-md-6 text-center">
+									{{detail_posts.createdates}}
+								</div>
+							</div>
+							<div class="col-md-12 text-center mt-3 pt-2">
+								<span><blockquote class="blockquote text-center mt-2">{{ detail_posts.postsgroupwrite|safe }}</blockquote></span>
+							</div>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</section>
+	{% else %}
+		<p>{% trans "No more pages to display" %}</p>
+	{% endif %}
+{% endif %}
+ 
+{% endblock %}
+{% endblock %}
+{% block myfooter %}
+  {% include "myincludes/myfooter.html" %}
+{% endblock %}

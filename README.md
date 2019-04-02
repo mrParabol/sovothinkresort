@@ -5,6 +5,7 @@
 After becoming a member you can become a world leader with the algorithm.At the moment of testing.Do you want to test it for its faults?
 Django Extensions requires Django 2.1.7 or later.
 requirements:
+```
 pip install 
 django-allauth 
 django-ckeditor 
@@ -19,35 +20,46 @@ django-extensions
 redis 
 psycopg2
 pysolr
-
+```
 If you want to install it from source, grab the git repository from GitHub and run sovothinkresort:
-
+```
 $ git clone https://github.com/mrParabol/sovothinkresort.git
 $ sudo mv sovothinkresort /var/www/
 $ cd /var/www/sovothinkresort
 $ sudo python3.6 manage.py crontab add
 $ sudo python3.6 manage.py runserver
-
+```
 Warning: Solr 7 Settings:
+```
 $ cd /var
 $ sudo chmod -R 777
 $ sudo su - solr -c '/opt/solr/bin/solr create -c haystacksovothinkresortsearch'
 $ cd /var/solr/data/haystacksovothinksearch/conf/
 $ sudo gedit solrconfig.xml
+```
 comment on the following class:
+```
 ManagedIndexSchemaFactory
+```
 Add this below the class you commented on:
+```
 <schemaFactory class="ClassicIndexSchemaFactory"/>
+```
 and then comment on the following class:
+```
 updateProcessor and AddSchemaFieldsUpdateProcessorFactory 
+```
 and
+```
 <updateRequestProcessorChain name="add-unknown-fields-to-the-schema" default="${update.autoCreateFields:true}"
            processor="uuid,remove-blank,field-name-mutating,parse-boolean,parse-long,parse-double,parse-date,add-schema-fields">
     <processor class="solr.LogUpdateProcessorFactory"/>
     <processor class="solr.DistributedUpdateProcessorFactory"/>
     <processor class="solr.RunUpdateProcessorFactory"/>
   </updateRequestProcessorChain>
+  ```
 and
+```
 <updateProcessor class="solr.UUIDUpdateProcessorFactory" name="uuid"/>
   <updateProcessor class="solr.RemoveBlankFieldUpdateProcessorFactory" name="remove-blank"/>
   <updateProcessor class="solr.FieldNameMutatingUpdateProcessorFactory" name="field-name-mutating">
@@ -78,8 +90,10 @@ and
       <str>yyyy-MM-dd</str>
     </arr>
   </updateProcessor>
+```
 Change the name of the managed-schema file to schema.xml.
 Create the currency.xml file in the same directory and write following codes.
+```
 <?xml version="1.0" ?>
 <!--
  Licensed to the Apache Software Foundation (ASF) under one or more
@@ -145,13 +159,15 @@ Create the currency.xml file in the same directory and write following codes.
     <rate from="GBP" to="NOK" rate="8.966508" />  
   </rates>
 </currencyConfig>
-
+```
 and then you have to write to terminale:
+```
 sudo mkdir /var/www/sovothinkresort/templates/search_configuration
 sudo touch /var/www/sovothinkresort/templates/search_configuration/solr.xml
 sudo gedit /var/www/sovothinkresort/templates/search_configuration/solr.xml
+```
 Put it in the file that we opened with gedit:
-
+```
 <?xml version="1.0" encoding="UTF-8" ?>
 <!--
  Licensed to the Apache Software Foundation (ASF) under one or more
@@ -1186,10 +1202,12 @@ Put it in the file that we opened with gedit:
     -->
 
 </schema>
-
+```
 and then you have to do:
+```
 $ sudo service solr restart
 $ sudo python3.6 manage.py build_solr_schema --filename=/var/solr/data/haystacksovothinksearch/conf/schema.xml && curl 'http://localhost:8983/solr/admin/cores?action=RELOAD&core=haystacksovothinksearch&wt=json&indent=true'
 $ sudo python3.6 manage.py rebuild_index
+```
 that's all for now
 

@@ -4,7 +4,8 @@
  
 After becoming a member you can become a world leader with the algorithm.At the moment of testing.Do you want to test it for its faults?
 Django Extensions requires Django 2.1.7 or later and Opencv 3 required.
-requirements:
+
+Other requirements:
 ```
 pip install 
 django-allauth 

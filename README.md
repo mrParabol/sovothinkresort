@@ -3,7 +3,7 @@
  What does this new social media work for?
  
 After becoming a member you can become a world leader with the algorithm.At the moment of testing.Do you want to test it for its faults?
-Django Extensions requires Django 2.1.7 or later.
+Django Extensions requires Django 2.1.7 or later and Opencv 3 required.
 requirements:
 ```
 pip install 
@@ -20,6 +20,7 @@ django-extensions
 redis 
 psycopg2
 pysolr
+Pillow
 ```
 If you want to install it from source, grab the git repository from GitHub and run sovothinkresort:
 ```

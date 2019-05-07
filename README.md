@@ -1,5 +1,6 @@
 # sovothinkresort
  Today, a democratic system is not fully functioning  therefore, a new democratic system is needed.name of the system democracy 4.0
+  
   With this algorithm, you can become a world leader with your shares.
  What does this new social media work for?
  
